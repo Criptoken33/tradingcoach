@@ -105,81 +105,99 @@ const initialShortChecklist: ChecklistType = {
 
 
 const createNewPairState = (symbol: string): PairState => {
-    return {
-      symbol,
-      direction: Direction.NONE,
-      answers: {},
-      riskPlan: null,
-      status: OperationStatus.IDLE,
-      notes: [],
-      exitPrice: null,
-      exitReason: null,
-      optionSelections: {},
-    };
+  return {
+    symbol,
+    direction: Direction.NONE,
+    answers: {},
+    riskPlan: null,
+    status: OperationStatus.IDLE,
+    notes: [],
+    exitPrice: null,
+    exitReason: null,
+    optionSelections: {},
+  };
 };
 
 const calculatePnl = (trade: Trade): number | null => {
-    if (
-      trade.status !== OperationStatus.CLOSED ||
-      !trade.riskPlan ||
-      !trade.exitPrice ||
-      !trade.riskPlan.entryPrice ||
-      !trade.riskPlan.positionSizeLots
-    ) {
-        return null;
-    }
-    const { entryPrice, positionSizeLots } = trade.riskPlan;
-    const pipMultiplier = trade.symbol.includes('JPY') ? 100 : 10000;
-    const pips = (trade.direction === Direction.LONG ? trade.exitPrice - entryPrice : entryPrice - trade.exitPrice) * pipMultiplier;
-    const pipValuePerLot = 10; // Assuming standard lot on a USD account
-    return pips * pipValuePerLot * positionSizeLots;
+  if (
+    trade.status !== OperationStatus.CLOSED ||
+    !trade.riskPlan ||
+    !trade.exitPrice ||
+    !trade.riskPlan.entryPrice ||
+    !trade.riskPlan.positionSizeLots
+  ) {
+    return null;
+  }
+  const { entryPrice, positionSizeLots } = trade.riskPlan;
+  const pipMultiplier = trade.symbol.includes('JPY') ? 100 : 10000;
+  const pips = (trade.direction === Direction.LONG ? trade.exitPrice - entryPrice : entryPrice - trade.exitPrice) * pipMultiplier;
+  const pipValuePerLot = 10; // Assuming standard lot on a USD account
+  return pips * pipValuePerLot * positionSizeLots;
 };
 
-// Toast Component
+
+// MD3 Snackbar Component
 interface ToastProps {
   message: string;
   show: boolean;
   isExiting: boolean;
 }
+
 const Toast: React.FC<ToastProps> = ({ message, show, isExiting }) => {
   if (!show) return null;
 
-  const animationClass = isExiting ? 'animate-fade-out-down' : 'animate-fade-in-up';
-
   return (
-    <div className={`fixed bottom-24 sm:bottom-10 left-1/2 -translate-x-1/2 bg-brand-text text-brand-dark px-6 py-3 rounded-xl shadow-lg z-50 ${animationClass} flex items-center gap-3 justify-center text-center w-auto max-w-[calc(100vw-2rem)] sm:max-w-md`}>
-      <span className="font-medium text-sm">{message}</span>
+    <div
+      className={`
+        fixed z-50 
+        bottom-24 left-1/2 -translate-x-1/2
+        md-medium:bottom-6 md-medium:left-6 md-medium:translate-x-0
+        px-4 py-3 
+        rounded-md-xs shadow-md-elevation-3
+        transition-all duration-md-medium2 ease-md-emphasized
+        ${isExiting ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}
+        min-w-[280px] max-w-[calc(100vw-32px)] 
+        md-medium:max-w-[568px]
+      `}
+      style={{
+        backgroundColor: '#303034',
+        color: '#F2F0F4'
+      }}
+    >
+      <p className="label-large text-center md-medium:text-left break-words">
+        {message}
+      </p>
     </div>
   );
 };
 
 // Helper to get ISO week number
 const getWeekNumber = (d: Date): number => {
-    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-    const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
-    return weekNo;
+  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  return weekNo;
 };
 
 export type Theme = 'light' | 'dark' | 'system';
 
 const App: React.FC = () => {
   const [view, setView] = useState<View>('DASHBOARD');
-  
+
   // Use safeParse for all persisted state to prevent app crashes
   const [pairsState, setPairsState] = useState<{ [key: string]: PairState }>(() => safeParse('tradingCoachWatchlist', {}));
   const [tradingLog, setTradingLog] = useState<Trade[]>(() => safeParse('tradingCoachLog', []));
-  
+
   const [activePairSymbol, setActivePairSymbol] = useState<string | null>(null);
   const [toast, setToast] = useState({ message: '', show: false, isExiting: false });
 
   const [settings, setSettings] = useState(() => safeParse('tradingCoachSettings', {
-        accountBalance: '10000',
-        dailyLossLimit: '1',
-        weeklyLossLimit: '2.5'
+    accountBalance: '10000',
+    dailyLossLimit: '1',
+    weeklyLossLimit: '2.5'
   }));
-  
+
   const [theme, setTheme] = useState<Theme>(() => {
     return (localStorage.getItem('tradingCoachTheme') as Theme) || 'system';
   });
@@ -191,7 +209,7 @@ const App: React.FC = () => {
   const [isTradingLocked, setIsTradingLocked] = useState(false);
   const [lockReason, setLockReason] = useState('');
   const [showWeeklyReview, setShowWeeklyReview] = useState(false);
-  
+
   const [dynamicRiskPercentage, setDynamicRiskPercentage] = useState<number>(() => {
     const saved = localStorage.getItem('tradingCoachRiskPercentage');
     const parsed = saved ? parseFloat(saved) : NaN;
@@ -207,17 +225,17 @@ const App: React.FC = () => {
     let startTime = 0;
 
     if (mt5ReportData?.equityCurve && mt5ReportData.equityCurve.length > 0) {
-        const lastReportEntry = mt5ReportData.equityCurve[mt5ReportData.equityCurve.length - 1];
-        baseBalance = lastReportEntry.balance;
-        startTime = lastReportEntry.time;
+      const lastReportEntry = mt5ReportData.equityCurve[mt5ReportData.equityCurve.length - 1];
+      baseBalance = lastReportEntry.balance;
+      startTime = lastReportEntry.time;
     } else {
-        baseBalance = parseFloat(settings.accountBalance) || 0;
+      baseBalance = parseFloat(settings.accountBalance) || 0;
     }
 
     const pnlSinceStart = tradingLog
-        .filter(t => t.status === OperationStatus.CLOSED && t.closeTimestamp && t.closeTimestamp > startTime)
-        .reduce((sum, trade) => sum + (calculatePnl(trade) ?? 0), 0);
-        
+      .filter(t => t.status === OperationStatus.CLOSED && t.closeTimestamp && t.closeTimestamp > startTime)
+      .reduce((sum, trade) => sum + (calculatePnl(trade) ?? 0), 0);
+
     return baseBalance + pnlSinceStart;
   }, [settings.accountBalance, tradingLog, mt5ReportData]);
 
@@ -231,7 +249,7 @@ const App: React.FC = () => {
       theme === 'dark' ||
       (theme === 'system' &&
         window.matchMedia('(prefers-color-scheme: dark)').matches);
-    
+
     root.classList.toggle('dark', isDark);
     localStorage.setItem('tradingCoachTheme', theme);
   }, [theme]);
@@ -242,30 +260,30 @@ const App: React.FC = () => {
     const isWeekend = dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0;
 
     if (isWeekend) {
-        const currentWeek = getWeekNumber(today);
-        const lastDismissedWeek = parseInt(localStorage.getItem('lastReviewDismissedWeek') || '0', 10);
-        
-        if (currentWeek > lastDismissedWeek) {
-            setShowWeeklyReview(true);
-        }
+      const currentWeek = getWeekNumber(today);
+      const lastDismissedWeek = parseInt(localStorage.getItem('lastReviewDismissedWeek') || '0', 10);
+
+      if (currentWeek > lastDismissedWeek) {
+        setShowWeeklyReview(true);
+      }
     }
-  }, []); 
+  }, []);
 
   useEffect(() => {
     if (!cooldownUntil) return;
 
     const interval = setInterval(() => {
-        if (Date.now() > cooldownUntil) {
-            setCooldownUntil(null);
-            triggerToast('Periodo de reflexión terminado. Puedes volver a operar.');
-        }
+      if (Date.now() > cooldownUntil) {
+        setCooldownUntil(null);
+        triggerToast('Periodo de reflexión terminado. Puedes volver a operar.');
+      }
     }, 1000);
 
     return () => clearInterval(interval);
   }, [cooldownUntil]);
 
   useEffect(() => {
-      localStorage.setItem('tradingCoachSettings', JSON.stringify(settings));
+    localStorage.setItem('tradingCoachSettings', JSON.stringify(settings));
   }, [settings]);
 
   useEffect(() => {
@@ -290,9 +308,9 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (mt5ReportData) {
-        localStorage.setItem('tradingCoachMt5Report', JSON.stringify(mt5ReportData));
+      localStorage.setItem('tradingCoachMt5Report', JSON.stringify(mt5ReportData));
     } else {
-        localStorage.removeItem('tradingCoachMt5Report');
+      localStorage.removeItem('tradingCoachMt5Report');
     }
   }, [mt5ReportData]);
 
@@ -300,9 +318,9 @@ const App: React.FC = () => {
   useEffect(() => {
     const closedTrades = tradingLog.filter(t => t.status === OperationStatus.CLOSED && t.closeTimestamp);
     if (closedTrades.length === 0) {
-        setIsTradingLocked(false);
-        setLockReason('');
-        return;
+      setIsTradingLocked(false);
+      setLockReason('');
+      return;
     }
 
     const balance = currentAccountBalance;
@@ -310,79 +328,79 @@ const App: React.FC = () => {
     const weeklyLimit = parseFloat(settings.weeklyLossLimit) || 0;
 
     if (balance <= 0 || (dailyLimit <= 0 && weeklyLimit <= 0)) {
-        setIsTradingLocked(false);
-        setLockReason('');
-        return;
+      setIsTradingLocked(false);
+      setLockReason('');
+      return;
     }
 
     const now = new Date();
     const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    
-    const dayOfWeek = now.getDay(); 
+
+    const dayOfWeek = now.getDay();
     const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1)).getTime();
 
     let dailyPnl = 0;
     let weeklyPnl = 0;
 
     closedTrades.forEach(trade => {
-        const pnl = calculatePnl(trade);
-        if (pnl !== null) {
-            if (trade.closeTimestamp! >= startOfWeek) {
-                weeklyPnl += pnl;
-            }
-            if (trade.closeTimestamp! >= startOfDay) {
-                dailyPnl += pnl;
-            }
+      const pnl = calculatePnl(trade);
+      if (pnl !== null) {
+        if (trade.closeTimestamp! >= startOfWeek) {
+          weeklyPnl += pnl;
         }
+        if (trade.closeTimestamp! >= startOfDay) {
+          dailyPnl += pnl;
+        }
+      }
     });
 
     const dailyLossAmount = (balance * dailyLimit) / 100;
     const weeklyLossAmount = (balance * weeklyLimit) / 100;
-    
+
     if (dailyLimit > 0 && dailyPnl <= -dailyLossAmount) {
-        setIsTradingLocked(true);
-        setLockReason(`Límite de pérdida diaria (${settings.dailyLossLimit}%) alcanzado. La operativa se reanudará mañana.`);
-        return;
+      setIsTradingLocked(true);
+      setLockReason(`Límite de pérdida diaria (${settings.dailyLossLimit}%) alcanzado. La operativa se reanudará mañana.`);
+      return;
     }
 
     if (weeklyLimit > 0 && weeklyPnl <= -weeklyLossAmount) {
-        setIsTradingLocked(true);
-        setLockReason(`Límite de pérdida semanal (${settings.weeklyLossLimit}%) alcanzado. La operativa se reanudará la próxima semana.`);
-        return;
+      setIsTradingLocked(true);
+      setLockReason(`Límite de pérdida semanal (${settings.weeklyLossLimit}%) alcanzado. La operativa se reanudará la próxima semana.`);
+      return;
     }
 
     setIsTradingLocked(false);
     setLockReason('');
-    
+
   }, [tradingLog, settings, currentAccountBalance]);
-  
+
   const pairPerformance = React.useMemo(() => {
     const performance: Record<string, number> = {};
     let lastReportTime = 0;
 
     if (mt5ReportData?.performanceBySymbol) {
-        mt5ReportData.performanceBySymbol.forEach(item => {
-            performance[item.label] = item.value;
-        });
-        if (mt5ReportData.equityCurve && mt5ReportData.equityCurve.length > 0) {
-            lastReportTime = mt5ReportData.equityCurve[mt5ReportData.equityCurve.length - 1].time;
-        }
+      mt5ReportData.performanceBySymbol.forEach(item => {
+        performance[item.label] = item.value;
+      });
+      if (mt5ReportData.equityCurve && mt5ReportData.equityCurve.length > 0) {
+        lastReportTime = mt5ReportData.equityCurve[mt5ReportData.equityCurve.length - 1].time;
+      }
     }
 
     const tradesToMerge = tradingLog.filter(t =>
-        t.status === OperationStatus.CLOSED &&
-        t.closeTimestamp &&
-        t.closeTimestamp > lastReportTime
+      t.status === OperationStatus.CLOSED &&
+      t.closeTimestamp &&
+      t.closeTimestamp > lastReportTime
     );
 
     tradesToMerge.forEach(trade => {
-        const pnl = calculatePnl(trade);
-        if (pnl !== null) {
-            if (!performance[trade.symbol]) {
-                performance[trade.symbol] = 0;
-            }
-            performance[trade.symbol] += pnl;
+      const pnl = calculatePnl(trade);
+      if (pnl !== null) {
+        if (!performance[trade.symbol]) {
+          performance[trade.symbol] = 0;
         }
+        performance[trade.symbol] += pnl;
+      }
     });
 
     return performance;
@@ -392,20 +410,20 @@ const App: React.FC = () => {
   const activeShortChecklist = React.useMemo(() => checklists.find(c => c.id === activeChecklistIds.short), [checklists, activeChecklistIds.short]);
 
   const getChecklistForPair = useCallback((pair: PairState): ChecklistType | undefined => {
-      if (pair.direction === Direction.LONG) {
-          return activeLongChecklist;
-      }
-      if (pair.direction === Direction.SHORT) {
-          return activeShortChecklist;
-      }
-      return undefined;
+    if (pair.direction === Direction.LONG) {
+      return activeLongChecklist;
+    }
+    if (pair.direction === Direction.SHORT) {
+      return activeShortChecklist;
+    }
+    return undefined;
   }, [activeLongChecklist, activeShortChecklist]);
 
 
   const triggerToast = (message: string) => {
     setToast({ message, show: true, isExiting: false });
   };
-  
+
   useEffect(() => {
     if (toast.show) {
       const exitTimer = setTimeout(() => {
@@ -431,22 +449,22 @@ const App: React.FC = () => {
     setActivePairSymbol(symbol);
     setView('CHECKLIST');
   }, [isTradingLocked, lockReason, cooldownUntil]);
-  
+
   const resetTradePlan = (checklist: ChecklistType | null) => {
     const initialAnswers: ChecklistAnswers = {};
     if (checklist) {
-        checklist.phases.flatMap(p => p.items).forEach(item => {
-            initialAnswers[item.id] = null;
-        });
+      checklist.phases.flatMap(p => p.items).forEach(item => {
+        initialAnswers[item.id] = null;
+      });
     }
     return {
-        answers: initialAnswers,
-        riskPlan: null,
-        status: OperationStatus.IDLE,
-        notes: [],
-        exitPrice: null,
-        exitReason: null,
-        optionSelections: {},
+      answers: initialAnswers,
+      riskPlan: null,
+      status: OperationStatus.IDLE,
+      notes: [],
+      exitPrice: null,
+      exitReason: null,
+      optionSelections: {},
     };
   }
 
@@ -454,7 +472,7 @@ const App: React.FC = () => {
     setPairsState(prevState => {
       const currentPair = prevState[symbol];
       const previousDirection = currentPair.direction;
-      
+
       const checklist = direction === Direction.LONG ? activeLongChecklist : activeShortChecklist;
       const shouldReset = direction !== previousDirection;
 
@@ -468,24 +486,24 @@ const App: React.FC = () => {
       };
     });
   }, [activeLongChecklist, activeShortChecklist]);
-  
+
   const handleAddPair = useCallback((symbol: string) => {
     if (pairsState[symbol]) {
-        triggerToast('El símbolo ya está en la lista.');
-        return;
+      triggerToast('El símbolo ya está en la lista.');
+      return;
     }
     setPairsState(prevState => ({
-        ...prevState,
-        [symbol]: createNewPairState(symbol)
+      ...prevState,
+      [symbol]: createNewPairState(symbol)
     }));
     triggerToast(`${symbol} añadido`);
   }, [pairsState]);
 
   const handleRemovePair = useCallback((symbol: string) => {
     setPairsState(prevState => {
-        const newState = { ...prevState };
-        delete newState[symbol];
-        return newState;
+      const newState = { ...prevState };
+      delete newState[symbol];
+      return newState;
     });
     triggerToast(`${symbol} eliminado`);
   }, []);
@@ -518,7 +536,7 @@ const App: React.FC = () => {
     setActivePairSymbol(null);
     setView('DASHBOARD');
   }, []);
-  
+
   const handleChecklistComplete = useCallback(() => {
     setView('RISK_MANAGEMENT');
   }, []);
@@ -526,44 +544,44 @@ const App: React.FC = () => {
   const handleBackToChecklist = useCallback(() => {
     setView('CHECKLIST');
   }, []);
-  
+
   const handleSavePlan = useCallback((plan: RiskPlan) => {
-      if (!activePairSymbol) return;
-      const activePair = pairsState[activePairSymbol];
-      const checklist = getChecklistForPair(activePair);
-      const allItems = checklist?.phases.flatMap(p => p.items) || [];
+    if (!activePairSymbol) return;
+    const activePair = pairsState[activePairSymbol];
+    const checklist = getChecklistForPair(activePair);
+    const allItems = checklist?.phases.flatMap(p => p.items) || [];
 
-      const tradeOptionSelections = Object.entries(activePair.optionSelections)
-        .map(([questionId, selectedOption]) => {
-            const item = allItems.find(i => i.id === questionId);
-            return item ? {
-                questionId: item.id,
-                questionText: item.text,
-                selectedOption: selectedOption
-            } : null;
-        })
-        .filter((selection): selection is { questionId: string; questionText: string; selectedOption: string; } => selection !== null);
-      
-      const newTrade: Trade = {
-        id: `${activePairSymbol}-${Date.now()}`,
-        symbol: activePair.symbol,
-        direction: activePair.direction,
-        optionSelections: tradeOptionSelections,
-        openTimestamp: Date.now(),
-        closeTimestamp: null,
-        riskPlan: plan,
-        status: OperationStatus.OPEN,
-        notes: [],
-        exitPrice: null,
-        exitReason: null,
-      };
+    const tradeOptionSelections = Object.entries(activePair.optionSelections)
+      .map(([questionId, selectedOption]) => {
+        const item = allItems.find(i => i.id === questionId);
+        return item ? {
+          questionId: item.id,
+          questionText: item.text,
+          selectedOption: selectedOption
+        } : null;
+      })
+      .filter((selection): selection is { questionId: string; questionText: string; selectedOption: string; } => selection !== null);
 
-      setTradingLog(prevLog => [...prevLog, newTrade]);
-      
-      handleRemovePair(activePairSymbol);
+    const newTrade: Trade = {
+      id: `${activePairSymbol}-${Date.now()}`,
+      symbol: activePair.symbol,
+      direction: activePair.direction,
+      optionSelections: tradeOptionSelections,
+      openTimestamp: Date.now(),
+      closeTimestamp: null,
+      riskPlan: plan,
+      status: OperationStatus.OPEN,
+      notes: [],
+      exitPrice: null,
+      exitReason: null,
+    };
 
-      triggerToast(`Operación en ${activePairSymbol} abierta.`);
-      handleBackToDashboard();
+    setTradingLog(prevLog => [...prevLog, newTrade]);
+
+    handleRemovePair(activePairSymbol);
+
+    triggerToast(`Operación en ${activePairSymbol} abierta.`);
+    handleBackToDashboard();
   }, [activePairSymbol, pairsState, handleBackToDashboard, handleRemovePair, getChecklistForPair]);
 
   const handleAddNote = useCallback((tradeId: string, note: string) => {
@@ -577,26 +595,26 @@ const App: React.FC = () => {
     if (!tradeToClose) return;
 
     const updatedTrade = {
-        ...tradeToClose,
-        status: OperationStatus.CLOSED,
-        exitPrice,
-        exitReason,
-        closeTimestamp: Date.now(),
+      ...tradeToClose,
+      status: OperationStatus.CLOSED,
+      exitPrice,
+      exitReason,
+      closeTimestamp: Date.now(),
     };
 
     const pnl = calculatePnl(updatedTrade);
 
     if (pnl !== null) {
-        if (pnl > 0) { // Win
-            setDynamicRiskPercentage(prev => Math.min(1.0, prev + 0.25));
-        } else if (pnl < 0) { // Loss
-            setDynamicRiskPercentage(prev => Math.max(0.25, prev - 0.25));
-            setCooldownUntil(Date.now() + 15 * 60 * 1000); // 15 minute cooldown
-        }
+      if (pnl > 0) { // Win
+        setDynamicRiskPercentage(prev => Math.min(1.0, prev + 0.25));
+      } else if (pnl < 0) { // Loss
+        setDynamicRiskPercentage(prev => Math.max(0.25, prev - 0.25));
+        setCooldownUntil(Date.now() + 15 * 60 * 1000); // 15 minute cooldown
+      }
     }
 
     setTradingLog(prevLog => prevLog.map(trade =>
-        trade.id === tradeId ? updatedTrade : trade
+      trade.id === tradeId ? updatedTrade : trade
     ));
   }, [tradingLog]);
 
@@ -604,90 +622,90 @@ const App: React.FC = () => {
     setSettings(newSettings);
     triggerToast('Ajustes guardados.');
   };
-  
+
   const handleImportMt5Report = (htmlContent: string) => {
     try {
-        const match = htmlContent.match(/window\.__report\s*=\s*(\{[\s\S]*?\});/);
-        if (!match || !match[1]) {
-            throw new Error("Could not find window.__report object in the HTML file.");
+      const match = htmlContent.match(/window\.__report\s*=\s*(\{[\s\S]*?\});/);
+      if (!match || !match[1]) {
+        throw new Error("Could not find window.__report object in the HTML file.");
+      }
+
+      const report = JSON.parse(match[1]);
+
+      const totalTrades = report.tradeTypeTotal?.manual ?? (report.longShortTotal?.long + report.longShortTotal?.short) ?? 0;
+      const winTradesLong = report.longShortIndicators?.win_trades?.[0] ?? 0;
+      const winTradesShort = report.longShortIndicators?.win_trades?.[1] ?? 0;
+      const totalWinTrades = winTradesLong + winTradesShort;
+      const totalLossTrades = totalTrades - totalWinTrades;
+
+      const summary: MT5Summary = {
+        grossProfit: report.profitTotal?.profit_gross ?? 0,
+        grossLoss: report.profitTotal?.loss_gross ?? 0,
+        totalNetProfit: report.balance?.table?.total ?? 0,
+        profitFactor: report.summaryIndicators?.profit_factor ?? 0,
+        maxDrawdown: (report.summaryIndicators?.drawdown ?? 0) * 100,
+        totalTrades: totalTrades,
+        bestTrade: report.risksIndicators?.profit?.[0] ?? 0,
+        worstTrade: report.risksIndicators?.profit?.[1] ?? 0,
+        maxConsecutiveWins: report.risksIndicators?.max_consecutive_trades?.[0] ?? 0,
+        maxConsecutiveLosses: report.risksIndicators?.max_consecutive_trades?.[1] ?? 0,
+        averageProfitTrade: totalWinTrades > 0 ? (report.profitTotal?.profit_gross ?? 0) / totalWinTrades : 0,
+        averageLossTrade: totalLossTrades > 0 ? (report.profitTotal?.loss_gross ?? 0) / totalLossTrades : 0,
+      };
+
+      const equityCurve = (report.balance?.chart ?? []).map((p: { x: number; y: number[] }) => ({
+        time: p.x * 1000,
+        balance: p.y[0]
+      }));
+
+      if (equityCurve.length > 0) {
+        const lastEquityPoint = equityCurve[equityCurve.length - 1];
+        if (lastEquityPoint) {
+          setSettings(prev => ({
+            ...prev,
+            accountBalance: String(lastEquityPoint.balance),
+          }));
         }
+      }
 
-        const report = JSON.parse(match[1]);
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const monthlyPerformance = (report.balance?.table?.years ?? []).map((yearData: { year: number; months: Record<string, number> }) => ({
+        year: yearData.year,
+        months: Object.entries(yearData.months).map(([monthIndex, pnl]) => ({
+          name: monthNames[parseInt(monthIndex, 10)],
+          pnl: pnl
+        }))
+      }));
 
-        const totalTrades = report.tradeTypeTotal?.manual ?? (report.longShortTotal?.long + report.longShortTotal?.short) ?? 0;
-        const winTradesLong = report.longShortIndicators?.win_trades?.[0] ?? 0;
-        const winTradesShort = report.longShortIndicators?.win_trades?.[1] ?? 0;
-        const totalWinTrades = winTradesLong + winTradesShort;
-        const totalLossTrades = totalTrades - totalWinTrades;
+      const performanceBySymbol = (report.symbolIndicators?.netto_profit ?? []).map(([label, value]: [string, number]) => ({ label, value }));
 
-        const summary: MT5Summary = {
-            grossProfit: report.profitTotal?.profit_gross ?? 0,
-            grossLoss: report.profitTotal?.loss_gross ?? 0,
-            totalNetProfit: report.balance?.table?.total ?? 0,
-            profitFactor: report.summaryIndicators?.profit_factor ?? 0,
-            maxDrawdown: (report.summaryIndicators?.drawdown ?? 0) * 100,
-            totalTrades: totalTrades,
-            bestTrade: report.risksIndicators?.profit?.[0] ?? 0,
-            worstTrade: report.risksIndicators?.profit?.[1] ?? 0,
-            maxConsecutiveWins: report.risksIndicators?.max_consecutive_trades?.[0] ?? 0,
-            maxConsecutiveLosses: report.risksIndicators?.max_consecutive_trades?.[1] ?? 0,
-            averageProfitTrade: totalWinTrades > 0 ? (report.profitTotal?.profit_gross ?? 0) / totalWinTrades : 0,
-            averageLossTrade: totalLossTrades > 0 ? (report.profitTotal?.loss_gross ?? 0) / totalLossTrades : 0,
-        };
+      const performanceByDirection = [
+        { label: Direction.LONG, value: report.longShortIndicators?.netto_pl?.[0] ?? 0 },
+        { label: Direction.SHORT, value: report.longShortIndicators?.netto_pl?.[1] ?? 0 },
+      ];
 
-        const equityCurve = (report.balance?.chart ?? []).map((p: { x: number; y: number[] }) => ({
-            time: p.x * 1000,
-            balance: p.y[0]
-        }));
-        
-        if (equityCurve.length > 0) {
-            const lastEquityPoint = equityCurve[equityCurve.length - 1];
-            if (lastEquityPoint) {
-                setSettings(prev => ({
-                    ...prev,
-                    accountBalance: String(lastEquityPoint.balance),
-                }));
-            }
-        }
-        
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const monthlyPerformance = (report.balance?.table?.years ?? []).map((yearData: { year: number; months: Record<string, number>}) => ({
-            year: yearData.year,
-            months: Object.entries(yearData.months).map(([monthIndex, pnl]) => ({
-                name: monthNames[parseInt(monthIndex, 10)],
-                pnl: pnl
-            }))
-        }));
-
-        const performanceBySymbol = (report.symbolIndicators?.netto_profit ?? []).map(([label, value]: [string, number]) => ({ label, value }));
-
-        const performanceByDirection = [
-            { label: Direction.LONG, value: report.longShortIndicators?.netto_pl?.[0] ?? 0 },
-            { label: Direction.SHORT, value: report.longShortIndicators?.netto_pl?.[1] ?? 0 },
-        ];
-        
-        const dayNames = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-        const performanceByDay = (report.dayOfWeekIndicators?.netto_pl ?? []).map((value: number, index: number) => ({
-            label: dayNames[index],
-            value: value,
-        }));
+      const dayNames = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+      const performanceByDay = (report.dayOfWeekIndicators?.netto_pl ?? []).map((value: number, index: number) => ({
+        label: dayNames[index],
+        value: value,
+      }));
 
 
-        setMt5ReportData({
-            summary,
-            trades: [],
-            monthlyPerformance,
-            equityCurve,
-            performanceBySymbol,
-            performanceByDirection,
-            performanceByDay,
-        });
-        
-        triggerToast('Reporte de MT5 importado con éxito.');
-        setView('PERFORMANCE_STATS');
+      setMt5ReportData({
+        summary,
+        trades: [],
+        monthlyPerformance,
+        equityCurve,
+        performanceBySymbol,
+        performanceByDirection,
+        performanceByDay,
+      });
+
+      triggerToast('Reporte de MT5 importado con éxito.');
+      setView('PERFORMANCE_STATS');
     } catch (e) {
-        console.error("Failed to parse MT5 report", e);
-        triggerToast('Error: El formato del reporte no es válido o está dañado.');
+      console.error("Failed to parse MT5 report", e);
+      triggerToast('Error: El formato del reporte no es válido o está dañado.');
     }
   };
 
@@ -710,10 +728,10 @@ const App: React.FC = () => {
   };
 
   const handleNavigateToStats = () => {
-      handleDismissWeeklyReview();
-      setView('PERFORMANCE_STATS');
+    handleDismissWeeklyReview();
+    setView('PERFORMANCE_STATS');
   };
-  
+
   const handleResetAppData = useCallback(() => {
     setTradingLog([]);
     setPairsState({});
@@ -736,8 +754,8 @@ const App: React.FC = () => {
 
   const currentStreak = useMemo(() => {
     const closedTrades = tradingLog
-        .filter(t => t.status === OperationStatus.CLOSED && t.closeTimestamp)
-        .sort((a, b) => b.closeTimestamp! - a.closeTimestamp!); 
+      .filter(t => t.status === OperationStatus.CLOSED && t.closeTimestamp)
+      .sort((a, b) => b.closeTimestamp! - a.closeTimestamp!);
 
     if (closedTrades.length === 0) return { type: 'none', count: 0 };
 
@@ -748,14 +766,14 @@ const App: React.FC = () => {
     let streakCount = 0;
 
     for (const trade of closedTrades) {
-        const pnl = calculatePnl(trade);
-        if (pnl === null) break;
-        const currentTradeType = pnl >= 0 ? 'win' : 'loss';
-        if (currentTradeType === streakType) {
-            streakCount++;
-        } else {
-            break;
-        }
+      const pnl = calculatePnl(trade);
+      if (pnl === null) break;
+      const currentTradeType = pnl >= 0 ? 'win' : 'loss';
+      if (currentTradeType === streakType) {
+        streakCount++;
+      } else {
+        break;
+      }
     }
     return { type: streakType, count: streakCount };
   }, [tradingLog]);
@@ -767,24 +785,24 @@ const App: React.FC = () => {
     switch (view) {
       case 'RISK_MANAGEMENT':
         if (activePair) {
-            return (
-                <RiskManagementScreen
-                    pairState={activePair}
-                    accountBalance={currentAccountBalance}
-                    onSavePlan={handleSavePlan}
-                    onBack={handleBackToChecklist}
-                    recommendedRisk={dynamicRiskPercentage}
-                />
-            );
+          return (
+            <RiskManagementScreen
+              pairState={activePair}
+              accountBalance={currentAccountBalance}
+              onSavePlan={handleSavePlan}
+              onBack={handleBackToChecklist}
+              recommendedRisk={dynamicRiskPercentage}
+            />
+          );
         }
         return null;
       case 'RISK_CALCULATOR':
         return (
-            <RiskManagementScreen
-                accountBalance={currentAccountBalance}
-                onBack={handleBackToDashboard}
-                recommendedRisk={dynamicRiskPercentage}
-            />
+          <RiskManagementScreen
+            accountBalance={currentAccountBalance}
+            onBack={handleBackToDashboard}
+            recommendedRisk={dynamicRiskPercentage}
+          />
         );
       case 'CHECKLIST':
         if (activePair) {
@@ -809,36 +827,36 @@ const App: React.FC = () => {
           onCloseTrade={handleCloseTrade}
         />;
       case 'PERFORMANCE_STATS':
-        return <PerformanceStats 
-                    tradingLog={tradingLog} 
-                    mt5ReportData={mt5ReportData} 
-                    accountBalance={parseFloat(settings.accountBalance) || 0}
-                />;
+        return <PerformanceStats
+          tradingLog={tradingLog}
+          mt5ReportData={mt5ReportData}
+          accountBalance={parseFloat(settings.accountBalance) || 0}
+        />;
       case 'SETTINGS':
-        return <Settings 
-                    currentSettings={settings} 
-                    onSave={handleSaveSettings} 
-                    appData={{ pairsState, tradingLog, settings, checklists, activeChecklistIds, dynamicRiskPercentage, mt5ReportData }}
-                    onImportData={handleImportData}
-                    onImportMt5Report={handleImportMt5Report}
-                    onShowToast={triggerToast}
-                    onNavigateToChecklistEditor={() => setView('CHECKLIST_EDITOR')}
-                    theme={theme}
-                    setTheme={setTheme}
-                    currentAccountBalance={currentAccountBalance}
-                    mt5ReportData={mt5ReportData}
-                    onResetAppData={handleResetAppData}
-                    onDeleteMt5Report={handleDeleteMt5Report}
-                />;
+        return <Settings
+          currentSettings={settings}
+          onSave={handleSaveSettings}
+          appData={{ pairsState, tradingLog, settings, checklists, activeChecklistIds, dynamicRiskPercentage, mt5ReportData }}
+          onImportData={handleImportData}
+          onImportMt5Report={handleImportMt5Report}
+          onShowToast={triggerToast}
+          onNavigateToChecklistEditor={() => setView('CHECKLIST_EDITOR')}
+          theme={theme}
+          setTheme={setTheme}
+          currentAccountBalance={currentAccountBalance}
+          mt5ReportData={mt5ReportData}
+          onResetAppData={handleResetAppData}
+          onDeleteMt5Report={handleDeleteMt5Report}
+        />;
       case 'CHECKLIST_EDITOR':
         return <ChecklistEditor
-                  checklists={checklists}
-                  setChecklists={setChecklists}
-                  activeIds={activeChecklistIds}
-                  setActiveIds={setActiveChecklistIds}
-                  onBack={() => setView('SETTINGS')}
-                  onShowToast={triggerToast}
-               />;
+          checklists={checklists}
+          setChecklists={setChecklists}
+          activeIds={activeChecklistIds}
+          setActiveIds={setActiveChecklistIds}
+          onBack={() => setView('SETTINGS')}
+          onShowToast={triggerToast}
+        />;
       case 'DASHBOARD':
       default:
         return (
@@ -863,90 +881,128 @@ const App: React.FC = () => {
         );
     }
   };
-  
+
   const activeTradesCount = tradingLog.filter(trade => trade.status === OperationStatus.OPEN).length;
 
   return (
-    <div className="min-h-screen bg-brand-dark font-sans pb-24 md:pb-0 md:pl-24">
-      <main className="md:max-w-7xl md:mx-auto">
+    <div className="min-h-screen bg-md-surface font-sans pb-20 md-medium:pb-0 md-medium:pl-20">
+      <main className="md-expanded:max-w-7xl md-expanded:mx-auto">
         {renderView()}
       </main>
-      
-      <nav className="fixed bottom-0 left-0 right-0 bg-brand-light z-30 h-20 md:h-screen md:w-24 md:flex-col md:justify-start md:pt-8 md:border-r border-brand-border-secondary">
-          <div className="flex items-center justify-around h-full md:flex-col md:justify-start md:h-auto md:gap-6 w-full">
-            <NavButton
-              label="Inicio"
-              icon={<HomeIcon />}
-              isActive={view === 'DASHBOARD'}
-              onClick={() => setView('DASHBOARD')}
-            />
-            <NavButton
-              label="Diario"
-              icon={<JournalIcon />}
-              isActive={view === 'TRADING_LOG'}
-              onClick={() => setView('TRADING_LOG')}
-              notificationCount={activeTradesCount}
-            />
-            <NavButton
-              label="Calculadora"
-              icon={<CalculatorIcon />}
-              isActive={view === 'RISK_CALCULATOR'}
-              onClick={() => setView('RISK_CALCULATOR')}
-            />
-            <NavButton
-              label="Análisis"
-              icon={<ChartPieIcon />}
-              isActive={view === 'PERFORMANCE_STATS'}
-              onClick={() => setView('PERFORMANCE_STATS')}
-            />
-             <NavButton
-              label="Ajustes"
-              icon={<Cog6ToothIcon />}
-              isActive={view === 'SETTINGS' || view === 'CHECKLIST_EDITOR'}
-              onClick={() => setView('SETTINGS')}
-            />
-          </div>
-        </nav>
-      
+
+      {/* MD3 Navigation Bar (Bottom on mobile, Rail on tablet+) */}
+      <nav className="
+        fixed bottom-0 left-0 right-0 z-30 
+        bg-md-surface-container 
+        h-20 
+        md-medium:h-screen md-medium:w-20 md-medium:flex-col md-medium:justify-start md-medium:pt-2
+        border-t md-medium:border-t-0 md-medium:border-r border-md-outline-variant
+        shadow-md-elevation-2
+      ">
+        <div className="flex items-center justify-around h-full md-medium:flex-col md-medium:justify-start md-medium:h-auto md-medium:gap-1 w-full">
+          <NavButton
+            label="Inicio"
+            icon={<HomeIcon />}
+            isActive={view === 'DASHBOARD'}
+            onClick={() => setView('DASHBOARD')}
+          />
+          <NavButton
+            label="Diario"
+            icon={<JournalIcon />}
+            isActive={view === 'TRADING_LOG'}
+            onClick={() => setView('TRADING_LOG')}
+            notificationCount={activeTradesCount}
+          />
+          <NavButton
+            label="Calculadora"
+            icon={<CalculatorIcon />}
+            isActive={view === 'RISK_CALCULATOR'}
+            onClick={() => setView('RISK_CALCULATOR')}
+          />
+          <NavButton
+            label="Análisis"
+            icon={<ChartPieIcon />}
+            isActive={view === 'PERFORMANCE_STATS'}
+            onClick={() => setView('PERFORMANCE_STATS')}
+          />
+          <NavButton
+            label="Ajustes"
+            icon={<Cog6ToothIcon />}
+            isActive={view === 'SETTINGS' || view === 'CHECKLIST_EDITOR'}
+            onClick={() => setView('SETTINGS')}
+          />
+        </div>
+      </nav>
+
       <Toast message={toast.message} show={toast.show} isExiting={toast.isExiting} />
     </div>
   );
 };
 
 interface NavButtonProps {
-    label: string;
-    icon: React.ReactNode;
-    isActive: boolean;
-    onClick: () => void;
-    notificationCount?: number;
+  label: string;
+  icon: React.ReactNode;
+  isActive: boolean;
+  onClick: () => void;
+  notificationCount?: number;
 }
 
 const NavButton: React.FC<NavButtonProps> = ({ label, icon, isActive, onClick, notificationCount }) => {
-    return (
-        <button 
-            onClick={onClick} 
-            className="flex flex-col items-center justify-center w-full md:h-16 group focus:outline-none relative"
-        >
-            <div className={`
-                flex items-center justify-center w-16 h-8 rounded-full transition-all duration-300 mb-1
-                ${isActive ? 'bg-brand-accent-container text-brand-accent' : 'text-brand-text-secondary group-hover:bg-brand-tertiary'}
+  return (
+    <button
+      onClick={onClick}
+      className="
+              flex flex-col items-center justify-center 
+              w-full h-full
+              md-medium:w-14 md-medium:h-14 md-medium:mx-auto
+              min-h-[48px] min-w-[48px]
+              group focus:outline-none relative
+              transition-colors duration-md-short4 ease-md-standard
+            "
+      aria-label={label}
+    >
+      {/* MD3 State Layer Container */}
+      <div className={`
+                flex flex-col items-center justify-center gap-1
+                md-medium:gap-0.5
+                w-16 h-12 
+                md-medium:w-14 md-medium:h-14
+                rounded-md-lg
+                transition-all duration-md-short4 ease-md-standard
+                ${isActive
+          ? 'bg-md-secondary-container text-md-on-surface'
+          : 'text-md-on-surface-variant hover:bg-md-surface-container-highest active:bg-md-surface-container-highest'
+        }
             `}>
-                <div className={`w-[22px] h-[22px]`}>
-                    {icon}
-                </div>
-            </div>
-            <span className={`
-                text-[11px] font-medium transition-colors duration-200 tracking-tight
-                ${isActive ? 'text-brand-text font-bold' : 'text-brand-text-secondary'}
-            `}>
-                {label}
-            </span>
-            {notificationCount > 0 && (
-                <span className="absolute top-1 right-1/4 md:top-2 md:right-4 flex h-2 w-2 items-center justify-center rounded-full bg-brand-danger ring-2 ring-brand-light">
-                </span>
-            )}
-        </button>
-    );
+        {/* Icon */}
+        <div className="w-6 h-6 flex items-center justify-center">
+          {icon}
+        </div>
+
+        {/* Label */}
+        <span className={`
+                    label-medium
+                    transition-colors duration-md-short3
+                    ${isActive ? 'font-bold' : 'font-medium'}
+                `}>
+          {label}
+        </span>
+      </div>
+
+      {/* Notification Badge */}
+      {(notificationCount ?? 0) > 0 && (
+        <span className="
+                  absolute top-1 right-1/4 
+                  md-medium:top-1 md-medium:right-2
+                  flex h-2 w-2 items-center justify-center 
+                  rounded-md-full 
+                  bg-md-error 
+                  ring-2 ring-md-surface-container
+                ">
+        </span>
+      )}
+    </button>
+  );
 };
 
 export default App;

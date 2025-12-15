@@ -18,19 +18,108 @@
               sans: ['Roboto', 'sans-serif'],
             },
             colors: {
-              'brand-dark': 'rgb(var(--bg-primary))', // Surface
-              'brand-light': 'rgb(var(--bg-secondary))', // Surface Container Low
-              'brand-tertiary': 'rgb(var(--bg-tertiary))', // Surface Container High
-              'brand-accent': 'rgb(var(--accent))', // Primary
-              'brand-accent-container': 'rgb(var(--accent-container))', // Secondary Container
-              'brand-text': 'rgb(var(--fg-primary))',
-              'brand-text-secondary': 'rgb(var(--fg-secondary))',
-              'brand-success': 'rgb(var(--success))',
-              'brand-danger': 'rgb(var(--danger))',
-              'brand-warning-medium': 'rgb(var(--warning-medium))',
-              'brand-warning-high': 'rgb(var(--warning-high))',
-              'brand-border': 'rgb(var(--border-primary))',
-              'brand-border-secondary': 'rgb(var(--border-secondary))',
+              // MD3 Surface Colors
+              'md-surface': 'rgb(var(--md-sys-color-surface))',
+              'md-surface-container': 'rgb(var(--md-sys-color-surface-container))',
+              'md-surface-container-low': 'rgb(var(--md-sys-color-surface-container-low))',
+              'md-surface-container-high': 'rgb(var(--md-sys-color-surface-container-high))',
+              'md-surface-container-highest': 'rgb(var(--md-sys-color-surface-container-highest))',
+              
+              // MD3 Primary Colors
+              'md-primary': 'rgb(var(--md-sys-color-primary))',
+              'md-on-primary': 'rgb(var(--md-sys-color-on-primary))',
+              'md-primary-container': 'rgb(var(--md-sys-color-primary-container))',
+              'md-on-primary-container': 'rgb(var(--md-sys-color-on-primary-container))',
+              
+              // MD3 Secondary Colors
+              'md-secondary': 'rgb(var(--md-sys-color-secondary))',
+              'md-on-secondary': 'rgb(var(--md-sys-color-on-secondary))',
+              'md-secondary-container': 'rgb(var(--md-sys-color-secondary-container))',
+              
+              // MD3 Text Colors
+              'md-on-surface': 'rgb(var(--md-sys-color-on-surface))',
+              'md-on-surface-variant': 'rgb(var(--md-sys-color-on-surface-variant))',
+              
+              // MD3 Error Colors
+              'md-error': 'rgb(var(--md-sys-color-error))',
+              'md-on-error': 'rgb(var(--md-sys-color-on-error))',
+              'md-error-container': 'rgb(var(--md-sys-color-error-container))',
+              
+              // MD3 Success Colors (Custom)
+              'md-success': 'rgb(var(--md-sys-color-success))',
+              'md-on-success': 'rgb(var(--md-sys-color-on-success))',
+              'md-success-container': 'rgb(var(--md-sys-color-success-container))',
+              
+              // MD3 Warning Colors (Custom)
+              'md-warning': 'rgb(var(--md-sys-color-warning))',
+              'md-warning-high': 'rgb(var(--md-sys-color-warning-high))',
+              'md-on-warning': 'rgb(var(--md-sys-color-on-warning))',
+              
+              // MD3 Outline
+              'md-outline': 'rgb(var(--md-sys-color-outline))',
+              'md-outline-variant': 'rgb(var(--md-sys-color-outline-variant))',
+              
+              // Legacy aliases for backward compatibility
+              'brand-dark': 'rgb(var(--md-sys-color-surface))',
+              'brand-light': 'rgb(var(--md-sys-color-surface-container-low))',
+              'brand-tertiary': 'rgb(var(--md-sys-color-surface-container-high))',
+              'brand-accent': 'rgb(var(--md-sys-color-primary))',
+              'brand-accent-container': 'rgb(var(--md-sys-color-primary-container))',
+              'brand-text': 'rgb(var(--md-sys-color-on-surface))',
+              'brand-text-secondary': 'rgb(var(--md-sys-color-on-surface-variant))',
+              'brand-success': 'rgb(var(--md-sys-color-success))',
+              'brand-danger': 'rgb(var(--md-sys-color-error))',
+              'brand-warning-medium': 'rgb(var(--md-sys-color-warning))',
+              'brand-warning-high': 'rgb(var(--md-sys-color-warning-high))',
+              'brand-border': 'rgb(var(--md-sys-color-outline))',
+              'brand-border-secondary': 'rgb(var(--md-sys-color-outline-variant))',
+            },
+            boxShadow: {
+              'md-elevation-0': 'var(--md-sys-elevation-0)',
+              'md-elevation-1': 'var(--md-sys-elevation-1)',
+              'md-elevation-2': 'var(--md-sys-elevation-2)',
+              'md-elevation-3': 'var(--md-sys-elevation-3)',
+              'md-elevation-4': 'var(--md-sys-elevation-4)',
+              'md-elevation-5': 'var(--md-sys-elevation-5)',
+            },
+            borderRadius: {
+              'md-none': 'var(--md-sys-shape-corner-none)',
+              'md-xs': 'var(--md-sys-shape-corner-extra-small)',
+              'md-sm': 'var(--md-sys-shape-corner-small)',
+              'md-md': 'var(--md-sys-shape-corner-medium)',
+              'md-lg': 'var(--md-sys-shape-corner-large)',
+              'md-xl': 'var(--md-sys-shape-corner-extra-large)',
+              'md-full': 'var(--md-sys-shape-corner-full)',
+              // Legacy
+              '4xl': '2rem',
+              '5xl': '2.5rem',
+            },
+            spacing: {
+              'md-0': 'var(--md-sys-spacing-0)',
+              'md-1': 'var(--md-sys-spacing-1)',
+              'md-2': 'var(--md-sys-spacing-2)',
+              'md-3': 'var(--md-sys-spacing-3)',
+              'md-4': 'var(--md-sys-spacing-4)',
+              'md-5': 'var(--md-sys-spacing-5)',
+              'md-6': 'var(--md-sys-spacing-6)',
+              'md-8': 'var(--md-sys-spacing-8)',
+              'md-12': 'var(--md-sys-spacing-12)',
+            },
+            transitionDuration: {
+              'md-short1': 'var(--md-sys-motion-duration-short1)',
+              'md-short2': 'var(--md-sys-motion-duration-short2)',
+              'md-short3': 'var(--md-sys-motion-duration-short3)',
+              'md-short4': 'var(--md-sys-motion-duration-short4)',
+              'md-medium1': 'var(--md-sys-motion-duration-medium1)',
+              'md-medium2': 'var(--md-sys-motion-duration-medium2)',
+              'md-medium3': 'var(--md-sys-motion-duration-medium3)',
+              'md-medium4': 'var(--md-sys-motion-duration-medium4)',
+            },
+            transitionTimingFunction: {
+              'md-standard': 'var(--md-sys-motion-easing-standard)',
+              'md-emphasized': 'var(--md-sys-motion-easing-emphasized)',
+              'md-decelerate': 'var(--md-sys-motion-easing-standard-decelerate)',
+              'md-accelerate': 'var(--md-sys-motion-easing-standard-accelerate)',
             },
             keyframes: {
               'fade-in-up': {
@@ -47,100 +136,23 @@
               }
             },
             animation: {
-              'fade-in-up': 'fade-in-up 0.5s cubic-bezier(0.2, 0.0, 0, 1.0) forwards',
-              'fade-in': 'fade-in 0.5s cubic-bezier(0.2, 0.0, 0, 1.0) forwards',
-              'fade-out-down': 'fade-out-down 0.5s ease-in forwards',
+              'fade-in-up': 'fade-in-up var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized) forwards',
+              'fade-in': 'fade-in var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized) forwards',
+              'fade-out-down': 'fade-out-down var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized) forwards',
             },
-            borderRadius: {
-                '4xl': '2rem',
-                '5xl': '2.5rem',
+            screens: {
+              'md-compact': '0px',
+              'md-medium': '600px',
+              'md-expanded': '840px',
+              'md-large': '1240px',
+              'md-xl': '1600px',
             }
           }
         }
       }
     </script>
-    <style>
-      :root {
-        color-scheme: light;
-        /* Material 3 Light Theme Tokens */
-        --bg-primary: 255 251 254; /* Surface */
-        --bg-secondary: 247 242 250; /* Surface Container Low */
-        --bg-tertiary: 235 221 231; /* Surface Container High (Purple tint) or Neutral */
-        /* Let's stick to a neutral/blue tint for a trading app */
-        --bg-primary: 248 249 255; 
-        --bg-secondary: 255 255 255; 
-        --bg-tertiary: 235 238 245; 
-        
-        --fg-primary: 27 27 31; 
-        --fg-secondary: 70 70 79;
-        
-        --accent: 0 90 193; /* Primary Blue */
-        --accent-container: 216 226 255; /* Secondary Container (Active nav state) */
-        
-        --success: 24 121 61; 
-        --danger: 186 26 26; 
-        --warning-medium: 200 140 0;
-        --warning-high: 220 80 0;
-        
-        --border-primary: 116 119 127; 
-        --border-secondary: 225 226 236; 
-      }
+    <link rel="stylesheet" href="/index.css">
 
-      html.dark {
-        color-scheme: dark;
-        /* Material 3 Dark Theme Tokens */
-        --bg-primary: 20 18 24; /* Surface */
-        --bg-secondary: 33 31 38; /* Surface Container */
-        --bg-tertiary: 43 41 48; /* Surface Container High */
-        
-        --fg-primary: 230 225 229; 
-        --fg-secondary: 202 196 208; 
-        
-        --accent: 176 200 255; /* Primary Light Blue */
-        --accent-container: 0 74 119; /* Darker blue for active states */
-        
-        --success: 100 210 120;
-        --danger: 255 180 171; 
-        --warning-medium: 255 204 100;
-        --warning-high: 255 150 80;
-        
-        --border-primary: 147 143 153; 
-        --border-secondary: 73 69 79; 
-      }
-
-      html, body {
-        overscroll-behavior-y: contain;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        font-family: 'Roboto', sans-serif;
-      }
-      
-      /* Remove tap highlight on mobile */
-      * {
-        -webkit-tap-highlight-color: transparent;
-      }
-      
-      /* Custom scrollbar for webkit */
-      ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent; 
-      }
-      ::-webkit-scrollbar-thumb {
-        background: rgba(var(--fg-secondary), 0.3); 
-        border-radius: 10px;
-      }
-
-      /* Multi-line text truncation */
-      .line-clamp-3 {
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-    </style>
   <script type="importmap">
 {
   "imports": {

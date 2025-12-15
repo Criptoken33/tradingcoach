@@ -1,0 +1,500 @@
+/* ============================================
+   Material Design 3 - Design Token System
+   ============================================ */
+
+/* ============================================
+   1. COLOR TOKENS
+   ============================================ */
+
+:root {
+  color-scheme: light;
+  
+  /* Surface Colors */
+  --md-sys-color-surface: 248 249 255;
+  --md-sys-color-surface-dim: 222 226 235;
+  --md-sys-color-surface-bright: 248 249 255;
+  --md-sys-color-surface-container-lowest: 255 255 255;
+  --md-sys-color-surface-container-low: 242 244 251;
+  --md-sys-color-surface-container: 235 238 245;
+  --md-sys-color-surface-container-high: 229 232 240;
+  --md-sys-color-surface-container-highest: 223 226 235;
+  
+  /* Primary Colors */
+  --md-sys-color-primary: 0 90 193;
+  --md-sys-color-on-primary: 255 255 255;
+  --md-sys-color-primary-container: 216 226 255;
+  --md-sys-color-on-primary-container: 0 26 66;
+  
+  /* Secondary Colors */
+  --md-sys-color-secondary: 85 95 113;
+  --md-sys-color-on-secondary: 255 255 255;
+  --md-sys-color-secondary-container: 217 226 249;
+  --md-sys-color-on-secondary-container: 18 28 43;
+  
+  /* Tertiary Colors */
+  --md-sys-color-tertiary: 112 85 135;
+  --md-sys-color-on-tertiary: 255 255 255;
+  --md-sys-color-tertiary-container: 241 219 255;
+  --md-sys-color-on-tertiary-container: 39 14 59;
+  
+  /* Error Colors */
+  --md-sys-color-error: 186 26 26;
+  --md-sys-color-on-error: 255 255 255;
+  --md-sys-color-error-container: 255 218 214;
+  --md-sys-color-on-error-container: 65 0 2;
+  
+  /* Success Colors (Custom) */
+  --md-sys-color-success: 24 121 61;
+  --md-sys-color-on-success: 255 255 255;
+  --md-sys-color-success-container: 161 234 180;
+  --md-sys-color-on-success-container: 0 33 11;
+  
+  /* Warning Colors (Custom) */
+  --md-sys-color-warning: 200 140 0;
+  --md-sys-color-warning-high: 220 80 0;
+  --md-sys-color-on-warning: 255 255 255;
+  
+  /* Text Colors */
+  --md-sys-color-on-surface: 27 27 31;
+  --md-sys-color-on-surface-variant: 70 70 79;
+  
+  /* Outline Colors */
+  --md-sys-color-outline: 116 119 127;
+  --md-sys-color-outline-variant: 197 199 208;
+  
+  /* Background */
+  --md-sys-color-background: 248 249 255;
+  --md-sys-color-on-background: 27 27 31;
+  
+  /* Inverse Colors */
+  --md-sys-color-inverse-surface: 48 48 52;
+  --md-sys-color-inverse-on-surface: 242 240 244;
+  --md-sys-color-inverse-primary: 176 200 255;
+  
+  /* Scrim */
+  --md-sys-color-scrim: 0 0 0;
+  --md-sys-color-shadow: 0 0 0;
+}
+
+html.dark {
+  color-scheme: dark;
+  
+  /* Surface Colors */
+  --md-sys-color-surface: 20 18 24;
+  --md-sys-color-surface-dim: 20 18 24;
+  --md-sys-color-surface-bright: 59 56 62;
+  --md-sys-color-surface-container-lowest: 15 13 19;
+  --md-sys-color-surface-container-low: 28 27 31;
+  --md-sys-color-surface-container: 33 31 38;
+  --md-sys-color-surface-container-high: 43 41 48;
+  --md-sys-color-surface-container-highest: 54 52 59;
+  
+  /* Primary Colors */
+  --md-sys-color-primary: 176 200 255;
+  --md-sys-color-on-primary: 0 48 106;
+  --md-sys-color-primary-container: 0 74 119;
+  --md-sys-color-on-primary-container: 216 226 255;
+  
+  /* Secondary Colors */
+  --md-sys-color-secondary: 189 199 220;
+  --md-sys-color-on-secondary: 39 49 65;
+  --md-sys-color-secondary-container: 62 71 88;
+  --md-sys-color-on-secondary-container: 217 226 249;
+  
+  /* Tertiary Colors */
+  --md-sys-color-tertiary: 223 189 244;
+  --md-sys-color-on-tertiary: 62 36 84;
+  --md-sys-color-tertiary-container: 86 60 110;
+  --md-sys-color-on-tertiary-container: 241 219 255;
+  
+  /* Error Colors */
+  --md-sys-color-error: 255 180 171;
+  --md-sys-color-on-error: 105 0 5;
+  --md-sys-color-error-container: 147 0 10;
+  --md-sys-color-on-error-container: 255 218 214;
+  
+  /* Success Colors (Custom) */
+  --md-sys-color-success: 100 210 120;
+  --md-sys-color-on-success: 0 57 20;
+  --md-sys-color-success-container: 0 83 35;
+  --md-sys-color-on-success-container: 161 234 180;
+  
+  /* Warning Colors (Custom) */
+  --md-sys-color-warning: 255 204 100;
+  --md-sys-color-warning-high: 255 150 80;
+  --md-sys-color-on-warning: 66 45 0;
+  
+  /* Text Colors */
+  --md-sys-color-on-surface: 230 225 229;
+  --md-sys-color-on-surface-variant: 202 196 208;
+  
+  /* Outline Colors */
+  --md-sys-color-outline: 147 143 153;
+  --md-sys-color-outline-variant: 73 69 79;
+  
+  /* Background */
+  --md-sys-color-background: 20 18 24;
+  --md-sys-color-on-background: 230 225 229;
+  
+  /* Inverse Colors */
+  --md-sys-color-inverse-surface: 230 225 229;
+  --md-sys-color-inverse-on-surface: 48 48 52;
+  --md-sys-color-inverse-primary: 0 90 193;
+  
+  /* Scrim */
+  --md-sys-color-scrim: 0 0 0;
+  --md-sys-color-shadow: 0 0 0;
+}
+
+/* ============================================
+   2. ELEVATION TOKENS (MD3 Shadow System)
+   ============================================ */
+
+:root {
+  /* Level 0 - No elevation */
+  --md-sys-elevation-0: none;
+  
+  /* Level 1 - Subtle elevation (Cards at rest) */
+  --md-sys-elevation-1: 
+    0px 1px 2px 0px rgba(0, 0, 0, 0.3),
+    0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+  
+  /* Level 2 - Low elevation (Raised cards, buttons) */
+  --md-sys-elevation-2: 
+    0px 1px 2px 0px rgba(0, 0, 0, 0.3),
+    0px 2px 6px 2px rgba(0, 0, 0, 0.15);
+  
+  /* Level 3 - Medium elevation (FAB, Dialogs) */
+  --md-sys-elevation-3: 
+    0px 4px 8px 3px rgba(0, 0, 0, 0.15),
+    0px 1px 3px 0px rgba(0, 0, 0, 0.3);
+  
+  /* Level 4 - High elevation (Navigation drawer) */
+  --md-sys-elevation-4: 
+    0px 6px 10px 4px rgba(0, 0, 0, 0.15),
+    0px 2px 3px 0px rgba(0, 0, 0, 0.3);
+  
+  /* Level 5 - Highest elevation (Modal bottom sheets) */
+  --md-sys-elevation-5: 
+    0px 8px 12px 6px rgba(0, 0, 0, 0.15),
+    0px 4px 4px 0px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   3. TYPOGRAPHY TOKENS (MD3 Type Scale)
+   ============================================ */
+
+:root {
+  /* Display - Largest text */
+  --md-sys-typescale-display-large-font: 'Roboto', sans-serif;
+  --md-sys-typescale-display-large-size: 57px;
+  --md-sys-typescale-display-large-weight: 400;
+  --md-sys-typescale-display-large-line-height: 64px;
+  --md-sys-typescale-display-large-tracking: -0.25px;
+  
+  --md-sys-typescale-display-medium-size: 45px;
+  --md-sys-typescale-display-medium-weight: 400;
+  --md-sys-typescale-display-medium-line-height: 52px;
+  --md-sys-typescale-display-medium-tracking: 0px;
+  
+  --md-sys-typescale-display-small-size: 36px;
+  --md-sys-typescale-display-small-weight: 400;
+  --md-sys-typescale-display-small-line-height: 44px;
+  --md-sys-typescale-display-small-tracking: 0px;
+  
+  /* Headline */
+  --md-sys-typescale-headline-large-size: 32px;
+  --md-sys-typescale-headline-large-weight: 400;
+  --md-sys-typescale-headline-large-line-height: 40px;
+  --md-sys-typescale-headline-large-tracking: 0px;
+  
+  --md-sys-typescale-headline-medium-size: 28px;
+  --md-sys-typescale-headline-medium-weight: 400;
+  --md-sys-typescale-headline-medium-line-height: 36px;
+  --md-sys-typescale-headline-medium-tracking: 0px;
+  
+  --md-sys-typescale-headline-small-size: 24px;
+  --md-sys-typescale-headline-small-weight: 400;
+  --md-sys-typescale-headline-small-line-height: 32px;
+  --md-sys-typescale-headline-small-tracking: 0px;
+  
+  /* Title */
+  --md-sys-typescale-title-large-size: 22px;
+  --md-sys-typescale-title-large-weight: 400;
+  --md-sys-typescale-title-large-line-height: 28px;
+  --md-sys-typescale-title-large-tracking: 0px;
+  
+  --md-sys-typescale-title-medium-size: 16px;
+  --md-sys-typescale-title-medium-weight: 500;
+  --md-sys-typescale-title-medium-line-height: 24px;
+  --md-sys-typescale-title-medium-tracking: 0.15px;
+  
+  --md-sys-typescale-title-small-size: 14px;
+  --md-sys-typescale-title-small-weight: 500;
+  --md-sys-typescale-title-small-line-height: 20px;
+  --md-sys-typescale-title-small-tracking: 0.1px;
+  
+  /* Body */
+  --md-sys-typescale-body-large-size: 16px;
+  --md-sys-typescale-body-large-weight: 400;
+  --md-sys-typescale-body-large-line-height: 24px;
+  --md-sys-typescale-body-large-tracking: 0.5px;
+  
+  --md-sys-typescale-body-medium-size: 14px;
+  --md-sys-typescale-body-medium-weight: 400;
+  --md-sys-typescale-body-medium-line-height: 20px;
+  --md-sys-typescale-body-medium-tracking: 0.25px;
+  
+  --md-sys-typescale-body-small-size: 12px;
+  --md-sys-typescale-body-small-weight: 400;
+  --md-sys-typescale-body-small-line-height: 16px;
+  --md-sys-typescale-body-small-tracking: 0.4px;
+  
+  /* Label */
+  --md-sys-typescale-label-large-size: 14px;
+  --md-sys-typescale-label-large-weight: 500;
+  --md-sys-typescale-label-large-line-height: 20px;
+  --md-sys-typescale-label-large-tracking: 0.1px;
+  
+  --md-sys-typescale-label-medium-size: 12px;
+  --md-sys-typescale-label-medium-weight: 500;
+  --md-sys-typescale-label-medium-line-height: 16px;
+  --md-sys-typescale-label-medium-tracking: 0.5px;
+  
+  --md-sys-typescale-label-small-size: 11px;
+  --md-sys-typescale-label-small-weight: 500;
+  --md-sys-typescale-label-small-line-height: 16px;
+  --md-sys-typescale-label-small-tracking: 0.5px;
+}
+
+/* ============================================
+   4. SHAPE TOKENS (Border Radius)
+   ============================================ */
+
+:root {
+  --md-sys-shape-corner-none: 0px;
+  --md-sys-shape-corner-extra-small: 4px;
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-full: 9999px;
+}
+
+/* ============================================
+   5. MOTION TOKENS (Animation)
+   ============================================ */
+
+:root {
+  /* Durations */
+  --md-sys-motion-duration-short1: 50ms;
+  --md-sys-motion-duration-short2: 100ms;
+  --md-sys-motion-duration-short3: 150ms;
+  --md-sys-motion-duration-short4: 200ms;
+  --md-sys-motion-duration-medium1: 250ms;
+  --md-sys-motion-duration-medium2: 300ms;
+  --md-sys-motion-duration-medium3: 350ms;
+  --md-sys-motion-duration-medium4: 400ms;
+  --md-sys-motion-duration-long1: 450ms;
+  --md-sys-motion-duration-long2: 500ms;
+  --md-sys-motion-duration-long3: 550ms;
+  --md-sys-motion-duration-long4: 600ms;
+  
+  /* Easing Curves */
+  --md-sys-motion-easing-standard: cubic-bezier(0.2, 0.0, 0, 1.0);
+  --md-sys-motion-easing-standard-accelerate: cubic-bezier(0.3, 0.0, 1, 1);
+  --md-sys-motion-easing-standard-decelerate: cubic-bezier(0, 0.0, 0, 1);
+  --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0.0, 0, 1.0);
+  --md-sys-motion-easing-emphasized-accelerate: cubic-bezier(0.3, 0.0, 0.8, 0.15);
+  --md-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1.0);
+  --md-sys-motion-easing-legacy: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --md-sys-motion-easing-legacy-accelerate: cubic-bezier(0.4, 0.0, 1, 1);
+  --md-sys-motion-easing-legacy-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --md-sys-motion-easing-linear: cubic-bezier(0, 0, 1, 1);
+}
+
+/* ============================================
+   6. SPACING TOKENS (4dp Grid)
+   ============================================ */
+
+:root {
+  --md-sys-spacing-0: 0px;
+  --md-sys-spacing-1: 4px;
+  --md-sys-spacing-2: 8px;
+  --md-sys-spacing-3: 12px;
+  --md-sys-spacing-4: 16px;
+  --md-sys-spacing-5: 20px;
+  --md-sys-spacing-6: 24px;
+  --md-sys-spacing-7: 28px;
+  --md-sys-spacing-8: 32px;
+  --md-sys-spacing-10: 40px;
+  --md-sys-spacing-12: 48px;
+  --md-sys-spacing-14: 56px;
+  --md-sys-spacing-16: 64px;
+}
+
+/* ============================================
+   7. BREAKPOINTS (MD3 Window Size Classes)
+   ============================================ */
+
+:root {
+  /* Compact: 0-599dp (Mobile portrait) */
+  --md-sys-breakpoint-compact: 0px;
+  
+  /* Medium: 600-839dp (Tablet portrait, mobile landscape) */
+  --md-sys-breakpoint-medium: 600px;
+  
+  /* Expanded: 840dp+ (Tablet landscape, desktop) */
+  --md-sys-breakpoint-expanded: 840px;
+  
+  /* Large: 1240dp+ (Large desktop) */
+  --md-sys-breakpoint-large: 1240px;
+  
+  /* Extra Large: 1600dp+ (Extra large desktop) */
+  --md-sys-breakpoint-extra-large: 1600px;
+}
+
+/* ============================================
+   8. COMPONENT-SPECIFIC TOKENS
+   ============================================ */
+
+:root {
+  /* Touch Target */
+  --md-sys-touch-target-min: 48px;
+  
+  /* FAB */
+  --md-sys-fab-size: 56px;
+  --md-sys-fab-small-size: 40px;
+  --md-sys-fab-large-size: 96px;
+  
+  /* Icon Button */
+  --md-sys-icon-button-size: 40px;
+  
+  /* Navigation Bar */
+  --md-sys-navigation-bar-height: 80px;
+  --md-sys-navigation-rail-width: 80px;
+}
+
+/* ============================================
+   9. GLOBAL STYLES
+   ============================================ */
+
+html, body {
+  overscroll-behavior-y: contain;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: var(--md-sys-typescale-display-large-font);
+}
+
+/* Remove tap highlight on mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Custom scrollbar for webkit */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(var(--md-sys-color-on-surface-variant), 0.3);
+  border-radius: var(--md-sys-shape-corner-full);
+}
+
+/* Multi-line text truncation */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ============================================
+   10. UTILITY CLASSES
+   ============================================ */
+
+/* Elevation Classes */
+.elevation-0 { box-shadow: var(--md-sys-elevation-0); }
+.elevation-1 { box-shadow: var(--md-sys-elevation-1); }
+.elevation-2 { box-shadow: var(--md-sys-elevation-2); }
+.elevation-3 { box-shadow: var(--md-sys-elevation-3); }
+.elevation-4 { box-shadow: var(--md-sys-elevation-4); }
+.elevation-5 { box-shadow: var(--md-sys-elevation-5); }
+
+/* Shape Classes */
+.shape-none { border-radius: var(--md-sys-shape-corner-none); }
+.shape-xs { border-radius: var(--md-sys-shape-corner-extra-small); }
+.shape-sm { border-radius: var(--md-sys-shape-corner-small); }
+.shape-md { border-radius: var(--md-sys-shape-corner-medium); }
+.shape-lg { border-radius: var(--md-sys-shape-corner-large); }
+.shape-xl { border-radius: var(--md-sys-shape-corner-extra-large); }
+.shape-full { border-radius: var(--md-sys-shape-corner-full); }
+
+/* Typography Classes */
+.display-large {
+  font-size: var(--md-sys-typescale-display-large-size);
+  font-weight: var(--md-sys-typescale-display-large-weight);
+  line-height: var(--md-sys-typescale-display-large-line-height);
+  letter-spacing: var(--md-sys-typescale-display-large-tracking);
+}
+
+.headline-large {
+  font-size: var(--md-sys-typescale-headline-large-size);
+  font-weight: var(--md-sys-typescale-headline-large-weight);
+  line-height: var(--md-sys-typescale-headline-large-line-height);
+  letter-spacing: var(--md-sys-typescale-headline-large-tracking);
+}
+
+.headline-medium {
+  font-size: var(--md-sys-typescale-headline-medium-size);
+  font-weight: var(--md-sys-typescale-headline-medium-weight);
+  line-height: var(--md-sys-typescale-headline-medium-line-height);
+  letter-spacing: var(--md-sys-typescale-headline-medium-tracking);
+}
+
+.title-large {
+  font-size: var(--md-sys-typescale-title-large-size);
+  font-weight: var(--md-sys-typescale-title-large-weight);
+  line-height: var(--md-sys-typescale-title-large-line-height);
+  letter-spacing: var(--md-sys-typescale-title-large-tracking);
+}
+
+.title-medium {
+  font-size: var(--md-sys-typescale-title-medium-size);
+  font-weight: var(--md-sys-typescale-title-medium-weight);
+  line-height: var(--md-sys-typescale-title-medium-line-height);
+  letter-spacing: var(--md-sys-typescale-title-medium-tracking);
+}
+
+.body-large {
+  font-size: var(--md-sys-typescale-body-large-size);
+  font-weight: var(--md-sys-typescale-body-large-weight);
+  line-height: var(--md-sys-typescale-body-large-line-height);
+  letter-spacing: var(--md-sys-typescale-body-large-tracking);
+}
+
+.body-medium {
+  font-size: var(--md-sys-typescale-body-medium-size);
+  font-weight: var(--md-sys-typescale-body-medium-weight);
+  line-height: var(--md-sys-typescale-body-medium-line-height);
+  letter-spacing: var(--md-sys-typescale-body-medium-tracking);
+}
+
+.label-large {
+  font-size: var(--md-sys-typescale-label-large-size);
+  font-weight: var(--md-sys-typescale-label-large-weight);
+  line-height: var(--md-sys-typescale-label-large-line-height);
+  letter-spacing: var(--md-sys-typescale-label-large-tracking);
+}
+
+.label-medium {
+  font-size: var(--md-sys-typescale-label-medium-size);
+  font-weight: var(--md-sys-typescale-label-medium-weight);
+  line-height: var(--md-sys-typescale-label-medium-line-height);
+  letter-spacing: var(--md-sys-typescale-label-medium-tracking);
+}
