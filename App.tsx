@@ -8,6 +8,7 @@ import PerformanceStats from './components/PerformanceStats';
 import Settings from './components/Settings';
 import ChecklistEditor from './components/ChecklistEditor';
 import { HomeIcon, JournalIcon, ChartPieIcon, Cog6ToothIcon, CalculatorIcon } from './components/icons';
+import { initAdMob, showBanner, hideBanner } from './services/admobService';
 
 // Helper para parsear localStorage de forma segura y evitar crash de la app
 const safeParse = <T,>(key: string, fallback: T): T => {
@@ -184,6 +185,25 @@ export type Theme = 'light' | 'dark' | 'system';
 
 const App: React.FC = () => {
   const [view, setView] = useState<View>('DASHBOARD');
+
+  // AdMob Management
+  useEffect(() => {
+    const init = async () => {
+      await initAdMob();
+      if (view === 'DASHBOARD') {
+        await showBanner();
+      }
+    };
+    init();
+  }, []);
+
+  useEffect(() => {
+    if (view === 'DASHBOARD') {
+      showBanner();
+    } else {
+      hideBanner();
+    }
+  }, [view]);
 
   // Use safeParse for all persisted state to prevent app crashes
   const [pairsState, setPairsState] = useState<{ [key: string]: PairState }>(() => safeParse('tradingCoachWatchlist', {}));
@@ -877,6 +897,7 @@ const App: React.FC = () => {
             mt5Summary={mt5ReportData?.summary ?? null}
             tradingLog={tradingLog}
             cooldownUntil={cooldownUntil}
+            isBannerVisible={view === 'DASHBOARD'}
           />
         );
     }
@@ -885,20 +906,21 @@ const App: React.FC = () => {
   const activeTradesCount = tradingLog.filter(trade => trade.status === OperationStatus.OPEN).length;
 
   return (
-    <div className="min-h-screen bg-md-surface font-sans pb-20 md-medium:pb-0 md-medium:pl-20">
+    <div className={`min-h-screen bg-md-surface font-sans md-medium:pb-0 md-medium:pl-20 ${view === 'DASHBOARD' ? 'pb-36' : 'pb-20'}`}>
       <main className="md-expanded:max-w-7xl md-expanded:mx-auto">
         {renderView()}
       </main>
 
       {/* MD3 Navigation Bar (Bottom on mobile, Rail on tablet+) */}
-      <nav className="
-        fixed bottom-0 left-0 right-0 z-30 
+      <nav className={`
+        fixed left-0 right-0 z-30 
+        ${view === 'DASHBOARD' ? 'bottom-16' : 'bottom-0'}
         bg-md-surface-container 
         h-20 
-        md-medium:h-screen md-medium:w-20 md-medium:flex-col md-medium:justify-start md-medium:pt-2
+        md-medium:bottom-0 md-medium:h-screen md-medium:w-20 md-medium:flex-col md-medium:justify-start md-medium:pt-2
         border-t md-medium:border-t-0 md-medium:border-r border-md-outline-variant
         shadow-md-elevation-2
-      ">
+      `}>
         <div className="flex items-center justify-around h-full md-medium:flex-col md-medium:justify-start md-medium:h-auto md-medium:gap-1 w-full">
           <NavButton
             label="Inicio"

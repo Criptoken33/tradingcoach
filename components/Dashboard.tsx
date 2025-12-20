@@ -54,6 +54,7 @@ interface DashboardProps {
   mt5Summary: MT5Summary | null;
   tradingLog: Trade[];
   cooldownUntil: number | null;
+  isBannerVisible?: boolean;
 }
 
 const LockNotification: React.FC<{ reason: string }> = ({ reason }) => (
@@ -193,7 +194,7 @@ const CooldownNotification: React.FC<{ cooldownUntil: number }> = ({ cooldownUnt
   );
 };
 
-const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPair, onRemovePair, isTradingLocked, lockReason, recommendedRisk, pairPerformance, showWeeklyReview, onDismissWeeklyReview, onNavigateToStats, getChecklistForPair, currentStreak, mt5Summary, tradingLog, cooldownUntil }) => {
+const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPair, onRemovePair, isTradingLocked, lockReason, recommendedRisk, pairPerformance, showWeeklyReview, onDismissWeeklyReview, onNavigateToStats, getChecklistForPair, currentStreak, mt5Summary, tradingLog, cooldownUntil, isBannerVisible }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const availablePairs = CURRENCY_PAIRS.filter(p => !pairsState[p]);
 
@@ -298,7 +299,7 @@ const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPa
       <button
         onClick={() => setIsAddModalOpen(true)}
         disabled={isUiLocked}
-        className="fixed bottom-24 right-6 md-medium:bottom-6 md-medium:right-6 w-14 h-14 bg-md-primary-container text-md-on-primary-container shadow-md-elevation-3 hover:shadow-md-elevation-4 flex items-center justify-center transition-all duration-md-short4 ease-md-standard active:scale-95 z-40 rounded-md-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        className={`fixed ${isBannerVisible ? 'bottom-40' : 'bottom-24'} right-6 md-medium:bottom-6 md-medium:right-6 w-14 h-14 bg-md-primary-container text-md-on-primary-container shadow-md-elevation-3 hover:shadow-md-elevation-4 flex items-center justify-center transition-all duration-md-short4 ease-md-standard active:scale-95 z-40 rounded-md-lg disabled:opacity-50 disabled:cursor-not-allowed`}
         aria-label="Añadir símbolo"
       >
         <PlusIcon className="w-7 h-7" />
