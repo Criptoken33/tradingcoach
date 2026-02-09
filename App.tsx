@@ -9,26 +9,22 @@ import Settings from './components/Settings';
 import ChecklistEditor from './components/ChecklistEditor';
 import { HomeIcon, JournalIcon, ChartPieIcon, Cog6ToothIcon, CalculatorIcon } from './components/icons';
 import { initAdMob, showBanner, hideBanner } from './services/admobService';
+import { storageService } from './services/storageService';
+import { calculatePnl, getWeekNumber } from './utils';
+import {
+  PairStateSchema,
+  TradeSchema,
+  SettingsSchema,
+} from './schemas';
+import { z } from 'zod';
 
-// Helper para parsear localStorage de forma segura y evitar crash de la app
-const safeParse = <T,>(key: string, fallback: T): T => {
-  try {
-    const item = localStorage.getItem(key);
-    if (item === null) { // La clave no existe, devolver el valor por defecto.
-      return fallback;
-    }
-    const parsed = JSON.parse(item);
-    // Si el valor parseado es null pero el fallback no lo es, usar el fallback.
-    // Esto previene errores si "null" se guarda como string en localStorage.
-    if (parsed === null && fallback !== null) {
-      return fallback;
-    }
-    return parsed;
-  } catch (error) {
-    console.warn(`Error parsing ${key} from localStorage, using fallback.`, error);
-    return fallback;
-  }
-};
+// We wrap the single item schemas into array/record schemas as needed
+const WatchlistSchema = z.record(PairStateSchema);
+const TradesSchema = z.array(TradeSchema);
+const ChecklistsSchema = z.array(z.any());
+const ActiveChecklistIdsSchema = z.object({ long: z.string(), short: z.string() });
+const Mt5ReportSchema = z.any().nullable();
+const SettingsAnySchema = z.any();
 
 const initialLongChecklist: ChecklistType = {
   id: 'default-long',
@@ -119,23 +115,7 @@ const createNewPairState = (symbol: string): PairState => {
   };
 };
 
-const calculatePnl = (trade: Trade): number | null => {
-  if (
-    trade.status !== OperationStatus.CLOSED ||
-    !trade.riskPlan ||
-    !trade.exitPrice ||
-    !trade.riskPlan.entryPrice ||
-    !trade.riskPlan.positionSizeLots
-  ) {
-    return null;
-  }
-  const { entryPrice, positionSizeLots } = trade.riskPlan;
-  const pipMultiplier = trade.symbol.includes('JPY') ? 100 : 10000;
-  const pips = (trade.direction === Direction.LONG ? trade.exitPrice - entryPrice : entryPrice - trade.exitPrice) * pipMultiplier;
-  const pipValuePerLot = 10; // Assuming standard lot on a USD account
-  return pips * pipValuePerLot * positionSizeLots;
-};
-
+/* Removed calculatePnl and getWeekNumber as they are now in utils.ts */
 
 // MD3 Snackbar Component
 interface ToastProps {
@@ -172,15 +152,6 @@ const Toast: React.FC<ToastProps> = ({ message, show, isExiting }) => {
   );
 };
 
-// Helper to get ISO week number
-const getWeekNumber = (d: Date): number => {
-  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
-  return weekNo;
-};
-
 export type Theme = 'light' | 'dark' | 'system';
 
 const App: React.FC = () => {
@@ -206,25 +177,35 @@ const App: React.FC = () => {
   }, [view]);
 
   // Use safeParse for all persisted state to prevent app crashes
-  const [pairsState, setPairsState] = useState<{ [key: string]: PairState }>(() => safeParse('tradingCoachWatchlist', {}));
-  const [tradingLog, setTradingLog] = useState<Trade[]>(() => safeParse('tradingCoachLog', []));
+  const [pairsState, setPairsState] = useState<{ [key: string]: PairState }>(() =>
+    storageService.getItem('tradingCoachWatchlist', {}, WatchlistSchema)
+  );
+  const [tradingLog, setTradingLog] = useState<Trade[]>(() =>
+    storageService.getItem('tradingCoachLog', [], TradesSchema)
+  );
 
   const [activePairSymbol, setActivePairSymbol] = useState<string | null>(null);
   const [toast, setToast] = useState({ message: '', show: false, isExiting: false });
 
-  const [settings, setSettings] = useState(() => safeParse('tradingCoachSettings', {
-    accountBalance: '10000',
-    dailyLossLimit: '1',
-    weeklyLossLimit: '2.5'
-  }));
+  const [settings, setSettings] = useState(() =>
+    storageService.getItem('tradingCoachSettings', {
+      accountBalance: '10000',
+      dailyLossLimit: '1',
+      weeklyLossLimit: '2.5'
+    }, z.any()) // Using z.any() for now to avoid partial matching issues
+  );
 
   const [theme, setTheme] = useState<Theme>(() => {
     return (localStorage.getItem('tradingCoachTheme') as Theme) || 'system';
   });
 
-  const [checklists, setChecklists] = useState<ChecklistType[]>(() => safeParse('tradingCoachChecklists', [initialLongChecklist, initialShortChecklist]));
+  const [checklists, setChecklists] = useState<ChecklistType[]>(() =>
+    storageService.getItem('tradingCoachChecklists', [initialLongChecklist, initialShortChecklist], ChecklistsSchema)
+  );
 
-  const [activeChecklistIds, setActiveChecklistIds] = useState<{ long: string, short: string }>(() => safeParse('tradingCoachActiveChecklists', { long: 'default-long', short: 'default-short' }));
+  const [activeChecklistIds, setActiveChecklistIds] = useState<{ long: string, short: string }>(() =>
+    storageService.getItem('tradingCoachActiveChecklists', { long: 'default-long', short: 'default-short' }, ActiveChecklistIdsSchema)
+  );
 
   const [isTradingLocked, setIsTradingLocked] = useState(false);
   const [lockReason, setLockReason] = useState('');
@@ -236,7 +217,9 @@ const App: React.FC = () => {
     return isNaN(parsed) ? 0.25 : parsed;
   });
 
-  const [mt5ReportData, setMt5ReportData] = useState<MT5ReportData | null>(() => safeParse('tradingCoachMt5Report', null));
+  const [mt5ReportData, setMt5ReportData] = useState<MT5ReportData | null>(() =>
+    storageService.getItem('tradingCoachMt5Report', null, Mt5ReportSchema)
+  );
 
   const [cooldownUntil, setCooldownUntil] = useState<number | null>(null);
 
@@ -271,7 +254,7 @@ const App: React.FC = () => {
         window.matchMedia('(prefers-color-scheme: dark)').matches);
 
     root.classList.toggle('dark', isDark);
-    localStorage.setItem('tradingCoachTheme', theme);
+    storageService.setItem('tradingCoachTheme', theme);
   }, [theme]);
 
   useEffect(() => {
@@ -303,34 +286,34 @@ const App: React.FC = () => {
   }, [cooldownUntil]);
 
   useEffect(() => {
-    localStorage.setItem('tradingCoachSettings', JSON.stringify(settings));
+    storageService.setItem('tradingCoachSettings', settings);
   }, [settings]);
 
   useEffect(() => {
-    localStorage.setItem('tradingCoachWatchlist', JSON.stringify(pairsState));
+    storageService.setItem('tradingCoachWatchlist', pairsState);
   }, [pairsState]);
 
   useEffect(() => {
-    localStorage.setItem('tradingCoachLog', JSON.stringify(tradingLog));
+    storageService.setItem('tradingCoachLog', tradingLog);
   }, [tradingLog]);
 
   useEffect(() => {
-    localStorage.setItem('tradingCoachChecklists', JSON.stringify(checklists));
+    storageService.setItem('tradingCoachChecklists', checklists);
   }, [checklists]);
 
   useEffect(() => {
-    localStorage.setItem('tradingCoachActiveChecklists', JSON.stringify(activeChecklistIds));
+    storageService.setItem('tradingCoachActiveChecklists', activeChecklistIds);
   }, [activeChecklistIds]);
 
   useEffect(() => {
-    localStorage.setItem('tradingCoachRiskPercentage', String(dynamicRiskPercentage));
+    storageService.setItem('tradingCoachRiskPercentage', String(dynamicRiskPercentage));
   }, [dynamicRiskPercentage]);
 
   useEffect(() => {
     if (mt5ReportData) {
-      localStorage.setItem('tradingCoachMt5Report', JSON.stringify(mt5ReportData));
+      storageService.setItem('tradingCoachMt5Report', mt5ReportData);
     } else {
-      localStorage.removeItem('tradingCoachMt5Report');
+      storageService.removeItem('tradingCoachMt5Report');
     }
   }, [mt5ReportData]);
 
