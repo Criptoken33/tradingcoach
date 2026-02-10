@@ -4,4 +4,6 @@
     <string name="title_activity_main">TradingCoach</string>
     <string name="package_name">com.tradingcoach.app</string>
     <string name="custom_url_scheme">com.tradingcoach.app</string>
+    <string name="default_web_client_id">146126403535-ndns8fuslk4ao424lvj2tnru2ajtus82.apps.googleusercontent.com</string>
+    <string name="google_client_id">146126403535-ndns8fuslk4ao424lvj2tnru2ajtus82.apps.googleusercontent.com</string>
 </resources>

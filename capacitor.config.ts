@@ -7,14 +7,14 @@ const config: CapacitorConfig = {
   server: {
     androidScheme: 'https'
   },
-  android: {
-    buildOptions: {
-      keystorePath: undefined,
-      keystorePassword: undefined,
-      keystoreAlias: undefined,
-      keystoreAliasPassword: undefined
-    }
-  }
+  plugins: {
+    GoogleAuth: {
+      scopes: ['profile', 'email'],
+      clientId: '146126403535-ndns8fuslk4ao424lvj2tnru2ajtus82.apps.googleusercontent.com',
+      serverClientId: '146126403535-ndns8fuslk4ao424lvj2tnru2ajtus82.apps.googleusercontent.com',
+      forceCodeForRefreshToken: true,
+    },
+  },
 };
 
 export default config;

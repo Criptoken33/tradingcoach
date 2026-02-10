@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "146126403535",
+    "project_id": "tradingcoach-021015",
+    "storage_bucket": "tradingcoach-021015.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:146126403535:android:465fd759091f354f1e84ba",
+        "android_client_info": {
+          "package_name": "com.tradingcoach.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "146126403535-f22457oetdqkfrejat62fbl0t285a6ij.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tradingcoach.app",
+            "certificate_hash": "e33158b044e4ddc61c75f9c111e87c8f260c7fb3"
+          }
+        },
+        {
+          "client_id": "146126403535-lr1nof3qu7dkuencgdujjhkafcoh82d3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tradingcoach.app",
+            "certificate_hash": "716f36534ff2bf6841548394dcb5ef66d269daa4"
+          }
+        },
+        {
+          "client_id": "146126403535-pk986si0psv661ljke7psgj5a6a8u293.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tradingcoach.app",
+            "certificate_hash": "76b233e5a57beb1001c3911750e0c96f0f0ac48a"
+          }
+        },
+        {
+          "client_id": "146126403535-ndns8fuslk4ao424lvj2tnru2ajtus82.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVPeIWngOeupr_TOuAXywraEXJZv-jZCw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "146126403535-ndns8fuslk4ao424lvj2tnru2ajtus82.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -33,10 +33,11 @@ interface SettingsProps {
     mt5ReportData: MT5ReportData | null;
     onResetAppData: () => void;
     onDeleteMt5Report: () => void;
+    onLogout: () => void;
 }
 
 
-const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, onImportData, onImportMt5Report, onShowToast, onNavigateToChecklistEditor, theme, setTheme, currentAccountBalance, mt5ReportData, onResetAppData, onDeleteMt5Report }) => {
+const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, onImportData, onImportMt5Report, onShowToast, onNavigateToChecklistEditor, theme, setTheme, currentAccountBalance, mt5ReportData, onResetAppData, onDeleteMt5Report, onLogout }) => {
     const [settings, setSettings] = useState<SettingsValues>(currentSettings);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const mt5FileInputRef = useRef<HTMLInputElement>(null);
@@ -47,7 +48,7 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
     const handleSave = () => {
         const dailyLimit = parseFloat(settings.dailyLossLimit);
         const weeklyLimit = parseFloat(settings.weeklyLossLimit);
-        
+
         if (isNaN(dailyLimit) || dailyLimit < 0) {
             onShowToast('Error: El límite de pérdida diaria debe ser un número positivo.');
             return;
@@ -67,7 +68,7 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
         } else {
             balanceToSave = currentSettings.accountBalance;
         }
-        
+
         onSave({
             accountBalance: balanceToSave,
             dailyLossLimit: settings.dailyLossLimit,
@@ -114,7 +115,7 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
                 const text = e.target?.result;
                 if (typeof text !== 'string') throw new Error('File is not valid text');
                 const data = JSON.parse(text);
-                
+
                 if (data && data.pairsState && data.tradingLog && data.settings) {
                     onImportData(data);
                 } else {
@@ -129,7 +130,7 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
             onShowToast('Error al leer el archivo.');
         };
         reader.readAsText(file);
-        
+
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
@@ -150,8 +151,8 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
                 if (typeof htmlContent !== 'string') throw new Error('File is not valid text');
                 onImportMt5Report(htmlContent);
             } catch (error) {
-                 console.error('Error reading MT5 report:', error);
-                 onShowToast('Error al leer el archivo de reporte.');
+                console.error('Error reading MT5 report:', error);
+                onShowToast('Error al leer el archivo de reporte.');
             }
         };
         reader.readAsText(file);
@@ -169,14 +170,14 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
             </div>
 
             <div className="space-y-6">
-                <SectionCard 
+                <SectionCard
                     title="Apariencia"
                     description="Elige cómo quieres que se vea la aplicación."
                 >
                     <ThemeSwitcher theme={theme} setTheme={setTheme} />
                 </SectionCard>
-                
-                <SectionCard 
+
+                <SectionCard
                     title="Parámetros de Riesgo"
                     description="Estos valores se usan para el cálculo de riesgo y los límites de pérdida automáticos."
                     headerAction={<button onClick={handleSave} aria-label="Guardar Ajustes" className="bg-brand-accent hover:brightness-110 text-white p-3 rounded-2xl shadow-md transition-all"><SaveIcon className="w-6 h-6" /></button>}
@@ -226,7 +227,7 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
                     description="Crea, edita y gestiona tus checklists de estrategias para adaptarlos a tu operativa."
                 >
                     <button onClick={onNavigateToChecklistEditor} className="w-full flex items-center justify-center gap-3 bg-brand-accent-container hover:bg-brand-accent/20 text-brand-accent font-bold py-4 px-4 rounded-2xl transition-colors">
-                        <ChecklistIcon className="w-6 h-6"/>
+                        <ChecklistIcon className="w-6 h-6" />
                         <span>Abrir Gestor de Checklists</span>
                     </button>
                 </SectionCard>
@@ -239,39 +240,39 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
                     <div className="space-y-6">
                         <div>
                             <h3 className="text-base font-bold text-brand-text mb-2">Sincronización de Historial</h3>
-                             <button onClick={handleImportMt5ReportClick} className="w-full flex items-center justify-center gap-3 bg-brand-accent hover:brightness-110 text-white font-bold py-4 px-4 rounded-2xl transition-colors shadow-lg">
-                                <ArrowUpTrayIcon className="w-6 h-6"/>
+                            <button onClick={handleImportMt5ReportClick} className="w-full flex items-center justify-center gap-3 bg-brand-accent hover:brightness-110 text-white font-bold py-4 px-4 rounded-2xl transition-colors shadow-lg">
+                                <ArrowUpTrayIcon className="w-6 h-6" />
                                 <span>Importar Reporte de MT5</span>
                             </button>
                             <input type="file" ref={mt5FileInputRef} onChange={handleMt5FileChange} accept=".html,.htm" className="hidden" />
                         </div>
 
-                         <div className="pt-6 border-t border-brand-border-secondary">
-                             <h3 className="text-base font-bold text-brand-text mb-2">Copia de Seguridad</h3>
-                             <div className="text-xs flex items-start space-x-2 text-brand-warning-high p-3 bg-brand-warning-high/10 rounded-xl mb-4">
+                        <div className="pt-6 border-t border-brand-border-secondary">
+                            <h3 className="text-base font-bold text-brand-text mb-2">Copia de Seguridad</h3>
+                            <div className="text-xs flex items-start space-x-2 text-brand-warning-high p-3 bg-brand-warning-high/10 rounded-xl mb-4">
                                 <InfoIcon className="w-5 h-5 flex-shrink-0 mt-0.5" />
                                 <span><strong>Atención:</strong> Importar datos reemplazará toda la información actual de la app.</span>
                             </div>
-                             <div className="flex flex-col sm:flex-row gap-4">
-                                <ActionButton onClick={handleExport} icon={<ArrowDownTrayIcon className="w-6 h-6"/>}>
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <ActionButton onClick={handleExport} icon={<ArrowDownTrayIcon className="w-6 h-6" />}>
                                     Exportar Datos
                                 </ActionButton>
-                                <ActionButton onClick={handleImportClick} icon={<ArrowUpTrayIcon className="w-6 h-6"/>}>
+                                <ActionButton onClick={handleImportClick} icon={<ArrowUpTrayIcon className="w-6 h-6" />}>
                                     Importar Datos
                                 </ActionButton>
                                 <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".json" className="hidden" />
-                             </div>
-                         </div>
+                            </div>
+                        </div>
                     </div>
                 </SectionCard>
 
-                 <SectionCard
+                <SectionCard
                     title="Zona de Peligro"
                     description="Acciones permanentes que no se pueden deshacer. Ten cuidado."
                 >
                     <ActionButton
                         onClick={() => setIsResetModalOpen(true)}
-                        icon={<ExclamationTriangleIcon className="w-5 h-5"/>}
+                        icon={<ExclamationTriangleIcon className="w-5 h-5" />}
                         isDanger={true}
                     >
                         Reiniciar Diario y Registro
@@ -283,7 +284,7 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
                         <div className="mt-4 pt-4 border-t border-brand-border-secondary/50">
                             <ActionButton
                                 onClick={() => setIsDeleteReportModalOpen(true)}
-                                icon={<TrashIcon className="w-5 h-5"/>}
+                                icon={<TrashIcon className="w-5 h-5" />}
                                 isDanger={true}
                             >
                                 Eliminar Reporte de MT5
@@ -293,6 +294,20 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
                             </p>
                         </div>
                     )}
+                </SectionCard>
+
+                <SectionCard
+                    title="Cuenta"
+                    description="Gestiona tu sesión y perfil de usuario."
+                >
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <ActionButton
+                            onClick={onLogout}
+                            icon={<ArrowUpTrayIcon className="w-6 h-6 rotate-90" />}
+                        >
+                            Cerrar Sesión
+                        </ActionButton>
+                    </div>
                 </SectionCard>
             </div>
 
@@ -442,7 +457,7 @@ const ThemeSwitcher: React.FC<{ theme: Theme, setTheme: (theme: Theme) => void }
     );
 };
 
-const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement> & {label: string}> = ({label, ...props}) => (
+const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement> & { label: string }> = ({ label, ...props }) => (
     <div className="relative group">
         <label className="block text-xs font-bold text-brand-text-secondary mb-1 uppercase tracking-wider">{label}</label>
         <input {...props} className={`w-full bg-brand-tertiary border-b-2 border-brand-text-secondary/50 rounded-t-lg px-4 py-3 text-brand-text text-lg focus:border-brand-accent outline-none transition-colors placeholder:text-brand-text-secondary/30 ${props.readOnly ? 'cursor-default' : ''} ${props.className}`} />

@@ -1,5 +1,3 @@
-
-
 export enum Direction {
   LONG = 'Long',
   SHORT = 'Short',
@@ -132,4 +130,23 @@ export interface MT5ReportData {
   performanceBySymbol?: { label: string; value: number }[];
   performanceByDirection?: { label: Direction; value: number }[];
   performanceByDay?: { label: string; value: number }[];
+}
+
+export interface UserProfile {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+  isPro: boolean;
+  createdAt: number;
+}
+
+export interface UserData {
+  pairStates: Record<string, PairState>;
+  trades: Trade[];
+  checklists: Checklist[];
+  activeChecklistIds: { long: string; short: string };
+  settings: any;
+  mt5Report: MT5ReportData | null;
+  lastUpdated: number;
 }

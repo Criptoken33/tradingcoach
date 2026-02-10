@@ -11,6 +11,8 @@ import { HomeIcon, JournalIcon, ChartPieIcon, Cog6ToothIcon, CalculatorIcon } fr
 import { initAdMob, showBanner, hideBanner } from './services/admobService';
 import { storageService } from './services/storageService';
 import { calculatePnl, getWeekNumber } from './utils';
+import { UserRepository } from './src/services/userRepository';
+import { UserData } from './types';
 import {
   PairStateSchema,
   TradeSchema,
@@ -154,7 +156,11 @@ const Toast: React.FC<ToastProps> = ({ message, show, isExiting }) => {
 
 export type Theme = 'light' | 'dark' | 'system';
 
+import { useAuth } from './src/context/AuthContext';
+import { AuthScreen } from './src/components/AuthScreen';
+
 const App: React.FC = () => {
+  const { user, loading, logout } = useAuth();
   const [view, setView] = useState<View>('DASHBOARD');
 
   // AdMob Management
@@ -224,23 +230,73 @@ const App: React.FC = () => {
   const [cooldownUntil, setCooldownUntil] = useState<number | null>(null);
 
   const currentAccountBalance = useMemo(() => {
-    let baseBalance: number;
-    let startTime = 0;
+    let baseBalance = parseFloat(settings.accountBalance) || 10000;
 
     if (mt5ReportData?.equityCurve && mt5ReportData.equityCurve.length > 0) {
       const lastReportEntry = mt5ReportData.equityCurve[mt5ReportData.equityCurve.length - 1];
-      baseBalance = lastReportEntry.balance;
-      startTime = lastReportEntry.time;
-    } else {
-      baseBalance = parseFloat(settings.accountBalance) || 0;
+      // startTime could be tracked separately if needed
     }
 
-    const pnlSinceStart = tradingLog
-      .filter(t => t.status === OperationStatus.CLOSED && t.closeTimestamp && t.closeTimestamp > startTime)
-      .reduce((sum, trade) => sum + (calculatePnl(trade) ?? 0), 0);
+    return baseBalance;
+  }, [mt5ReportData, settings.accountBalance]);
 
-    return baseBalance + pnlSinceStart;
-  }, [settings.accountBalance, tradingLog, mt5ReportData]);
+  // --- DATA SYNC LOGIC ---
+  useEffect(() => {
+    if (!user) return;
+
+    const loadData = async () => {
+      try {
+        const cloudData = await UserRepository.getUserData(user.uid);
+        if (cloudData) {
+          // Merge or Replace? For now, we assume Cloud is source of truth if it exists and is newer?
+          // Or just load it.
+          // Simplest: Load cloud data into state.
+          if (cloudData.pairStates) setPairsState(cloudData.pairStates);
+          if (cloudData.trades) setTradingLog(cloudData.trades);
+          if (cloudData.checklists) setChecklists(cloudData.checklists);
+          if (cloudData.activeChecklistIds) setActiveChecklistIds(cloudData.activeChecklistIds);
+          if (cloudData.settings) setSettings(cloudData.settings);
+          if (cloudData.mt5Report) setMt5ReportData(cloudData.mt5Report);
+
+          setToast({ message: 'Datos sincronizados desde la nube', show: true, isExiting: false });
+        }
+      } catch (error) {
+        console.error("Error loading data from cloud", error);
+        setToast({ message: 'Error al sincronizar datos', show: true, isExiting: false });
+      }
+    };
+
+    loadData();
+  }, [user]);
+
+  // Debounced Save
+  useEffect(() => {
+    if (!user) return;
+
+    const saveData = async () => {
+      const userData: UserData = {
+        pairStates: pairsState,
+        trades: tradingLog,
+        checklists,
+        activeChecklistIds,
+        settings,
+        mt5Report: mt5ReportData,
+        lastUpdated: Date.now(),
+      };
+
+      try {
+        await UserRepository.saveUserData(user.uid, userData);
+        console.log("Data saved to cloud");
+      } catch (error) {
+        console.error("Error saving data to cloud", error);
+      }
+    };
+
+    const timeoutId = setTimeout(saveData, 5000); // 5 seconds debounce
+    return () => clearTimeout(timeoutId);
+
+  }, [user, pairsState, tradingLog, checklists, activeChecklistIds, settings, mt5ReportData]);
+
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -850,6 +906,7 @@ const App: React.FC = () => {
           mt5ReportData={mt5ReportData}
           onResetAppData={handleResetAppData}
           onDeleteMt5Report={handleDeleteMt5Report}
+          onLogout={logout}
         />;
       case 'CHECKLIST_EDITOR':
         return <ChecklistEditor
@@ -944,6 +1001,25 @@ const App: React.FC = () => {
   );
 };
 
+// Conditional rendering moved to end after all hooks
+const AppWithAuth: React.FC = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-brand-dark flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-accent"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthScreen />;
+  }
+
+  return <App />;
+};
+
 interface NavButtonProps {
   label: string;
   icon: React.ReactNode;
@@ -1010,4 +1086,4 @@ const NavButton: React.FC<NavButtonProps> = ({ label, icon, isActive, onClick, n
   );
 };
 
-export default App;
+export default AppWithAuth;
