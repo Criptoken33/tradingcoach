@@ -8,8 +8,11 @@ interface ChecklistEditorProps {
     activeIds: { long: string, short: string };
     setActiveIds: React.Dispatch<React.SetStateAction<{ long: string, short: string }>>;
     onBack: () => void;
-    onShowToast: (message: string) => void;
+    onShowPaywall: () => void;
+    isPro: boolean;
 }
+
+const MAX_FREE_CHECKLISTS = 3;
 
 const generateId = () => `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -28,20 +31,24 @@ const itemTypeDescriptions: { [key in ChecklistItemType]: { label: string; descr
     }
 };
 
-const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setChecklists, activeIds, setActiveIds, onBack, onShowToast }) => {
+const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setChecklists, activeIds, setActiveIds, onBack, onShowToast, onShowPaywall, isPro }) => {
     const [editingChecklist, setEditingChecklist] = useState<Checklist | null>(null);
     const [formState, setFormState] = useState<Checklist | null>(null);
     const [activePhaseTab, setActivePhaseTab] = useState(0);
     const [editingItem, setEditingItem] = useState<{ phaseIndex: number; itemIndex: number } | null>(null);
     const importFileInputRef = useRef<HTMLInputElement>(null);
-    
+
     useEffect(() => {
         setFormState(editingChecklist ? JSON.parse(JSON.stringify(editingChecklist)) : null);
         setActivePhaseTab(0);
         setEditingItem(null);
     }, [editingChecklist]);
-    
+
     const handleCreateNew = () => {
+        if (!isPro && checklists.length >= MAX_FREE_CHECKLISTS) {
+            onShowPaywall();
+            return;
+        }
         const newChecklist: Checklist = {
             id: generateId(),
             name: 'Nueva Estrategia',
@@ -58,6 +65,10 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setCheckl
     };
 
     const handleDuplicate = (checklistToDupe: Checklist) => {
+        if (!isPro && checklists.length >= MAX_FREE_CHECKLISTS) {
+            onShowPaywall();
+            return;
+        }
         const newChecklist: Checklist = {
             ...JSON.parse(JSON.stringify(checklistToDupe)),
             id: generateId(),
@@ -86,7 +97,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setCheckl
             onShowToast('El nombre del checklist no puede estar vacío.');
             return;
         }
-        
+
         const isNew = !checklists.some(c => c.id === formState.id);
         if (isNew) {
             setChecklists(prev => [...prev, formState]);
@@ -112,7 +123,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setCheckl
         setFormState(prev => prev ? { ...prev, phases: newPhases } : null);
         setEditingItem({ phaseIndex, itemIndex: newPhases[phaseIndex].items.length - 1 });
     };
-    
+
     const handleRemoveItem = (phaseIndex: number, itemId: string) => {
         if (!formState) return;
         const newPhases = [...formState.phases];
@@ -130,7 +141,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setCheckl
         if (field === 'type' && value !== ChecklistItemType.OPTIONS) {
             delete updatedItem.options;
         }
-        
+
         phase.items[itemIndex] = updatedItem;
         setFormState(prev => prev ? { ...prev, phases: newPhases } : null);
     };
@@ -162,6 +173,10 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setCheckl
         reader.onload = (e) => {
             try {
                 const importedChecklist = JSON.parse(e.target?.result as string) as Checklist;
+                if (!isPro && checklists.length >= MAX_FREE_CHECKLISTS) {
+                    onShowPaywall();
+                    return;
+                }
                 if (importedChecklist?.name && Array.isArray(importedChecklist.phases)) {
                     setChecklists(prev => [...prev, { ...importedChecklist, id: generateId(), name: `${importedChecklist.name} (Importado)` }]);
                     onShowToast('Checklist importado con éxito.');
@@ -196,7 +211,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setCheckl
                     <h1 className="text-xl sm:text-2xl font-bold text-brand-text text-center">Editor de Checklist</h1>
                     <button onClick={handleSave} aria-label="Guardar" className="bg-brand-accent hover:brightness-110 text-white p-3 rounded-2xl shadow-md transition-all"><SaveIcon className="w-6 h-6" /></button>
                 </div>
-                
+
                 <div className="space-y-6">
                     <SectionCard title="Metadatos">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -205,12 +220,12 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setCheckl
                             <div className="md:col-span-2">
                                 <Input label="Descripción" value={formState.description} onChange={e => setFormState(p => p ? { ...p, description: e.target.value } : null)} />
                             </div>
-                             <div className="md:col-span-2">
-                                 <Input label="Etiquetas (separadas por coma)" value={formState.tags.join(', ')} onChange={e => setFormState(p => p ? { ...p, tags: e.target.value.split(',').map(t=>t.trim()) } : null)} />
+                            <div className="md:col-span-2">
+                                <Input label="Etiquetas (separadas por coma)" value={formState.tags.join(', ')} onChange={e => setFormState(p => p ? { ...p, tags: e.target.value.split(',').map(t => t.trim()) } : null)} />
                             </div>
                         </div>
                     </SectionCard>
-                    
+
                     <SectionCard title="Puntos de Control">
                         <div className="border-b border-brand-border-secondary">
                             <nav className="flex space-x-2 sm:space-x-4 -mb-px">
@@ -222,31 +237,31 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setCheckl
                         <div className="pt-4 animate-fade-in">
                             {formState.phases[activePhaseTab].items.length > 0 ? (
                                 <div className="space-y-2">
-                                {formState.phases[activePhaseTab].items.map((item, itemIndex) => (
-                                    <div key={item.id} className="flex justify-between items-center p-3 rounded-2xl hover:bg-brand-tertiary/50 transition-colors">
-                                        <span className="text-sm text-brand-text truncate pr-2 flex items-center">
-                                            <span className="font-mono text-brand-text-secondary mr-3 bg-brand-tertiary px-2 py-1 rounded-md text-xs">{item.timeframe}</span>
-                                            {item.text || <span className="italic text-brand-text-secondary/75">Nueva condición...</span>}
-                                        </span>
-                                        <div className="flex-shrink-0">
-                                            <button onClick={() => setEditingItem({ phaseIndex: activePhaseTab, itemIndex })} className="p-2 rounded-full text-brand-text-secondary hover:text-brand-accent"><PencilIcon className="w-5 h-5"/></button>
-                                            <button onClick={() => handleRemoveItem(activePhaseTab, item.id)} className="p-2 rounded-full text-brand-text-secondary hover:text-brand-danger"><TrashIcon className="w-5 h-5"/></button>
+                                    {formState.phases[activePhaseTab].items.map((item, itemIndex) => (
+                                        <div key={item.id} className="flex justify-between items-center p-3 rounded-2xl hover:bg-brand-tertiary/50 transition-colors">
+                                            <span className="text-sm text-brand-text truncate pr-2 flex items-center">
+                                                <span className="font-mono text-brand-text-secondary mr-3 bg-brand-tertiary px-2 py-1 rounded-md text-xs">{item.timeframe}</span>
+                                                {item.text || <span className="italic text-brand-text-secondary/75">Nueva condición...</span>}
+                                            </span>
+                                            <div className="flex-shrink-0">
+                                                <button onClick={() => setEditingItem({ phaseIndex: activePhaseTab, itemIndex })} className="p-2 rounded-full text-brand-text-secondary hover:text-brand-accent"><PencilIcon className="w-5 h-5" /></button>
+                                                <button onClick={() => handleRemoveItem(activePhaseTab, item.id)} className="p-2 rounded-full text-brand-text-secondary hover:text-brand-danger"><TrashIcon className="w-5 h-5" /></button>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
                                 </div>
                             ) : (
-                                 <p className="text-sm text-brand-text-secondary italic text-center py-4">No hay puntos de control en esta fase.</p>
+                                <p className="text-sm text-brand-text-secondary italic text-center py-4">No hay puntos de control en esta fase.</p>
                             )}
-                             <button onClick={() => handleAddItem(activePhaseTab)} className="w-full mt-4 flex items-center justify-center gap-2 bg-brand-tertiary hover:bg-brand-border-secondary/50 text-brand-text font-bold py-3 px-4 rounded-2xl transition-colors">
-                                <PlusIcon className="w-5 h-5"/> Añadir Punto de Control
+                            <button onClick={() => handleAddItem(activePhaseTab)} className="w-full mt-4 flex items-center justify-center gap-2 bg-brand-tertiary hover:bg-brand-border-secondary/50 text-brand-text font-bold py-3 px-4 rounded-2xl transition-colors">
+                                <PlusIcon className="w-5 h-5" /> Añadir Punto de Control
                             </button>
                         </div>
                     </SectionCard>
                 </div>
 
                 {currentItem && editingItem && (
-                    <ItemEditorModal 
+                    <ItemEditorModal
                         item={currentItem}
                         itemIndex={editingItem.itemIndex}
                         phaseIndex={editingItem.phaseIndex}
@@ -263,13 +278,13 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setCheckl
         <div className="p-4 sm:p-6 max-w-4xl mx-auto animate-fade-in pb-32">
             <div className="flex items-center gap-4 mb-8">
                 <button onClick={onBack} aria-label="Volver a Ajustes" className="bg-brand-light border border-brand-border-secondary text-brand-text p-2 rounded-full hover:bg-brand-tertiary transition-colors">
-                   <ArrowLeftIcon className="w-6 h-6" />
+                    <ArrowLeftIcon className="w-6 h-6" />
                 </button>
                 <h1 className="text-2xl sm:text-3xl font-bold text-brand-text">Gestor de Checklists</h1>
             </div>
-            
-             <div className="mb-6">
-                <ActionButton onClick={handleImportClick} icon={<ArrowUpTrayIcon className="w-6 h-6"/>}>
+
+            <div className="mb-6">
+                <ActionButton onClick={handleImportClick} icon={<ArrowUpTrayIcon className="w-6 h-6" />}>
                     Importar Checklist
                 </ActionButton>
                 <input type="file" ref={importFileInputRef} onChange={handleFileChange} accept=".json" className="hidden" />
@@ -291,7 +306,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setCheckl
                     />
                 ))}
             </div>
-            
+
             <button onClick={handleCreateNew} className="fixed bottom-24 right-6 w-16 h-16 bg-brand-accent-container text-brand-accent shadow-lg hover:shadow-xl flex items-center justify-center transition-all active:scale-95 z-40 rounded-2xl">
                 <PlusIcon className="w-8 h-8" />
             </button>
@@ -307,18 +322,18 @@ const SectionCard: React.FC<{ title: string; children: React.ReactNode; }> = ({ 
 );
 
 const TabButton: React.FC<{ name: string; isActive: boolean; onClick: () => void }> = ({ name, isActive, onClick }) => (
-  <button
-    onClick={onClick}
-    className={`whitespace-nowrap py-3 px-2 sm:px-4 border-b-2 font-bold text-sm sm:text-base transition-colors focus:outline-none rounded-t-md
+    <button
+        onClick={onClick}
+        className={`whitespace-nowrap py-3 px-2 sm:px-4 border-b-2 font-bold text-sm sm:text-base transition-colors focus:outline-none rounded-t-md
       ${isActive
-        ? 'border-brand-accent text-brand-accent'
-        : 'border-transparent text-brand-text-secondary hover:text-brand-text hover:border-brand-border-secondary'
-      }
+                ? 'border-brand-accent text-brand-accent'
+                : 'border-transparent text-brand-text-secondary hover:text-brand-text hover:border-brand-border-secondary'
+            }
     `}
-     aria-current={isActive ? 'page' : undefined}
-  >
-    {name}
-  </button>
+        aria-current={isActive ? 'page' : undefined}
+    >
+        {name}
+    </button>
 );
 
 
@@ -329,7 +344,7 @@ const ActionButton: React.FC<{ onClick: () => void; icon: React.ReactNode; child
     </button>
 );
 
-const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement> & {label: string}> = ({label, ...props}) => (
+const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement> & { label: string }> = ({ label, ...props }) => (
     <div className="relative group">
         <label className="block text-xs font-bold text-brand-text-secondary mb-1 uppercase tracking-wider">{label}</label>
         <input {...props} className={`w-full bg-brand-tertiary border-b-2 border-brand-text-secondary/50 rounded-t-lg px-4 py-3 text-brand-text text-lg focus:border-brand-accent outline-none transition-colors placeholder:text-brand-text-secondary/30 ${props.className}`} />
@@ -352,22 +367,22 @@ const ChecklistCard: React.FC<{
             <div className="flex justify-between items-start">
                 <div className="flex-1 min-w-0">
                     <p className="font-bold text-lg text-brand-text truncate">{checklist.name}</p>
-                    <p className="text-sm text-brand-text-secondary">{checklist.phases.flatMap(p=>p.items).length} puntos de control</p>
+                    <p className="text-sm text-brand-text-secondary">{checklist.phases.flatMap(p => p.items).length} puntos de control</p>
                 </div>
                 <div className="flex items-center space-x-1 ml-2 flex-shrink-0">
-                    <button onClick={onEdit} className="p-2 rounded-full text-brand-text-secondary hover:bg-brand-tertiary" title="Editar"><PencilIcon className="w-5 h-5"/></button>
-                    <button onClick={onDuplicate} className="p-2 rounded-full text-brand-text-secondary hover:bg-brand-tertiary" title="Duplicar"><DocumentDuplicateIcon className="w-5 h-5"/></button>
+                    <button onClick={onEdit} className="p-2 rounded-full text-brand-text-secondary hover:bg-brand-tertiary" title="Editar"><PencilIcon className="w-5 h-5" /></button>
+                    <button onClick={onDuplicate} className="p-2 rounded-full text-brand-text-secondary hover:bg-brand-tertiary" title="Duplicar"><DocumentDuplicateIcon className="w-5 h-5" /></button>
                 </div>
             </div>
             <div className="mt-4 pt-4 border-t border-brand-border-secondary/50 flex flex-col sm:flex-row gap-2">
-                 <div className="flex flex-1 gap-2">
+                <div className="flex flex-1 gap-2">
                     <button onClick={onSetActiveLong} className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-sm font-bold transition-colors ${isActiveLong ? 'bg-brand-success text-white' : 'bg-brand-tertiary hover:bg-brand-tertiary/70 text-brand-text-secondary'}`}><StarIcon className="w-4 h-4" /> Long</button>
                     <button onClick={onSetActiveShort} className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-sm font-bold transition-colors ${isActiveShort ? 'bg-brand-danger text-white' : 'bg-brand-tertiary hover:bg-brand-tertiary/70 text-brand-text-secondary'}`}><StarIcon className="w-4 h-4" /> Short</button>
-                 </div>
-                 <div className="flex flex-1 sm:flex-initial sm:w-auto gap-2">
-                    <button onClick={onExport} className="flex-1 sm:flex-initial p-2 rounded-xl bg-brand-tertiary text-brand-text-secondary hover:bg-brand-tertiary/70" title="Exportar"><ArrowDownTrayIcon className="w-5 h-5"/></button>
-                    <button onClick={onDelete} className="flex-1 sm:flex-initial p-2 rounded-xl bg-brand-tertiary text-brand-text-secondary hover:bg-brand-danger/20 hover:text-brand-danger" title="Eliminar"><TrashIcon className="w-5 h-5"/></button>
-                 </div>
+                </div>
+                <div className="flex flex-1 sm:flex-initial sm:w-auto gap-2">
+                    <button onClick={onExport} className="flex-1 sm:flex-initial p-2 rounded-xl bg-brand-tertiary text-brand-text-secondary hover:bg-brand-tertiary/70" title="Exportar"><ArrowDownTrayIcon className="w-5 h-5" /></button>
+                    <button onClick={onDelete} className="flex-1 sm:flex-initial p-2 rounded-xl bg-brand-tertiary text-brand-text-secondary hover:bg-brand-danger/20 hover:text-brand-danger" title="Eliminar"><TrashIcon className="w-5 h-5" /></button>
+                </div>
             </div>
         </div>
     );
@@ -406,13 +421,13 @@ const ItemEditorModal: React.FC<{
             <div className="bg-brand-light w-full sm:max-w-lg rounded-3xl overflow-hidden flex flex-col shadow-2xl" onClick={e => e.stopPropagation()}>
                 <div className="p-4 border-b border-brand-border-secondary flex justify-between items-center">
                     <h3 className="text-lg font-bold text-brand-text">Editar Punto de Control</h3>
-                    <button onClick={onClose} className="p-2 text-brand-text-secondary hover:bg-brand-tertiary rounded-full"><XCircleIcon className="w-6 h-6"/></button>
+                    <button onClick={onClose} className="p-2 text-brand-text-secondary hover:bg-brand-tertiary rounded-full"><XCircleIcon className="w-6 h-6" /></button>
                 </div>
                 <div className="p-4 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto">
                     <Input label="Texto de la Pregunta" value={item.text} onChange={e => onChange(phaseIndex, itemIndex, 'text', e.target.value)} placeholder="¿Condición a verificar?" />
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <Input label="Timeframe" value={item.timeframe} onChange={e => onChange(phaseIndex, itemIndex, 'timeframe', e.target.value)} />
-                         <div>
+                        <div>
                             <div className="flex items-center gap-2 mb-1">
                                 <label className="block text-xs font-bold text-brand-text-secondary uppercase tracking-wider">Tipo</label>
                                 <span className="relative group" tabIndex={0}>
@@ -422,7 +437,7 @@ const ItemEditorModal: React.FC<{
                                     </span>
                                 </span>
                             </div>
-                             <select
+                            <select
                                 value={item.type}
                                 onChange={e => {
                                     const newType = e.target.value as ChecklistItemType;
@@ -438,12 +453,12 @@ const ItemEditorModal: React.FC<{
                         </div>
                     </div>
                     <Input label="Tooltip (Opcional)" value={item.tooltip || ''} onChange={e => onChange(phaseIndex, itemIndex, 'tooltip', e.target.value)} />
-                    
+
                     {item.type === ChecklistItemType.OPTIONS && (
                         <div>
                             <label className="block text-xs font-bold text-brand-text-secondary uppercase tracking-wider mb-2">Opciones</label>
                             <div className="flex items-center gap-2 bg-brand-tertiary rounded-t-lg border-b-2 border-brand-text-secondary/50 px-3 py-2 transition-colors focus-within:border-brand-accent">
-                                <input type="text" value={optionInput} onChange={e => setOptionInput(e.target.value)} onKeyDown={handleOptionKeyDown} className="flex-grow bg-transparent text-brand-text focus:outline-none placeholder:text-brand-text-secondary/70 text-lg" placeholder="Añadir y presionar Enter..."/>
+                                <input type="text" value={optionInput} onChange={e => setOptionInput(e.target.value)} onKeyDown={handleOptionKeyDown} className="flex-grow bg-transparent text-brand-text focus:outline-none placeholder:text-brand-text-secondary/70 text-lg" placeholder="Añadir y presionar Enter..." />
                             </div>
                             <div className="flex flex-wrap gap-2 mt-3">
                                 {(item.options || []).map(option => (

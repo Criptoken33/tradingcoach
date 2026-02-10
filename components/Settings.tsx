@@ -34,10 +34,12 @@ interface SettingsProps {
     onResetAppData: () => void;
     onDeleteMt5Report: () => void;
     onLogout: () => void;
+    onShowPaywall: () => void;
+    isPro: boolean;
 }
 
 
-const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, onImportData, onImportMt5Report, onShowToast, onNavigateToChecklistEditor, theme, setTheme, currentAccountBalance, mt5ReportData, onResetAppData, onDeleteMt5Report, onLogout }) => {
+const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, onImportData, onImportMt5Report, onShowToast, onNavigateToChecklistEditor, theme, setTheme, currentAccountBalance, mt5ReportData, onResetAppData, onDeleteMt5Report, onLogout, onShowPaywall, isPro }) => {
     const [settings, setSettings] = useState<SettingsValues>(currentSettings);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const mt5FileInputRef = useRef<HTMLInputElement>(null);
@@ -239,23 +241,35 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
                 >
                     <div className="space-y-6">
                         <div>
-                            <h3 className="text-base font-bold text-brand-text mb-2">Sincronización de Historial</h3>
-                            <button onClick={handleImportMt5ReportClick} className="w-full flex items-center justify-center gap-3 bg-brand-accent hover:brightness-110 text-white font-bold py-4 px-4 rounded-2xl transition-colors shadow-lg">
+                            <h3 className="text-base font-bold text-brand-text mb-2 flex items-center gap-2">
+                                Sincronización de Historial
+                                {!isPro && <span className="bg-brand-accent/10 text-brand-accent text-[10px] px-1.5 py-0.5 rounded-full border border-brand-accent/20">PRO</span>}
+                            </h3>
+                            <button onClick={isPro ? handleImportMt5ReportClick : onShowPaywall} className="w-full flex items-center justify-center gap-3 bg-brand-accent hover:brightness-110 text-white font-bold py-4 px-4 rounded-2xl transition-colors shadow-lg relative overflow-hidden group">
                                 <ArrowUpTrayIcon className="w-6 h-6" />
                                 <span>Importar Reporte de MT5</span>
+                                {!isPro && (
+                                    <div className="absolute inset-0 bg-black/5 flex items-center justify-end pr-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Cog6ToothIcon className="w-5 h-5 animate-spin-slow opacity-20" />
+                                    </div>
+                                )}
                             </button>
                             <input type="file" ref={mt5FileInputRef} onChange={handleMt5FileChange} accept=".html,.htm" className="hidden" />
                         </div>
 
                         <div className="pt-6 border-t border-brand-border-secondary">
-                            <h3 className="text-base font-bold text-brand-text mb-2">Copia de Seguridad</h3>
-                            <div className="text-xs flex items-start space-x-2 text-brand-warning-high p-3 bg-brand-warning-high/10 rounded-xl mb-4">
-                                <InfoIcon className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                                <span><strong>Atención:</strong> Importar datos reemplazará toda la información actual de la app.</span>
-                            </div>
-                            <div className="flex flex-col sm:flex-row gap-4">
+                            <h3 className="text-base font-bold text-brand-text mb-4 flex items-center gap-2">
+                                Copias de Seguridad
+                                {isPro && <span className="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-[10px] px-1.5 py-0.5 rounded-full border border-green-200 dark:border-green-800">SINCRONIZADO</span>}
+                            </h3>
+                            <div className="space-y-3">
+                                {!isPro && (
+                                    <p className="text-xs text-brand-text-secondary mb-4 bg-brand-tertiary p-3 rounded-xl italic">
+                                        Las copias de seguridad automáticas en la nube son una función <strong>PRO</strong>. Tus datos actuales se guardan localmente.
+                                    </p>
+                                )}
                                 <ActionButton onClick={handleExport} icon={<ArrowDownTrayIcon className="w-6 h-6" />}>
-                                    Exportar Datos
+                                    Exportar Datos (JSON)
                                 </ActionButton>
                                 <ActionButton onClick={handleImportClick} icon={<ArrowUpTrayIcon className="w-6 h-6" />}>
                                     Importar Datos

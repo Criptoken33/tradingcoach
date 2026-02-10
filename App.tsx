@@ -158,10 +158,15 @@ export type Theme = 'light' | 'dark' | 'system';
 
 import { useAuth } from './src/context/AuthContext';
 import { AuthScreen } from './src/components/AuthScreen';
+import { useProFeatures } from './src/hooks/useProFeatures';
+import { Paywall } from './src/components/Paywall';
+import { UpdateManager } from './src/components/UpdateManager';
 
 const App: React.FC = () => {
-  const { user, loading, logout } = useAuth();
+  const { user, loading, logout, refreshProStatus } = useAuth();
   const [view, setView] = useState<View>('DASHBOARD');
+  const [showPaywall, setShowPaywall] = useState(false);
+  const pro = useProFeatures();
 
   // AdMob Management
   useEffect(() => {
@@ -285,6 +290,10 @@ const App: React.FC = () => {
       };
 
       try {
+        if (!pro.canBackupToCloud) {
+          console.log("Cloud backup disabled for non-PRO users");
+          return;
+        }
         await UserRepository.saveUserData(user.uid, userData);
         console.log("Data saved to cloud");
       } catch (error) {
@@ -683,6 +692,10 @@ const App: React.FC = () => {
   };
 
   const handleImportMt5Report = (htmlContent: string) => {
+    if (!pro.canImportMT5) {
+      setShowPaywall(true);
+      return;
+    }
     try {
       const match = htmlContent.match(/window\.__report\s*=\s*(\{[\s\S]*?\});/);
       if (!match || !match[1]) {
@@ -907,6 +920,8 @@ const App: React.FC = () => {
           onResetAppData={handleResetAppData}
           onDeleteMt5Report={handleDeleteMt5Report}
           onLogout={logout}
+          onShowPaywall={() => setShowPaywall(true)}
+          isPro={pro.isPro}
         />;
       case 'CHECKLIST_EDITOR':
         return <ChecklistEditor
@@ -916,6 +931,8 @@ const App: React.FC = () => {
           setActiveIds={setActiveChecklistIds}
           onBack={() => setView('SETTINGS')}
           onShowToast={triggerToast}
+          onShowPaywall={() => setShowPaywall(true)}
+          isPro={pro.isPro}
         />;
       case 'DASHBOARD':
       default:
@@ -997,6 +1014,18 @@ const App: React.FC = () => {
       </nav>
 
       <Toast message={toast.message} show={toast.show} isExiting={toast.isExiting} />
+
+      <UpdateManager />
+
+      {showPaywall && (
+        <Paywall
+          onClose={() => setShowPaywall(false)}
+          onSuccess={async () => {
+            await refreshProStatus();
+            triggerToast('¡Bienvenido a TradingCoach PRO!');
+          }}
+        />
+      )}
     </div>
   );
 };

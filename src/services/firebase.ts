@@ -17,9 +17,15 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+import { getRemoteConfig, fetchAndActivate, getValue } from 'firebase/remote-config';
+
 // Initialize services
 const auth = getAuth(app);
 const db = getFirestore(app);
+const remoteConfig = getRemoteConfig(app);
+
+// Remote Config settings
+remoteConfig.settings.minimumFetchIntervalMillis = 3600000; // 1 hour
 
 // Analytics is only supported in browser environments
 const analytics = typeof window !== 'undefined'
@@ -28,4 +34,4 @@ const analytics = typeof window !== 'undefined'
 
 console.log('🔥 Firebase Initialized');
 
-export { auth, db, analytics, GoogleAuthProvider, signInWithCredential, signInWithPopup };
+export { auth, db, analytics, remoteConfig, fetchAndActivate, getValue, GoogleAuthProvider, signInWithCredential, signInWithPopup };
