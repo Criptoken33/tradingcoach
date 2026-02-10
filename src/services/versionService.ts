@@ -16,26 +16,34 @@ export const VersionService = {
 
     async checkVersion(): Promise<VersionInfo> {
         try {
+            console.log("[VersionCheck] Iniciando... Versión actual:", this.getCurrentVersion());
             await fetchAndActivate(remoteConfig);
 
-            const latestVersion = getValue(remoteConfig, 'android_latest_version').asString() || '1.1.0';
-            const minVersion = getValue(remoteConfig, 'android_min_version').asString() || '1.1.0';
+            const latestRaw = getValue(remoteConfig, 'android_latest_version').asString();
+            const minRaw = getValue(remoteConfig, 'android_min_version').asString();
             const updateUrl = getValue(remoteConfig, 'android_update_url').asString() || 'https://play.google.com/store/apps/details?id=com.tradingcoach.app';
 
-            const current = this.getCurrentVersion();
+            console.log("[VersionCheck] Firebase devolvió -> Latest:", latestRaw, "Min:", minRaw);
 
-            return {
+            const current = this.getCurrentVersion();
+            const latestVersion = latestRaw || '1.4.0';
+            const minVersion = minRaw || '1.4.0';
+
+            const res = {
                 latestVersion,
                 minVersion,
                 isUpdateRequired: this.compareVersions(current, minVersion) < 0,
                 isUpdateAvailable: this.compareVersions(current, latestVersion) < 0,
                 updateUrl
             };
+
+            console.log("[VersionCheck] Resultado final:", res);
+            return res;
         } catch (error) {
-            console.error("Error checking version:", error);
+            console.error("[VersionCheck] Error:", error);
             return {
-                latestVersion: '1.1.0',
-                minVersion: '1.1.0',
+                latestVersion: '1.4.0',
+                minVersion: '1.4.0',
                 isUpdateRequired: false,
                 isUpdateAvailable: false,
                 updateUrl: ''

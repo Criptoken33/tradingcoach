@@ -1,4 +1,19 @@
+import groovy.json.JsonSlurper
 apply plugin: 'com.android.application'
+
+def getPackageVersion() {
+    def inputFile = new File(projectDir, "../../package.json")
+    def packageJson = new groovy.json.JsonSlurper().parseText(inputFile.text)
+    return packageJson.version
+}
+
+def getPackageVersionCode() {
+    def version = getPackageVersion()
+    def parts = version.split("\\.")
+    // Formula: major * 10000 + minor * 100 + patch
+    // Example: 1.3.0 -> 10300
+    return parts[0].toInteger() * 10000 + parts[1].toInteger() * 100 + parts[2].toInteger()
+}
 
 android {
     namespace = "com.tradingcoach.app"
@@ -7,8 +22,8 @@ android {
         applicationId "com.tradingcoach.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "1.1"
+        versionCode getPackageVersionCode()
+        versionName getPackageVersion()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

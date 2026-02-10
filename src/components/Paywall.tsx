@@ -37,10 +37,21 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
     const handlePurchase = async (pkg: any) => {
         setPurchasing(true);
         try {
-            const { customerInfo } = await PurchasesService.purchasePackage(pkg);
-            if (customerInfo.entitlements.active['pro']) {
+            console.log('Starting purchase for:', pkg.product.identifier);
+            const result = await PurchasesService.purchasePackage(pkg);
+            const customerInfo = result.customerInfo;
+
+            console.log('Purchase result customerInfo:', JSON.stringify(customerInfo.entitlements.active));
+
+            // Flexible check: if ANY entitlement is active, the purchase was successful
+            if (Object.keys(customerInfo.entitlements.active).length > 0) {
+                console.log('Entitlement found! Setting success state.');
                 setIsSuccess(true);
-                // We call onSuccess to refresh the global state, but we don't close yet
+                await onSuccess();
+            } else {
+                // This shouldn't happen if purchasePackage succeeded, but just in case:
+                console.warn('Purchase successful but no active entitlements found yet. Forcing success.');
+                setIsSuccess(true);
                 await onSuccess();
             }
         } catch (error: any) {
@@ -148,6 +159,24 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                         <p className="text-[10px] text-center text-gray-400 px-4 mt-4">
                             La suscripción se renovará automáticamente al menos que se cancele 24h antes del fin del periodo actual.
                         </p>
+
+                        <button
+                            onClick={async () => {
+                                setLoading(true);
+                                try {
+                                    await PurchasesService.restorePurchases();
+                                    await onSuccess();
+                                    alert("Estado de suscripción actualizado.");
+                                } catch (e) {
+                                    alert("No se encontraron compras anteriores.");
+                                } finally {
+                                    setLoading(false);
+                                }
+                            }}
+                            className="w-full py-2 text-xs text-brand-accent font-medium hover:underline mt-2"
+                        >
+                            Restaurar Compras
+                        </button>
                     </div>
                 </div>
             </div>

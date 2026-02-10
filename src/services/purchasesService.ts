@@ -40,14 +40,36 @@ export const PurchasesService = {
     },
 
     async isPro(): Promise<boolean> {
+        if (Capacitor.getPlatform() === 'web') return false;
+
+        const checkStatus = async () => {
+            const res = await Purchases.getCustomerInfo();
+            const customerInfo = res.customerInfo;
+
+            console.log('RC Active Entitlements:', Object.keys(customerInfo.entitlements.active));
+            console.log('RC Active Subscriptions:', customerInfo.activeSubscriptions);
+
+            const hasEntitlement = Object.keys(customerInfo.entitlements.active).length > 0;
+            const hasSubscription = (customerInfo.activeSubscriptions && customerInfo.activeSubscriptions.length > 0);
+
+            return hasEntitlement || hasSubscription;
+        };
+
         try {
-            if (Capacitor.getPlatform() === 'web') return false;
-            const customerInfo = await Purchases.getCustomerInfo();
-            // Assuming entitlement ID is 'pro'
-            return customerInfo.customerInfo.entitlements.active['pro'] !== undefined;
+            let isPro = await checkStatus();
+
+            // double check with cache invalidation if false
+            if (!isPro) {
+                console.log('Initial check failed, invalidating cache and retrying...');
+                await Purchases.invalidateCustomerInfoCache();
+                isPro = await checkStatus();
+            }
+
+            console.log('Is user PRO?', isPro);
+            return isPro;
         } catch (error) {
             console.error('Error checking PRO status:', error);
-            return false;
+            throw error; // Throw so caller knows it failed
         }
     },
 
@@ -74,8 +96,20 @@ export const PurchasesService = {
     async restorePurchases() {
         try {
             if (Capacitor.getPlatform() === 'web') return null;
-            return await Purchases.restorePurchases();
-        } catch (error) {
+
+            console.log('Invalidating cache before restore...');
+            await Purchases.invalidateCustomerInfoCache();
+
+            const restoreResult = await Purchases.restorePurchases();
+            console.log('Restore completed. Active entitlements:', Object.keys(restoreResult.customerInfo.entitlements.active));
+
+            return restoreResult;
+        } catch (error: any) {
+            // Filter known benign errors
+            if (error.message && error.message.includes('BillingWrapper is not attached to a listener')) {
+                console.warn('Suppressing BillingWrapper error (benign race condition)');
+                return null;
+            }
             console.error('Error restoring purchases:', error);
             return null;
         }

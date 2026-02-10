@@ -25,7 +25,8 @@ const db = getFirestore(app);
 const remoteConfig = getRemoteConfig(app);
 
 // Remote Config settings
-remoteConfig.settings.minimumFetchIntervalMillis = 3600000; // 1 hour
+// Remote Config settings - Lower interval for testing/dev (1 minute instead of 1 hour)
+remoteConfig.settings.minimumFetchIntervalMillis = 60000;
 
 // Analytics is only supported in browser environments
 const analytics = typeof window !== 'undefined'

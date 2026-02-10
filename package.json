@@ -1,7 +1,7 @@
 {
   "name": "copy-of-tradingcoach",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.8.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "cap:sync": "cap sync",
     "cap:open:android": "cap open android",
-    "android:build": "npm run build && cap sync android"
+    "android:build": "npm run build && cap sync android",
+    "deploy:android": "npm run build && npx cap sync android && echo '✅ Proyecto sincronizado. Ahora genera el AAB en Android Studio y recuerda actualizar Firebase Remote Config si es necesario.'"
   },
   "dependencies": {
     "@capacitor-community/admob": "^7.2.0",

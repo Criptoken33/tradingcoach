@@ -26,13 +26,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         try {
             if (Capacitor.getPlatform() !== 'web') {
-                const isPro = await PurchasesService.isPro();
+                let isPro: boolean;
+                try {
+                    isPro = await PurchasesService.isPro();
+                } catch (e) {
+                    console.log("[AuthContext] Error checking RC status, skipping sync to avoid accidental downgrade.");
+                    return; // Stop here if we can't verify RC
+                }
 
                 // Fetch the latest profile from Firestore to be sure
                 const profile = await UserRepository.getUserProfile(auth.currentUser.uid);
 
                 if (profile) {
                     // Update Firestore if RevenueCat is the source of truth
+                    // Only update if it has changed
                     if (isPro !== profile.isPro) {
                         await UserRepository.updateUserProfile(auth.currentUser.uid, { isPro });
                         profile.isPro = isPro;
@@ -64,13 +71,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
                     // Initialize RevenueCat on mobile
                     if (Capacitor.getPlatform() !== 'web') {
-                        await PurchasesService.initialize(firebaseUser.uid);
-                        const isPro = await PurchasesService.isPro();
+                        try {
+                            await PurchasesService.initialize(firebaseUser.uid);
+                            const isPro = await PurchasesService.isPro();
 
-                        // Sync status if needed
-                        if (isPro !== profile.isPro) {
-                            await UserRepository.updateUserProfile(firebaseUser.uid, { isPro });
-                            profile.isPro = isPro;
+                            // Sync status if needed
+                            if (isPro !== profile.isPro) {
+                                await UserRepository.updateUserProfile(firebaseUser.uid, { isPro });
+                                profile.isPro = isPro;
+                            }
+                        } catch (rcError) {
+                            console.warn("[AuthContext] Could not sync with RevenueCat on init:", rcError);
+                            // We keep the profile as is (trusting Firestore)
                         }
                     }
 
