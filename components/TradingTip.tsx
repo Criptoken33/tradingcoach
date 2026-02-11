@@ -7,30 +7,9 @@ const TradingTip: React.FC = () => {
   const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {
-    // Helper to select a new tip that is different from the current one
-    const selectNewTip = (currentTip: string) => {
-      let newTip;
-      if (TRADING_TIPS.length <= 1) return TRADING_TIPS[0] || '';
-      do {
-        const randomIndex = Math.floor(Math.random() * TRADING_TIPS.length);
-        newTip = TRADING_TIPS[randomIndex];
-      } while (newTip === currentTip);
-      return newTip;
-    };
-
-    // Set initial tip
-    setTip(selectNewTip(''));
-
-    // Interval to cycle through tips
-    const intervalId = setInterval(() => {
-      setIsFading(true);
-      setTimeout(() => {
-        setTip(prevTip => selectNewTip(prevTip));
-        setIsFading(false);
-      }, 500); // Corresponds to fade-out duration
-    }, 15000); // Change tip every 15 seconds
-
-    return () => clearInterval(intervalId); // Cleanup on unmount
+    // Select a random tip only once when the component mounts
+    const randomIndex = Math.floor(Math.random() * TRADING_TIPS.length);
+    setTip(TRADING_TIPS[randomIndex] || '');
   }, []);
 
   return (
