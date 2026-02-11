@@ -247,6 +247,9 @@ const App: React.FC = () => {
   }, [mt5ReportData, settings.accountBalance]);
 
   // --- DATA SYNC LOGIC ---
+  // --- DATA SYNC LOGIC ---
+  const [isCloudDataLoaded, setIsCloudDataLoaded] = useState(false);
+
   useEffect(() => {
     if (!user) return;
 
@@ -269,6 +272,8 @@ const App: React.FC = () => {
       } catch (error) {
         console.error("Error loading data from cloud", error);
         showToast('Error al sincronizar datos', 'error');
+      } finally {
+        setIsCloudDataLoaded(true);
       }
     };
 
@@ -278,6 +283,9 @@ const App: React.FC = () => {
   // Debounced Save
   useEffect(() => {
     if (!user) return;
+
+    // Prevent saving before initial load to avoid overwriting cloud data with empty local state
+    if (!isCloudDataLoaded) return;
 
     const saveData = async () => {
       const userData: UserData = {
@@ -305,7 +313,7 @@ const App: React.FC = () => {
     const timeoutId = setTimeout(saveData, 5000); // 5 seconds debounce
     return () => clearTimeout(timeoutId);
 
-  }, [user, pairsState, tradingLog, checklists, activeChecklistIds, settings, mt5ReportData]);
+  }, [user, pairsState, tradingLog, checklists, activeChecklistIds, settings, mt5ReportData, isCloudDataLoaded, pro.canBackupToCloud]);
 
 
   useEffect(() => {
