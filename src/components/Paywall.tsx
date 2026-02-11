@@ -112,13 +112,13 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                 {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 p-2 bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 rounded-full transition-colors z-10 backdrop-blur-sm"
+                    className="absolute top-4 right-4 p-2 bg-black/20 dark:bg-black/40 hover:bg-black/30 dark:hover:bg-black/60 rounded-full transition-colors z-20 backdrop-blur-md"
                 >
-                    <XCircleIcon className="w-6 h-6 text-white/80" />
+                    <XCircleIcon className="w-6 h-6 text-white" />
                 </button>
 
                 {/* Header Section */}
-                <div className="bg-gradient-to-br from-[#FFD700] via-[#FDB931] to-[#D4AF37] p-8 pb-14 text-black text-center relative overflow-hidden flex-shrink-0">
+                <div className="bg-gradient-to-br from-brand-gold via-brand-gold-light to-brand-gold-dark p-8 pb-14 text-black text-center relative overflow-hidden flex-shrink-0">
                     <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
                     <div className="relative z-10">
                         <div className="inline-flex p-3 bg-white/30 backdrop-blur-md rounded-2xl mb-4 shadow-sm ring-1 ring-white/50">
@@ -193,7 +193,7 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                                             `}
                                             >
                                                 {isAnnual && (
-                                                    <div className="absolute top-0 right-0 bg-[#FFD700] text-black text-[10px] font-extrabold px-3 py-1 rounded-bl-xl shadow-sm">
+                                                    <div className="absolute top-0 right-0 bg-brand-gold text-black text-[10px] font-extrabold px-3 py-1 rounded-bl-xl shadow-sm">
                                                         MEJOR OPCIÓN
                                                     </div>
                                                 )}

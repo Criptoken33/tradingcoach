@@ -68,6 +68,11 @@ export default {
                 'brand-warning-high': 'rgb(var(--md-sys-color-warning-high))',
                 'brand-border': 'rgb(var(--md-sys-color-outline))',
                 'brand-border-secondary': 'rgb(var(--md-sys-color-outline-variant))',
+
+                // Premium / Gold Colors
+                'brand-gold': '#FFD700',
+                'brand-gold-light': '#FDB931',
+                'brand-gold-dark': '#D4AF37',
             },
             boxShadow: {
                 'md-elevation-0': 'var(--md-sys-elevation-0)',

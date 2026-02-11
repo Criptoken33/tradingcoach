@@ -337,8 +337,8 @@ const AddSymbolModal: React.FC<AddSymbolModalProps> = ({ availablePairs, onAddPa
 
   return (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 p-4 animate-fade-in backdrop-blur-sm" onClick={onClose}>
-      <div className="bg-brand-light rounded-4xl shadow-2xl w-full max-w-xs overflow-hidden" onClick={e => e.stopPropagation()}>
-        <div className="p-5 flex justify-between items-center bg-brand-light">
+      <div className="bg-brand-light/95 dark:bg-brand-light/90 backdrop-blur-xl rounded-4xl shadow-2xl w-full max-w-xs overflow-hidden border border-white/20" onClick={e => e.stopPropagation()}>
+        <div className="p-5 flex justify-between items-center bg-transparent">
           <h2 className="text-xl font-bold text-brand-text">Añadir Símbolo</h2>
         </div>
         <div className="px-4 pb-6 max-h-[60vh] overflow-y-auto">
