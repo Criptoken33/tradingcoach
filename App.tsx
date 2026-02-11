@@ -8,7 +8,7 @@ import PerformanceStats from './components/PerformanceStats';
 import Settings from './components/Settings';
 import ChecklistEditor from './components/ChecklistEditor';
 import { HomeIcon, JournalIcon, ChartPieIcon, Cog6ToothIcon, CalculatorIcon } from './components/icons';
-import { initAdMob, showBanner, hideBanner } from './services/admobService';
+import { useAds } from './src/hooks/useAds';
 import { storageService } from './services/storageService';
 import { calculatePnl, getWeekNumber } from './utils';
 import { UserRepository } from './src/services/userRepository';
@@ -167,25 +167,17 @@ const App: React.FC = () => {
   const [view, setView] = useState<View>('DASHBOARD');
   const [showPaywall, setShowPaywall] = useState(false);
   const pro = useProFeatures();
+  const { showBanner, hideBanner, removeBanner } = useAds();
 
   // AdMob Management
+  // AdMob Management (Global)
   useEffect(() => {
-    const init = async () => {
-      await initAdMob();
-      if (view === 'DASHBOARD') {
-        await showBanner();
-      }
-    };
-    init();
-  }, []);
-
-  useEffect(() => {
-    if (view === 'DASHBOARD') {
+    if (!pro.isPro) {
       showBanner();
     } else {
-      hideBanner();
+      removeBanner();
     }
-  }, [view]);
+  }, [pro.isPro, showBanner, removeBanner]);
 
   // Use safeParse for all persisted state to prevent app crashes
   const [pairsState, setPairsState] = useState<{ [key: string]: PairState }>(() =>
@@ -963,7 +955,11 @@ const App: React.FC = () => {
   const activeTradesCount = tradingLog.filter(trade => trade.status === OperationStatus.OPEN).length;
 
   return (
-    <div className={`min-h-screen bg-md-surface font-sans md-medium:pb-0 md-medium:pl-20 ${view === 'DASHBOARD' ? 'pb-36' : 'pb-20'}`}>
+    <div className={`
+      min-h-screen bg-md-surface font-sans 
+      md-medium:pb-0 md-medium:pl-20 pb-20
+      ${!pro.isPro ? 'pt-14' : ''} 
+    `}>
       <main className="md-expanded:max-w-7xl md-expanded:mx-auto">
         {renderView()}
       </main>
@@ -971,7 +967,7 @@ const App: React.FC = () => {
       {/* MD3 Navigation Bar (Bottom on mobile, Rail on tablet+) */}
       <nav className={`
         fixed left-0 right-0 z-30 
-        ${view === 'DASHBOARD' ? 'bottom-16' : 'bottom-0'}
+        bottom-0
         bg-md-surface-container 
         h-20 
         md-medium:bottom-0 md-medium:h-screen md-medium:w-20 md-medium:flex-col md-medium:justify-start md-medium:pt-2
