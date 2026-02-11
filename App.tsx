@@ -954,7 +954,7 @@ const App: React.FC = () => {
     <div className={`
       min-h-screen bg-md-surface font-sans 
       md-medium:pb-0 md-medium:pl-20 pb-20
-      ${!pro.isPro ? 'pt-14' : ''} 
+      ${!pro.isPro ? 'pt-[60px]' : ''} 
     `}>
       <main className="md-expanded:max-w-7xl md-expanded:mx-auto">
         {renderView()}
