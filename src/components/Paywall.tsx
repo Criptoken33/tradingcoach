@@ -73,7 +73,7 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
 
     if (isSuccess) {
         return (
-            <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300">
+            <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300">
                 <div className="bg-white dark:bg-[#1C1B1F] w-full max-w-md rounded-[28px] overflow-hidden shadow-2xl flex flex-col items-center p-8 text-center animate-in zoom-in-95 duration-500">
                     <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-6 animate-bounce">
                         <CheckIcon className="w-10 h-10 text-green-600 dark:text-green-400" />
@@ -94,7 +94,7 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
     }
 
     return (
-        <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300">
             <div className="bg-white dark:bg-[#1C1B1F] w-full max-w-md rounded-[28px] overflow-hidden shadow-2xl flex flex-col relative">
 
                 {/* Close Button */}

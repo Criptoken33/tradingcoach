@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Checklist, ChecklistItem, Phase, ChecklistItemType } from '../types';
 import { PencilIcon, TrashIcon, PlusIcon, DocumentDuplicateIcon, StarIcon, ArrowLeftIcon, SaveIcon, ArrowDownTrayIcon, ArrowUpTrayIcon, InfoIcon, XCircleIcon } from './icons';
+import { FileService } from '../src/services/fileService';
 
 interface ChecklistEditorProps {
     checklists: Checklist[];
@@ -45,7 +46,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setCheckl
     }, [editingChecklist]);
 
     const handleCreateNew = () => {
-        if (!isPro && checklists.length >= MAX_FREE_CHECKLISTS) {
+        if (!isPro) {
             onShowPaywall();
             return;
         }
@@ -65,7 +66,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setCheckl
     };
 
     const handleDuplicate = (checklistToDupe: Checklist) => {
-        if (!isPro && checklists.length >= MAX_FREE_CHECKLISTS) {
+        if (!isPro) {
             onShowPaywall();
             return;
         }
@@ -146,24 +147,31 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setCheckl
         setFormState(prev => prev ? { ...prev, phases: newPhases } : null);
     };
 
-    const handleExportChecklist = (checklist: Checklist) => {
+    const handleExportChecklist = async (checklist: Checklist) => {
+        if (!isPro) {
+            onShowPaywall();
+            return;
+        }
         try {
             const dataStr = JSON.stringify(checklist, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
             const sanitizedName = checklist.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-            link.download = `tradingcoach_checklist_${sanitizedName}.json`;
-            link.click();
-            URL.revokeObjectURL(url);
+            const fileName = `tradingcoach_checklist_${sanitizedName}.json`;
+
+            await FileService.exportData(fileName, dataStr);
+
             onShowToast('Checklist exportado.');
         } catch (error) {
             onShowToast('Error al exportar el checklist.');
         }
     };
 
-    const handleImportClick = () => importFileInputRef.current?.click();
+    const handleImportClick = () => {
+        if (!isPro) {
+            onShowPaywall();
+            return;
+        }
+        importFileInputRef.current?.click();
+    };
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -297,9 +305,27 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setCheckl
                         checklist={c}
                         isActiveLong={activeIds.long === c.id}
                         isActiveShort={activeIds.short === c.id}
-                        onSetActiveLong={() => setActiveIds(prev => ({ ...prev, long: c.id }))}
-                        onSetActiveShort={() => setActiveIds(prev => ({ ...prev, short: c.id }))}
-                        onEdit={() => setEditingChecklist(c)}
+                        onSetActiveLong={() => {
+                            if (!isPro && c.id !== 'default-long' && c.id !== 'default-short') {
+                                onShowPaywall();
+                                return;
+                            }
+                            setActiveIds(prev => ({ ...prev, long: c.id }));
+                        }}
+                        onSetActiveShort={() => {
+                            if (!isPro && c.id !== 'default-long' && c.id !== 'default-short') {
+                                onShowPaywall();
+                                return;
+                            }
+                            setActiveIds(prev => ({ ...prev, short: c.id }));
+                        }}
+                        onEdit={() => {
+                            if (!isPro && c.id !== 'default-long' && c.id !== 'default-short') {
+                                onShowPaywall();
+                                return;
+                            }
+                            setEditingChecklist(c);
+                        }}
                         onDuplicate={() => handleDuplicate(c)}
                         onDelete={() => handleDelete(c.id)}
                         onExport={() => handleExportChecklist(c)}

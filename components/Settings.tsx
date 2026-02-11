@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Cog6ToothIcon, ArrowDownTrayIcon, ArrowUpTrayIcon, InfoIcon, ChecklistIcon, SaveIcon, SunIcon, MoonIcon, ComputerDesktopIcon, ExclamationTriangleIcon, TrashIcon } from './icons';
 import { Theme } from '../App';
 import { MT5ReportData } from '../types';
+import { FileService } from '../src/services/fileService';
 
 interface SettingsValues {
     accountBalance: string;
@@ -83,19 +84,18 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
         setSettings(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleExport = () => {
+    const handleExport = async () => {
+        if (!isPro) {
+            onShowPaywall();
+            return;
+        }
         try {
             const dataStr = JSON.stringify(appData, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
             const date = new Date().toISOString().split('T')[0];
-            link.download = `tradingcoach_backup_${date}.json`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            const fileName = `tradingcoach_backup_${date}.json`;
+
+            await FileService.exportData(fileName, dataStr);
+
             onShowToast('Datos exportados con éxito.');
         } catch (error) {
             console.error('Error exporting data:', error);
@@ -104,6 +104,10 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
     };
 
     const handleImportClick = () => {
+        if (!isPro) {
+            onShowPaywall();
+            return;
+        }
         fileInputRef.current?.click();
     };
 

@@ -160,7 +160,9 @@ import { useAuth } from './src/context/AuthContext';
 import { AuthScreen } from './src/components/AuthScreen';
 import { useProFeatures } from './src/hooks/useProFeatures';
 import { Paywall } from './src/components/Paywall';
+import { dbService } from './src/services/dbService';
 import { UpdateManager } from './src/components/UpdateManager';
+import { useAndroidBackButton } from './src/hooks/useAndroidBackButton';
 
 const App: React.FC = () => {
   const { user, loading, logout, refreshProStatus } = useAuth();
@@ -168,6 +170,35 @@ const App: React.FC = () => {
   const [showPaywall, setShowPaywall] = useState(false);
   const pro = useProFeatures();
   const { showBanner, hideBanner, removeBanner } = useAds();
+
+  // Android Back Button Handler
+  useAndroidBackButton(() => {
+    // Si el paywall está abierto, cerrarlo
+    if (showPaywall) {
+      setShowPaywall(false);
+      return true; // Prevenir comportamiento por defecto
+    }
+
+    // Si estamos en el dashboard, minimizar la app (comportamiento por defecto)
+    if (view === 'DASHBOARD') {
+      return false; // Permitir que se minimice la app
+    }
+
+    // Para otras vistas, navegar hacia atrás
+    if (view === 'CHECKLIST' || view === 'RISK_MANAGEMENT') {
+      handleBackToDashboard();
+      return true;
+    }
+
+    if (view === 'CHECKLIST_EDITOR') {
+      setView('SETTINGS');
+      return true;
+    }
+
+    // Para cualquier otra vista, volver al dashboard
+    setView('DASHBOARD');
+    return true;
+  }, true);
 
   // AdMob Management
   // AdMob Management (Global)
@@ -220,9 +251,21 @@ const App: React.FC = () => {
     return isNaN(parsed) ? 0.25 : parsed;
   });
 
-  const [mt5ReportData, setMt5ReportData] = useState<MT5ReportData | null>(() =>
-    storageService.getItem('tradingCoachMt5Report', null, Mt5ReportSchema)
-  );
+  const [mt5ReportData, setMt5ReportData] = useState<MT5ReportData | null>(null);
+
+  useEffect(() => {
+    const loadMt5Report = async () => {
+      try {
+        const data = await dbService.getItem<MT5ReportData>('tradingCoachMt5Report');
+        if (data) {
+          setMt5ReportData(data);
+        }
+      } catch (error) {
+        console.error('Error loading MT5 report from DB:', error);
+      }
+    };
+    loadMt5Report();
+  }, []);
 
   const [cooldownUntil, setCooldownUntil] = useState<number | null>(null);
 
@@ -367,11 +410,14 @@ const App: React.FC = () => {
   }, [dynamicRiskPercentage]);
 
   useEffect(() => {
-    if (mt5ReportData) {
-      storageService.setItem('tradingCoachMt5Report', mt5ReportData);
-    } else {
-      storageService.removeItem('tradingCoachMt5Report');
-    }
+    const saveMt5Report = async () => {
+      if (mt5ReportData) {
+        await dbService.setItem('tradingCoachMt5Report', mt5ReportData);
+      } else {
+        await dbService.removeItem('tradingCoachMt5Report');
+      }
+    };
+    saveMt5Report();
   }, [mt5ReportData]);
 
 
