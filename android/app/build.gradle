@@ -33,10 +33,17 @@ android {
     }
     signingConfigs {
         release {
+            def localProperties = new Properties()
+            def localPropertiesFile = rootProject.file('local.properties')
+            if (localPropertiesFile.exists()) {
+                localPropertiesFile.withReader('UTF-8') { reader ->
+                    localProperties.load(reader)
+                }
+            }
             storeFile file('tradingcoach.keystore')
-            storePassword 'tradingcoach2025'
-            keyAlias 'tradingcoach'
-            keyPassword 'tradingcoach2025'
+            storePassword localProperties.getProperty('keystore.password')
+            keyAlias localProperties.getProperty('key.alias')
+            keyPassword localProperties.getProperty('key.password')
         }
     }
     buildTypes {

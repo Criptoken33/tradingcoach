@@ -9,6 +9,7 @@ import Settings from './components/Settings';
 import ChecklistEditor from './components/ChecklistEditor';
 import { HomeIcon, JournalIcon, ChartPieIcon, Cog6ToothIcon, CalculatorIcon } from './components/icons';
 import { useAds } from './src/hooks/useAds';
+import { useProFeatures } from './src/hooks/useProFeatures';
 import { storageService } from './services/storageService';
 import { calculatePnl, getWeekNumber } from './utils';
 import { useFeedback } from './src/context/FeedbackContext';
@@ -124,7 +125,7 @@ export type Theme = 'light' | 'dark' | 'system';
 
 import { useAuth } from './src/context/AuthContext';
 import { AuthScreen } from './src/components/AuthScreen';
-import { useProFeatures } from './src/hooks/useProFeatures';
+// import { useProFeatures } from './src/hooks/useProFeatures'; // Removed duplicate
 import { Paywall } from './src/components/Paywall';
 import { dbService } from './src/services/dbService';
 import { UpdateManager } from './src/components/UpdateManager';
@@ -133,10 +134,12 @@ import { useAndroidBackButton } from './src/hooks/useAndroidBackButton';
 const App: React.FC = () => {
   const { user, loading, logout, refreshProStatus } = useAuth();
   const { showToast, showConfirm } = useFeedback();
+  // const { isPro } = useProFeatures(); // Removed redundant call
+  const { prepareInterstitial, showInterstitial, showBanner, hideBanner, removeBanner } = useAds();
+
   const [view, setView] = useState<View>('DASHBOARD');
   const [showPaywall, setShowPaywall] = useState(false);
-  const pro = useProFeatures();
-  const { showBanner, hideBanner, removeBanner } = useAds();
+  const pro = useProFeatures(); // This `pro` object is still used for `pro.isPro` and `pro.canBackupToCloud`
 
   // Android Back Button Handler
   useAndroidBackButton(() => {
@@ -602,8 +605,11 @@ const App: React.FC = () => {
   }, []);
 
   const handleChecklistComplete = useCallback(() => {
+    if (!pro.isPro) {
+      prepareInterstitial();
+    }
     setView('RISK_MANAGEMENT');
-  }, []);
+  }, [pro.isPro, prepareInterstitial]);
 
   const handleBackToChecklist = useCallback(() => {
     setView('CHECKLIST');
@@ -645,8 +651,16 @@ const App: React.FC = () => {
     handleRemovePair(activePairSymbol);
 
     showToast(`Operación en ${activePairSymbol} abierta.`, 'success');
+
+    if (!pro.isPro) {
+      // Fire and forget (or await if we want to block)
+      // We await to ensuring the ad shows before navigating back fully
+      // But showToast is already shown. The ad will overlay.
+      showInterstitial();
+    }
+
     handleBackToDashboard();
-  }, [activePairSymbol, pairsState, handleBackToDashboard, handleRemovePair, getChecklistForPair]);
+  }, [activePairSymbol, pairsState, handleBackToDashboard, handleRemovePair, getChecklistForPair, pro.isPro, showInterstitial]);
 
   const handleAddNote = useCallback((tradeId: string, note: string) => {
     setTradingLog(prevLog => prevLog.map(trade =>

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { PurchasesService } from '../services/purchasesService';
-import { LockClosedIcon, CheckIcon, StarIcon, XCircleIcon } from '../../components/icons';
+import { LockClosedIcon, CheckIcon, StarIcon, XCircleIcon, PlayIcon } from '../../components/icons';
 import { Capacitor } from '@capacitor/core';
 import { useFeedback } from '../context/FeedbackContext';
 import { useProFeatures } from '../hooks/useProFeatures';
+import { useAds } from '../hooks/useAds';
 
 interface PaywallProps {
     onClose: () => void;
@@ -11,11 +12,13 @@ interface PaywallProps {
 }
 
 export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
-    const { isPro } = useProFeatures();
+    const { isPro, activateTempPro } = useProFeatures();
     const { showToast } = useFeedback();
+    const { prepareRewardVideo, showRewardVideo } = useAds();
     const [offerings, setOfferings] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [purchasing, setPurchasing] = useState(false);
+    const [adLoading, setAdLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
 
     useEffect(() => {
@@ -61,6 +64,24 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
             }
         } finally {
             setPurchasing(false);
+        }
+    };
+
+    const handleWatchAd = async () => {
+        setAdLoading(true);
+        try {
+            await prepareRewardVideo();
+            await showRewardVideo(() => {
+                activateTempPro();
+                setIsSuccess(true);
+                // onSuccess(); // Called by effects of success state or manual close
+                showToast('¡Has desbloqueado PRO por 24 horas!', 'success');
+            });
+        } catch (e) {
+            console.error(e);
+            showToast('No hay anuncios disponibles en este momento', 'error');
+        } finally {
+            setAdLoading(false);
         }
     };
 
@@ -226,6 +247,35 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                                 </p>
                             </div>
                         )}
+
+                        {/* Rewarded Ad Option */}
+                        <div className="pt-2">
+                            <div className="relative">
+                                <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                                    <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
+                                </div>
+                                <div className="relative flex justify-center">
+                                    <span className="bg-white dark:bg-[#1C1B1F] px-2 text-xs text-gray-400 uppercase tracking-widest">O desbloquea gratis</span>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={handleWatchAd}
+                                disabled={adLoading || purchasing}
+                                className="mt-4 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-bold py-3.5 rounded-xl shadow-lg hover:shadow-purple-500/25 transition-all active:scale-[0.98] disabled:opacity-70 disabled:grayscale disabled:cursor-not-allowed group relative overflow-hidden"
+                            >
+                                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                                {adLoading ? (
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                ) : (
+                                    <PlayIcon className="w-5 h-5 fill-current" />
+                                )}
+                                <span>{adLoading ? 'Cargando video...' : 'Ver Video para 24h PRO'}</span>
+                            </button>
+                            <p className="text-[10px] text-gray-400 mt-2 text-center px-4">
+                                Acceso completo a todas las funciones PRO por 1 día (Importar MT5, Checklists ilimitados, Cloud Sync).
+                            </p>
+                        </div>
 
                         <div className="text-center space-y-2 pt-2">
                             <p className="text-xs text-center text-gray-400 italic">
