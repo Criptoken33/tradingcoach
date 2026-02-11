@@ -47,13 +47,10 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
 
             console.log('Purchase result customerInfo:', JSON.stringify(customerInfo.entitlements.active));
 
-            // Flexible check: if ANY entitlement is active, the purchase was successful
             if (Object.keys(customerInfo.entitlements.active).length > 0) {
-                console.log('Entitlement found! Setting success state.');
                 setIsSuccess(true);
                 await onSuccess();
             } else {
-                // This shouldn't happen if purchasePackage succeeded, but just in case:
                 console.warn('Purchase successful but no active entitlements found yet. Forcing success.');
                 setIsSuccess(true);
                 await onSuccess();
@@ -68,29 +65,40 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
     };
 
     const benefits = [
-        "Sincronización en la Nube ilimitada",
-        "Importación de reportes MT5 ilimitados",
-        "Estrategias (Checklists) ilimitadas",
-        "Backup automático de tus operaciones",
-        "Soporte prioritario y nuevas funciones"
+        {
+            title: "Tu Trading, en Cualquier Lugar",
+            desc: "Opera en casa, analiza en el móvil. Tus datos te siguen, no al revés."
+        },
+        {
+            title: "La Verdad sobre tu Rentabilidad",
+            desc: "Audita tu cuenta de MT5 en segundos. Encuentra tus fallos antes de que te cuesten la cuenta."
+        },
+        {
+            title: "Nunca más entres por impulso",
+            desc: "Crea protocolos blindados para cada escenario. Elimina el trading emocional para siempre."
+        },
+        {
+            title: "Protege tu Capital",
+            desc: "Copias de seguridad automáticas. Porque un fallo del dispositivo no debería borrar tu progreso."
+        }
     ];
 
     if (isSuccess) {
         return (
-            <div className={`fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300 ${!isPro ? 'pt-[60px]' : ''}`}>
+            <div className={`fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300 ${!isPro ? 'pt-[60px]' : ''}`}>
                 <div className="bg-white dark:bg-[#1C1B1F] w-full max-w-md rounded-[28px] overflow-hidden shadow-2xl flex flex-col items-center p-8 text-center animate-in zoom-in-95 duration-500">
                     <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-6 animate-bounce">
                         <CheckIcon className="w-10 h-10 text-green-600 dark:text-green-400" />
                     </div>
-                    <h2 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">¡Felicidades!</h2>
-                    <p className="text-gray-600 dark:text-gray-400 mb-8">
-                        Ya eres miembro PRO de TradingCoach. Todas las funciones profesionales han sido desbloqueadas.
+                    <h2 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">¡Decisión Inteligente!</h2>
+                    <p className="text-gray-600 dark:text-gray-400 mb-8 text-lg">
+                        Te has unido al 10% de traders que invierten en su negocio. Vamos a hacer historia.
                     </p>
                     <button
                         onClick={onClose}
-                        className="w-full bg-brand-accent hover:brightness-110 text-white font-bold py-4 rounded-xl transition-all shadow-md active:scale-[0.98]"
+                        className="w-full bg-brand-accent hover:brightness-110 text-white font-bold py-4 rounded-xl transition-all shadow-lg active:scale-[0.98]"
                     >
-                        Empezar a usar PRO
+                        Empezar a Operar como PRO
                     </button>
                 </div>
             </div>
@@ -98,89 +106,141 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
     }
 
     return (
-        <div className={`fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300 ${!isPro ? 'pt-[60px]' : ''}`}>
-            <div className="bg-white dark:bg-[#1C1B1F] w-full max-w-md rounded-[28px] overflow-hidden shadow-2xl flex flex-col relative">
+        <div className={`fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300 ${!isPro ? 'pt-[60px]' : ''}`}>
+            <div className="bg-white dark:bg-[#1C1B1F] w-full max-w-lg rounded-[32px] overflow-hidden shadow-2xl flex flex-col relative max-h-[90vh]">
 
                 {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors z-10"
+                    className="absolute top-4 right-4 p-2 bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 rounded-full transition-colors z-10 backdrop-blur-sm"
                 >
-                    <XCircleIcon className="w-6 h-6" />
+                    <XCircleIcon className="w-6 h-6 text-white/80" />
                 </button>
 
-                {/* Header */}
-                <div className="bg-gradient-to-br from-brand-accent to-[#6750A4] p-8 text-white text-center">
-                    <div className="inline-flex p-3 bg-white/20 rounded-2xl mb-4">
-                        <StarIcon className="w-8 h-8 text-yellow-300" />
+                {/* Header Section */}
+                <div className="bg-gradient-to-br from-[#FFD700] via-[#FDB931] to-[#D4AF37] p-8 pb-14 text-black text-center relative overflow-hidden flex-shrink-0">
+                    <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                    <div className="relative z-10">
+                        <div className="inline-flex p-3 bg-white/30 backdrop-blur-md rounded-2xl mb-4 shadow-sm ring-1 ring-white/50">
+                            <StarIcon className="w-8 h-8 text-black" />
+                        </div>
+                        <h2 className="text-3xl font-extrabold mb-3 tracking-tight">Deja de Operar a Ciegas</h2>
+                        <p className="text-black font-semibold text-base leading-snug max-w-xs mx-auto drop-shadow-sm">
+                            El 90% pierde dinero por falta de datos. <br />Únete al 10% que opera con ventaja.
+                        </p>
                     </div>
-                    <h2 className="text-2xl font-bold mb-2">TradingCoach PRO</h2>
-                    <p className="text-white/80 text-sm">Lleva tu trading al siguiente nivel con todas las herramientas profesionales</p>
                 </div>
 
-                {/* Content */}
-                <div className="p-6 flex flex-col flex-1">
-                    <div className="space-y-4 mb-8">
+                {/* Content Scrollable */}
+                <div className="p-6 flex flex-col flex-1 overflow-y-auto custom-scrollbar">
+                    <div className="space-y-5 mb-8">
                         {benefits.map((benefit, i) => (
-                            <div key={i} className="flex items-start gap-3">
-                                <div className="mt-0.5 p-1 bg-green-100 dark:bg-green-900/30 rounded-full">
-                                    <CheckIcon className="w-4 h-4 text-green-600 dark:text-green-400" />
+                            <div key={i} className="flex gap-4 group">
+                                <div className="mt-1 flex-shrink-0 w-8 h-8 bg-brand-accent/10 rounded-xl flex items-center justify-center group-hover:bg-brand-accent group-hover:text-white transition-colors duration-300">
+                                    <CheckIcon className="w-5 h-5 text-brand-accent group-hover:text-white" />
                                 </div>
-                                <span className="text-sm text-gray-700 dark:text-gray-300">{benefit}</span>
+                                <div>
+                                    <h4 className="font-bold text-gray-900 dark:text-white text-base">{benefit.title}</h4>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-snug mt-0.5">{benefit.desc}</p>
+                                </div>
                             </div>
                         ))}
                     </div>
 
-                    {/* Pricing */}
-                    <div className="mt-auto space-y-3">
+                    {/* Pricing Section */}
+                    <div className="mt-auto space-y-4">
                         {loading ? (
-                            <div className="flex justify-center py-4">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-accent"></div>
+                            <div className="flex justify-center py-8">
+                                <div className="animate-spin rounded-full h-10 w-10 border-4 border-brand-accent border-t-transparent"></div>
                             </div>
                         ) : offerings?.availablePackages?.length > 0 ? (
-                            offerings.availablePackages.map((pkg: any) => (
-                                <button
-                                    key={pkg.identifier}
-                                    disabled={purchasing}
-                                    onClick={() => handlePurchase(pkg)}
-                                    className="w-full bg-brand-accent hover:brightness-110 disabled:opacity-50 text-white font-bold py-4 rounded-xl transition-all shadow-md active:scale-[0.98] flex flex-col items-center"
-                                >
-                                    <span>{pkg.product.title}</span>
-                                    <span className="text-xs font-normal opacity-80">{pkg.product.priceString} / mes</span>
-                                </button>
-                            ))
+                            <div className="space-y-3">
+                                {offerings.availablePackages
+                                    .slice()
+                                    .sort((a: any, b: any) => {
+                                        const isAnnualA = a.packageType === 'ANNUAL' || a.packageType === 3 || a.product.identifier.toLowerCase().includes('annual') || a.product.identifier.toLowerCase().includes('year');
+                                        const isAnnualB = b.packageType === 'ANNUAL' || b.packageType === 3 || b.product.identifier.toLowerCase().includes('annual') || b.product.identifier.toLowerCase().includes('year');
+                                        if (isAnnualA && !isAnnualB) return -1;
+                                        if (!isAnnualA && isAnnualB) return 1;
+                                        return 0;
+                                    })
+                                    .map((pkg: any) => {
+                                        const isAnnual = pkg.packageType === 'ANNUAL' ||
+                                            pkg.packageType === 3 ||
+                                            pkg.product.identifier.toLowerCase().includes('year') ||
+                                            pkg.product.identifier.toLowerCase().includes('annual');
+
+                                        return (
+                                            <button
+                                                key={pkg.identifier}
+                                                disabled={purchasing}
+                                                onClick={() => handlePurchase(pkg)}
+                                                className={`
+                                                w-full relative overflow-hidden font-bold py-4 px-6 rounded-2xl transition-all shadow-md active:scale-[0.98] flex items-center justify-between group
+                                                ${isAnnual
+                                                        ? 'bg-brand-accent text-white hover:brightness-110 ring-4 ring-brand-accent/20'
+                                                        : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700'
+                                                    }
+                                            `}
+                                            >
+                                                {isAnnual && (
+                                                    <div className="absolute top-0 right-0 bg-[#FFD700] text-black text-[10px] font-extrabold px-3 py-1 rounded-bl-xl shadow-sm">
+                                                        MEJOR OPCIÓN
+                                                    </div>
+                                                )}
+                                                <div className="flex flex-col items-start">
+                                                    <span className={`text-base ${isAnnual ? 'text-white' : 'text-gray-900 dark:text-white'}`}>{pkg.product.title}</span>
+                                                    {isAnnual && <span className="text-[10px] font-normal bg-white/20 px-2 py-0.5 rounded text-white mt-1">Ahorras 2 meses</span>}
+                                                </div>
+                                                <div className="flex flex-col items-end">
+                                                    <span className="text-xl">{pkg.product.priceString}</span>
+                                                    <span className={`text-xs font-normal ${isAnnual ? 'text-white/80' : 'text-gray-500'}`}>
+                                                        /{isAnnual ? 'año' : 'mes'}
+                                                    </span>
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
+                            </div>
                         ) : (
-                            <div className="text-center p-4 bg-gray-100 dark:bg-gray-800 rounded-xl">
-                                <LockClosedIcon className="w-6 h-6 mx-auto mb-2 text-gray-400" />
-                                <p className="text-sm text-gray-500">
-                                    {Capacitor.getPlatform() === 'web'
-                                        ? "Las compras están disponibles solo en la aplicación móvil."
-                                        : "No hay ofertas disponibles en este momento."}
+                            <div className="text-center p-6 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700">
+                                <LockClosedIcon className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+                                <p className="text-sm text-gray-500 font-medium">
+                                    {Capacitor.getPlatform() === 'web' ? (
+                                        <span className="block">
+                                            Para desbloquear PRO:<br />
+                                            1. Abre TradingCoach en tu móvil.<br />
+                                            2. Compra tu plan.<br />
+                                            3. Vuelve aquí y actualiza.
+                                        </span>
+                                    ) : "No hay ofertas disponibles en este momento."}
                                 </p>
                             </div>
                         )}
 
-                        <p className="text-[10px] text-center text-gray-400 px-4 mt-4">
-                            La suscripción se renovará automáticamente al menos que se cancele 24h antes del fin del periodo actual.
-                        </p>
+                        <div className="text-center space-y-2 pt-2">
+                            <p className="text-xs text-center text-gray-400 italic">
+                                "¿Cuánto te costó tu último Stop Loss innecesario?<br />Probablemente más que esta suscripción."
+                            </p>
 
-                        <button
-                            onClick={async () => {
-                                setLoading(true);
-                                try {
-                                    await PurchasesService.restorePurchases();
-                                    await onSuccess();
-                                    showToast('Estado de suscripción actualizado.', 'success');
-                                } catch (e) {
-                                    showToast('No se encontraron compras anteriores.', 'warning');
-                                } finally {
-                                    setLoading(false);
-                                }
-                            }}
-                            className="w-full py-2 text-xs text-brand-accent font-medium hover:underline mt-2"
-                        >
-                            Restaurar Compras
-                        </button>
+                            <button
+                                onClick={async () => {
+                                    setLoading(true);
+                                    try {
+                                        await PurchasesService.restorePurchases();
+                                        await onSuccess();
+                                        showToast('Estado de suscripción actualizado.', 'success');
+                                    } catch (e) {
+                                        showToast('No se encontraron compras anteriores.', 'warning');
+                                    } finally {
+                                        setLoading(false);
+                                    }
+                                }}
+                                className="text-[11px] uppercase tracking-wider text-gray-400 hover:text-brand-accent transition-colors font-semibold"
+                            >
+                                Restaurar Compras
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
