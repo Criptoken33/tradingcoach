@@ -2,6 +2,8 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithCredential, signInWithPopup } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getAnalytics, isSupported } from 'firebase/analytics';
+import { Capacitor } from '@capacitor/core';
+import { FirebaseAnalytics } from '@capacitor-community/firebase-analytics';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -32,6 +34,13 @@ remoteConfig.settings.minimumFetchIntervalMillis = 60000;
 const analytics = typeof window !== 'undefined'
     ? isSupported().then(yes => yes ? getAnalytics(app) : null)
     : null;
+
+// Initialize Native Analytics
+if (Capacitor.isNativePlatform()) {
+    FirebaseAnalytics.setCollectionEnabled({
+        enabled: true,
+    });
+}
 
 console.log('🔥 Firebase Initialized');
 
