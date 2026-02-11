@@ -58,7 +58,11 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
     const [riskWarning, setRiskWarning] = useState<string | null>(null);
     const [stopLossWarning, setStopLossWarning] = useState<string | null>(null);
 
-    const riskPercentage = String(recommendedRisk);
+    const [riskPercentage, setRiskPercentage] = useState(String(recommendedRisk));
+
+    useEffect(() => {
+        setRiskPercentage(String(recommendedRisk));
+    }, [recommendedRisk]);
 
     const isValid = useMemo(() => {
         return accountBalance > 0 &&
@@ -252,7 +256,7 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
                         </div>
                     )}
                     <div>
-                        <Input label="Riesgo (%)" type="number" value={riskPercentage} readOnly className="font-bold text-brand-accent !bg-brand-tertiary/50" />
+                        <Input label="Riesgo (%)" type="number" value={riskPercentage} onChange={e => setRiskPercentage(e.target.value)} step="0.01" className="font-bold text-brand-accent !bg-brand-tertiary/50" />
                         {riskWarning && <AlertMessage type="warning" text={riskWarning} size="small" />}
                     </div>
                     <Input label="Entrada" type="number" min="0" value={entryPrice} onChange={e => setEntryPrice(e.target.value)} placeholder="0.00000" step="0.00001" />
