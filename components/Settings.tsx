@@ -96,7 +96,9 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
 
             await FileService.exportData(fileName, dataStr);
 
-            onShowToast('Datos exportados con éxito.');
+            // En Android/iOS esto aparecerá después de que se cierre el menú de compartir
+            // En Web aparecerá después de la descarga
+            onShowToast('Exportación finalizada.');
         } catch (error) {
             console.error('Error exporting data:', error);
             onShowToast('Error al exportar los datos.');

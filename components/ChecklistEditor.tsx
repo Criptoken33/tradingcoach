@@ -159,7 +159,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setCheckl
 
             await FileService.exportData(fileName, dataStr);
 
-            onShowToast('Checklist exportado.');
+            onShowToast('Exportación finalizada.');
         } catch (error) {
             onShowToast('Error al exportar el checklist.');
         }

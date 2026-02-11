@@ -1,35 +1,44 @@
-import { Share } from '@capacitor/share';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
+
+// Plugin nativo personalizado para compartir archivos con permisos correctos
+interface FileSharePlugin {
+    shareFile(options: { fileUri: string; title?: string; dialogTitle?: string }): Promise<void>;
+}
+
+const FileShare = registerPlugin<FileSharePlugin>('FileShare');
 
 export const FileService = {
     /**
-     * Exporta datos a un archivo, manejando la diferencia entre Web y Nativo.
-     * En Nativo, guarda en caché y comparte el archivo.
-     * En Web, descarga el archivo mediante un enlace.
+     * Exporta datos a un archivo JSON.
+     * En plataformas nativas, guarda en caché (subdirectorio exports) y usa plugin nativo para compartir.
+     * En Web, descarga el archivo mediante el navegador.
      */
     exportData: async (fileName: string, data: string, mimeType: string = 'application/json'): Promise<void> => {
         try {
             if (Capacitor.isNativePlatform()) {
-                // Escribir archivo en el sistema de archivos (Cache)
+                // Escribir archivo en caché/exports
+                const path = `exports/${fileName}`;
+
                 const result = await Filesystem.writeFile({
-                    path: fileName,
+                    path: path,
                     data: data,
                     directory: Directory.Cache,
                     encoding: Encoding.UTF8,
+                    recursive: true
                 });
 
-                // Compartir el archivo
-                await Share.share({
-                    title: 'Exportar Archivo',
-                    text: `Aquí tienes tu archivo: ${fileName}`,
-                    url: result.uri, // Para versiones antiguas de Share
-                    files: [result.uri], // Para versiones nuevas de Share
+                console.log('Archivo escrito en Cache/exports:', result.uri);
+
+                // Usar plugin nativo personalizado que otorga permisos URI explícitamente
+                await FileShare.shareFile({
+                    fileUri: result.uri,
+                    title: `Exportar: ${fileName}`,
                     dialogTitle: 'Guardar o Compartir',
                 });
 
             } else {
-                // Método Web (Descarga directa)
+                // Método Web (Descarga directa mediante el navegador)
                 const blob = new Blob([data], { type: mimeType });
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
@@ -41,7 +50,7 @@ export const FileService = {
                 URL.revokeObjectURL(url);
             }
         } catch (error) {
-            console.error('Error in FileService.exportData:', error);
+            console.error('Error al exportar archivo:', error);
             throw error;
         }
     }
