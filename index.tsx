@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import ErrorBoundary from './components/ErrorBoundary';
 import { AuthProvider } from './src/context/AuthContext';
+import { FeedbackProvider } from './src/context/FeedbackContext';
 import './index.css';
 
 
@@ -16,7 +17,9 @@ root.render(
   <React.StrictMode>
     <ErrorBoundary>
       <AuthProvider>
-        <App />
+        <FeedbackProvider>
+          <App />
+        </FeedbackProvider>
       </AuthProvider>
     </ErrorBoundary>
   </React.StrictMode>

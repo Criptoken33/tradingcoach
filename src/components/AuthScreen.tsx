@@ -1,48 +1,58 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useFeedback } from '../context/FeedbackContext';
 import { GoogleIcon } from '../../components/icons';
 
 export function AuthScreen() {
     const { signInWithGoogle } = useAuth();
-    const [error, setError] = useState<string | null>(null);
+    const { showToast } = useFeedback();
     const [loading, setLoading] = useState(false);
 
     const handleGoogleSignIn = async () => {
-        setError(null);
         setLoading(true);
-
         try {
             await signInWithGoogle();
         } catch (err: any) {
-            setError(err.message || 'Error al iniciar sesión');
+            showToast(err.message || 'Error al iniciar sesión', 'error');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-brand-dark flex items-center justify-center p-4">
-            <div className="bg-brand-surface rounded-2xl p-8 max-w-md w-full shadow-2xl border border-brand-outline">
+        <div className="min-h-screen bg-md-surface flex items-center justify-center p-4">
+            <div className="bg-md-surface-container-high rounded-[28px] p-8 max-w-md w-full shadow-md-elevation-3 border border-md-outline-variant/30 animate-[dialog-in_0.4s_cubic-bezier(0.05,0.7,0.1,1.0)]">
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-brand-on-surface mb-2">Trading Coach</h1>
-                    <p className="text-brand-on-surface-variant">Inicia sesión para continuar</p>
+                    <h1 className="headline-medium text-md-on-surface font-semibold mb-2">Trading Coach</h1>
+                    <p className="body-medium text-md-on-surface-variant">Inicia sesión para continuar</p>
                 </div>
-
-                {error && (
-                    <div className="bg-error/20 border border-error text-error px-4 py-3 rounded-lg mb-4 text-sm">
-                        {error}
-                    </div>
-                )}
 
                 <button
                     onClick={handleGoogleSignIn}
                     disabled={loading}
-                    className="w-full bg-white text-gray-900 font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-3 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="
+                        w-full bg-white text-gray-900 font-semibold py-3.5 px-6 
+                        rounded-xl flex items-center justify-center gap-3 
+                        hover:bg-gray-50 active:scale-[0.98]
+                        transition-all duration-200
+                        disabled:opacity-60 disabled:cursor-not-allowed
+                        shadow-md-elevation-1
+                        min-h-[48px]
+                    "
                 >
-                    <GoogleIcon className="w-5 h-5" />
-                    {loading ? 'Iniciando sesión...' : 'Continuar con Google'}
+                    {loading ? (
+                        <div className="w-5 h-5 rounded-full border-[2.5px] border-gray-300 border-t-gray-800 animate-spin" />
+                    ) : (
+                        <GoogleIcon className="w-5 h-5" />
+                    )}
+                    <span>{loading ? 'Conectando...' : 'Continuar con Google'}</span>
                 </button>
+
+                <p className="mt-6 text-center text-xs text-md-on-surface-variant/60">
+                    Al continuar, aceptas nuestros Términos de Servicio y Política de Privacidad.
+                </p>
             </div>
         </div>
     );
 }
+

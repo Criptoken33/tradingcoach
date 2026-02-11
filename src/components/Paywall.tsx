@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { PurchasesService } from '../services/purchasesService';
 import { LockClosedIcon, CheckIcon, StarIcon, XCircleIcon } from '../../components/icons';
 import { Capacitor } from '@capacitor/core';
+import { useFeedback } from '../context/FeedbackContext';
 
 interface PaywallProps {
     onClose: () => void;
@@ -9,6 +10,7 @@ interface PaywallProps {
 }
 
 export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
+    const { showToast } = useFeedback();
     const [offerings, setOfferings] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [purchasing, setPurchasing] = useState(false);
@@ -56,7 +58,7 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
             }
         } catch (error: any) {
             if (!error.userCancelled) {
-                alert("Error al procesar la compra. Inténtalo de nuevo.");
+                showToast('Error al procesar la compra. Inténtalo de nuevo.', 'error');
             }
         } finally {
             setPurchasing(false);
@@ -166,9 +168,9 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                                 try {
                                     await PurchasesService.restorePurchases();
                                     await onSuccess();
-                                    alert("Estado de suscripción actualizado.");
+                                    showToast('Estado de suscripción actualizado.', 'success');
                                 } catch (e) {
-                                    alert("No se encontraron compras anteriores.");
+                                    showToast('No se encontraron compras anteriores.', 'warning');
                                 } finally {
                                     setLoading(false);
                                 }

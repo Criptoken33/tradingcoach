@@ -11,6 +11,7 @@ import { HomeIcon, JournalIcon, ChartPieIcon, Cog6ToothIcon, CalculatorIcon } fr
 import { useAds } from './src/hooks/useAds';
 import { storageService } from './services/storageService';
 import { calculatePnl, getWeekNumber } from './utils';
+import { useFeedback } from './src/context/FeedbackContext';
 import { UserRepository } from './src/services/userRepository';
 import { UserData } from './types';
 import {
@@ -119,41 +120,6 @@ const createNewPairState = (symbol: string): PairState => {
 
 /* Removed calculatePnl and getWeekNumber as they are now in utils.ts */
 
-// MD3 Snackbar Component
-interface ToastProps {
-  message: string;
-  show: boolean;
-  isExiting: boolean;
-}
-
-const Toast: React.FC<ToastProps> = ({ message, show, isExiting }) => {
-  if (!show) return null;
-
-  return (
-    <div
-      className={`
-        fixed z-50 
-        bottom-24 left-1/2 -translate-x-1/2
-        md-medium:bottom-6 md-medium:left-6 md-medium:translate-x-0
-        px-4 py-3 
-        rounded-md-xs shadow-md-elevation-3
-        transition-all duration-md-medium2 ease-md-emphasized
-        ${isExiting ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}
-        min-w-[280px] max-w-[calc(100vw-32px)] 
-        md-medium:max-w-[568px]
-      `}
-      style={{
-        backgroundColor: '#303034',
-        color: '#F2F0F4'
-      }}
-    >
-      <p className="label-large text-center md-medium:text-left break-words">
-        {message}
-      </p>
-    </div>
-  );
-};
-
 export type Theme = 'light' | 'dark' | 'system';
 
 import { useAuth } from './src/context/AuthContext';
@@ -166,6 +132,7 @@ import { useAndroidBackButton } from './src/hooks/useAndroidBackButton';
 
 const App: React.FC = () => {
   const { user, loading, logout, refreshProStatus } = useAuth();
+  const { showToast, showConfirm } = useFeedback();
   const [view, setView] = useState<View>('DASHBOARD');
   const [showPaywall, setShowPaywall] = useState(false);
   const pro = useProFeatures();
@@ -219,7 +186,6 @@ const App: React.FC = () => {
   );
 
   const [activePairSymbol, setActivePairSymbol] = useState<string | null>(null);
-  const [toast, setToast] = useState({ message: '', show: false, isExiting: false });
 
   const [settings, setSettings] = useState(() =>
     storageService.getItem('tradingCoachSettings', {
@@ -298,11 +264,11 @@ const App: React.FC = () => {
           if (cloudData.settings) setSettings(cloudData.settings);
           if (cloudData.mt5Report) setMt5ReportData(cloudData.mt5Report);
 
-          setToast({ message: 'Datos sincronizados desde la nube', show: true, isExiting: false });
+          showToast('Datos sincronizados desde la nube', 'success');
         }
       } catch (error) {
         console.error("Error loading data from cloud", error);
-        setToast({ message: 'Error al sincronizar datos', show: true, isExiting: false });
+        showToast('Error al sincronizar datos', 'error');
       }
     };
 
@@ -526,26 +492,10 @@ const App: React.FC = () => {
   }, [activeLongChecklist, activeShortChecklist]);
 
 
-  const triggerToast = (message: string) => {
-    setToast({ message, show: true, isExiting: false });
-  };
-
-  useEffect(() => {
-    if (toast.show) {
-      const exitTimer = setTimeout(() => {
-        setToast(prev => ({ ...prev, isExiting: true }));
-      }, 2500);
-
-      const hideTimer = setTimeout(() => {
-        setToast({ message: '', show: false, isExiting: false });
-      }, 3000);
-
-      return () => {
-        clearTimeout(exitTimer);
-        clearTimeout(hideTimer);
-      };
-    }
-  }, [toast.show, toast.message]);
+  // triggerToast is now a thin wrapper around showToast for backward compat
+  const triggerToast = useCallback((message: string) => {
+    showToast(message);
+  }, [showToast]);
 
   const handleSelectPair = useCallback((symbol: string) => {
     if (isTradingLocked || cooldownUntil) {
@@ -595,14 +545,14 @@ const App: React.FC = () => {
 
   const handleAddPair = useCallback((symbol: string) => {
     if (pairsState[symbol]) {
-      triggerToast('El símbolo ya está en la lista.');
+      showToast('El símbolo ya está en la lista.', 'warning');
       return;
     }
     setPairsState(prevState => ({
       ...prevState,
       [symbol]: createNewPairState(symbol)
     }));
-    triggerToast(`${symbol} añadido`);
+    showToast(`${symbol} añadido`, 'success');
   }, [pairsState]);
 
   const handleRemovePair = useCallback((symbol: string) => {
@@ -611,7 +561,7 @@ const App: React.FC = () => {
       delete newState[symbol];
       return newState;
     });
-    triggerToast(`${symbol} eliminado`);
+    showToast(`${symbol} eliminado`);
   }, []);
 
   const handleUpdateChecklist = useCallback((symbol: string, answers: ChecklistAnswers) => {
@@ -686,7 +636,7 @@ const App: React.FC = () => {
 
     handleRemovePair(activePairSymbol);
 
-    triggerToast(`Operación en ${activePairSymbol} abierta.`);
+    showToast(`Operación en ${activePairSymbol} abierta.`, 'success');
     handleBackToDashboard();
   }, [activePairSymbol, pairsState, handleBackToDashboard, handleRemovePair, getChecklistForPair]);
 
@@ -726,7 +676,7 @@ const App: React.FC = () => {
 
   const handleSaveSettings = (newSettings: { accountBalance: string; dailyLossLimit: string; weeklyLossLimit: string; }) => {
     setSettings(newSettings);
-    triggerToast('Ajustes guardados.');
+    showToast('Ajustes guardados.', 'success');
   };
 
   const handleImportMt5Report = (htmlContent: string) => {
@@ -811,11 +761,11 @@ const App: React.FC = () => {
         performanceByDay,
       });
 
-      triggerToast('Reporte de MT5 importado con éxito.');
+      showToast('Reporte de MT5 importado con éxito.', 'success');
       setView('PERFORMANCE_STATS');
     } catch (e) {
       console.error("Failed to parse MT5 report", e);
-      triggerToast('Error: El formato del reporte no es válido o está dañado.');
+      showToast('Error: El formato del reporte no es válido o está dañado.', 'error');
     }
   };
 
@@ -827,7 +777,7 @@ const App: React.FC = () => {
     if (data.activeChecklistIds) setActiveChecklistIds(data.activeChecklistIds);
     if (data.dynamicRiskPercentage) setDynamicRiskPercentage(data.dynamicRiskPercentage);
     if (data.mt5ReportData) setMt5ReportData(data.mt5ReportData);
-    triggerToast('Datos importados con éxito.');
+    showToast('Datos importados con éxito.', 'success');
     setView('DASHBOARD');
   };
 
@@ -852,14 +802,14 @@ const App: React.FC = () => {
     localStorage.removeItem('tradingCoachWatchlist');
     localStorage.setItem('tradingCoachRiskPercentage', '0.25');
 
-    triggerToast('El diario y la lista de seguimiento han sido reiniciados.');
+    showToast('El diario y la lista de seguimiento han sido reiniciados.', 'success');
     setView('DASHBOARD');
-  }, []);
+  }, [showToast]);
 
   const handleDeleteMt5Report = useCallback(() => {
     setMt5ReportData(null);
-    triggerToast('Reporte de MT5 eliminado.');
-  }, []);
+    showToast('Reporte de MT5 eliminado.', 'success');
+  }, [showToast]);
 
 
   const currentStreak = useMemo(() => {
@@ -1055,7 +1005,7 @@ const App: React.FC = () => {
         </div>
       </nav>
 
-      <Toast message={toast.message} show={toast.show} isExiting={toast.isExiting} />
+      {/* Toast, ConfirmDialog, and FullScreenLoader are now rendered by FeedbackProvider */}
 
       <UpdateManager />
 
@@ -1078,8 +1028,15 @@ const AppWithAuth: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-brand-dark flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-accent"></div>
+      <div className="fixed inset-0 z-[9999] bg-md-surface flex flex-col items-center justify-center gap-6 animate-[fade-in_0.3s_ease-out]">
+        <div className="relative">
+          <div className="w-16 h-16 rounded-full border-[3px] border-md-surface-container-highest" />
+          <div className="absolute inset-0 w-16 h-16 rounded-full border-[3px] border-transparent border-t-md-primary animate-spin" />
+        </div>
+        <div className="text-center space-y-2">
+          <h1 className="title-large text-md-on-surface font-semibold">Trading Coach</h1>
+          <p className="body-medium text-md-on-surface-variant animate-pulse">Cargando tu espacio de trading...</p>
+        </div>
       </div>
     );
   }
