@@ -170,6 +170,15 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                                             pkg.product.identifier.toLowerCase().includes('year') ||
                                             pkg.product.identifier.toLowerCase().includes('annual');
 
+                                        const isMonthly = pkg.packageType === 'MONTHLY' ||
+                                            pkg.packageType === 7 ||
+                                            pkg.product.identifier.toLowerCase().includes('month');
+
+                                        let cleanTitle = pkg.product.title;
+                                        if (isAnnual) cleanTitle = "Plan Anual";
+                                        else if (isMonthly) cleanTitle = "Plan Mensual";
+                                        else cleanTitle = cleanTitle.replace(/\s*\(.*?\)\s*/g, '').trim(); // Fallback cleanup
+
                                         return (
                                             <button
                                                 key={pkg.identifier}
@@ -189,7 +198,7 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                                                     </div>
                                                 )}
                                                 <div className="flex flex-col items-start">
-                                                    <span className={`text-base ${isAnnual ? 'text-white' : 'text-gray-900 dark:text-white'}`}>{pkg.product.title}</span>
+                                                    <span className={`text-base ${isAnnual ? 'text-white' : 'text-gray-900 dark:text-white'}`}>{cleanTitle}</span>
                                                     {isAnnual && <span className="text-[10px] font-normal bg-white/20 px-2 py-0.5 rounded text-white mt-1">Ahorras 2 meses</span>}
                                                 </div>
                                                 <div className="flex flex-col items-end">
