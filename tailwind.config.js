@@ -10,7 +10,7 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Roboto', 'sans-serif'],
+                sans: ['Inter', 'sans-serif'],
             },
             colors: {
                 // MD3 Surface Colors

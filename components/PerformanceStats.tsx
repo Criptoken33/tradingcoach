@@ -5,11 +5,11 @@ import { ChartPieIcon, InfoIcon } from './icons';
 // Helper function to calculate PnL from in-app log
 const calculateInAppPnl = (trade: Trade): number | null => {
     if (
-      trade.status !== OperationStatus.CLOSED ||
-      !trade.riskPlan ||
-      !trade.exitPrice ||
-      !trade.riskPlan.entryPrice ||
-      !trade.riskPlan.positionSizeLots
+        trade.status !== OperationStatus.CLOSED ||
+        !trade.riskPlan ||
+        !trade.exitPrice ||
+        !trade.riskPlan.entryPrice ||
+        !trade.riskPlan.positionSizeLots
     ) {
         return null;
     }
@@ -21,7 +21,7 @@ const calculateInAppPnl = (trade: Trade): number | null => {
 };
 
 // Generates a full performance report from the in-app trading log
-const calculateStatsFromLog = (trades: (Trade & {pnl: number})[], initialBalance: number): MT5ReportData => {
+const calculateStatsFromLog = (trades: (Trade & { pnl: number })[], initialBalance: number): MT5ReportData => {
     const sortedTrades = [...trades].sort((a, b) => a.closeTimestamp! - b.closeTimestamp!);
 
     let grossProfit = 0;
@@ -52,7 +52,7 @@ const calculateStatsFromLog = (trades: (Trade & {pnl: number})[], initialBalance
     const losingTrades = sortedTrades.filter(t => t.pnl < 0);
     const averageProfitTrade = winningTrades.length > 0 ? grossProfit / winningTrades.length : 0;
     const averageLossTrade = losingTrades.length > 0 ? grossLoss / losingTrades.length : 0;
-    
+
     // Equity Curve & Max Drawdown Calculation
     const equityCurve: { time: number; balance: number }[] = [];
     let currentBalance = initialBalance;
@@ -77,7 +77,7 @@ const calculateStatsFromLog = (trades: (Trade & {pnl: number})[], initialBalance
     const perfBySymbol: { [key: string]: number } = {};
     const perfByDirection: { [key: string]: number } = { [Direction.LONG]: 0, [Direction.SHORT]: 0 };
     const perfByDay: { [key: string]: number } = {};
-    const monthlyPerf: { [key: string]: { year: number, monthName: string, pnl: number }} = {};
+    const monthlyPerf: { [key: string]: { year: number, monthName: string, pnl: number } } = {};
 
     const dayNames = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -97,12 +97,12 @@ const calculateStatsFromLog = (trades: (Trade & {pnl: number})[], initialBalance
         monthlyPerf[monthKey].pnl += trade.pnl;
     });
 
-    const monthlyPerformanceByYear: { [year: number]: {name: string, pnl: number}[] } = {};
+    const monthlyPerformanceByYear: { [year: number]: { name: string, pnl: number }[] } = {};
     Object.values(monthlyPerf).forEach(m => {
         if (!monthlyPerformanceByYear[m.year]) monthlyPerformanceByYear[m.year] = [];
         monthlyPerformanceByYear[m.year].push({ name: m.monthName, pnl: m.pnl });
     });
-    
+
     const summary: MT5Summary = {
         grossProfit,
         grossLoss,
@@ -136,7 +136,7 @@ const formatDuration = (ms: number): string => {
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
-    
+
     if (hours > 0) {
         return `${hours}h ${minutes}m`;
     }
@@ -147,217 +147,217 @@ const formatDuration = (ms: number): string => {
 };
 
 interface PerformanceStatsProps {
-  tradingLog: Trade[];
-  mt5ReportData: MT5ReportData | null;
-  accountBalance: number;
+    tradingLog: Trade[];
+    mt5ReportData: MT5ReportData | null;
+    accountBalance: number;
 }
 
 type Tab = 'resumen' | 'graficos' | 'desglose';
 
 
 const PerformanceStats: React.FC<PerformanceStatsProps> = ({ tradingLog, mt5ReportData, accountBalance }) => {
-  const [activeTab, setActiveTab] = useState<Tab>('resumen');
-  
-  const closedInAppTrades = useMemo(() =>
-    tradingLog
-      .filter(t => t.status === OperationStatus.CLOSED && t.closeTimestamp)
-      .map(t => ({ ...t, pnl: calculateInAppPnl(t) }))
-      .filter(t => t.pnl !== null) as (Trade & { pnl: number })[],
-    [tradingLog]
-  );
+    const [activeTab, setActiveTab] = useState<Tab>('resumen');
 
-  const reportData = useMemo(() => {
-    // Priority 1: Use MT5 report and merge new trades from the app log
-    if (mt5ReportData) {
-        const mergedData: MT5ReportData = JSON.parse(JSON.stringify(mt5ReportData));
-        const lastReportTime = mergedData.equityCurve.length > 0 ? mergedData.equityCurve[mergedData.equityCurve.length - 1].time : 0;
-
-        const newTrades = closedInAppTrades.filter(t => t.closeTimestamp! > lastReportTime);
-        if (newTrades.length === 0) return mergedData;
-
-        newTrades.sort((a, b) => a.closeTimestamp! - b.closeTimestamp!);
-
-        newTrades.forEach(trade => {
-            const pnl = trade.pnl;
-            mergedData.summary.totalNetProfit += pnl;
-            mergedData.summary.totalTrades += 1;
-            if (pnl > 0) mergedData.summary.grossProfit += pnl;
-            else mergedData.summary.grossLoss += pnl; // Keep it negative
-            if (pnl > mergedData.summary.bestTrade) mergedData.summary.bestTrade = pnl;
-            if (pnl < mergedData.summary.worstTrade) mergedData.summary.worstTrade = pnl;
-            mergedData.summary.profitFactor = mergedData.summary.grossLoss !== 0 ? Math.abs(mergedData.summary.grossProfit / mergedData.summary.grossLoss) : 0;
-            const lastBalance = mergedData.equityCurve.length > 0 ? mergedData.equityCurve[mergedData.equityCurve.length - 1].balance : 0;
-            mergedData.equityCurve.push({ time: trade.closeTimestamp!, balance: lastBalance + pnl });
-            // Note: Merging chart data is complex and omitted for brevity. 
-            // The core summary and equity curve are updated.
-        });
-        return mergedData;
-    }
-    
-    // Priority 2: If no MT5 report, generate full stats from the app log
-    if (closedInAppTrades.length > 0) {
-        return calculateStatsFromLog(closedInAppTrades, accountBalance);
-    }
-
-    // No data available
-    return null;
-  }, [mt5ReportData, closedInAppTrades, accountBalance]);
-
-  
-  if (!reportData) {
-    return (
-      <div className="p-4 sm:p-8 max-w-6xl mx-auto animate-fade-in">
-        <div className="flex items-center mb-8">
-            <ChartPieIcon className="w-10 h-10 text-brand-accent mr-4" />
-            <h1 className="text-3xl sm:text-4xl font-bold text-brand-text">Estadísticas de Rendimiento</h1>
-        </div>
-        <div className="text-center py-16 bg-brand-light rounded-3xl border border-brand-border-secondary/50">
-          <p className="text-brand-text-secondary text-lg font-semibold">No hay operaciones cerradas para analizar.</p>
-          <p className="text-brand-text-secondary mt-2 max-w-md mx-auto">Cierra una operación en el Diario o importa un reporte de MT5 desde Ajustes para empezar.</p>
-        </div>
-      </div>
+    const closedInAppTrades = useMemo(() =>
+        tradingLog
+            .filter(t => t.status === OperationStatus.CLOSED && t.closeTimestamp)
+            .map(t => ({ ...t, pnl: calculateInAppPnl(t) }))
+            .filter(t => t.pnl !== null) as (Trade & { pnl: number })[],
+        [tradingLog]
     );
-  }
 
-  const { summary, monthlyPerformance, equityCurve, performanceBySymbol, performanceByDirection, performanceByDay } = reportData;
-  
-  const performanceByDayData = useMemo(() => {
-    if (performanceByDay) {
-        const dayOrder = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-        return [...performanceByDay]
-            .filter(day => day.value !== 0)
-            .sort((a, b) => dayOrder.indexOf(a.label) - dayOrder.indexOf(b.label));
-    }
-    return [];
-  }, [performanceByDay]);
+    const reportData = useMemo(() => {
+        // Priority 1: Use MT5 report and merge new trades from the app log
+        if (mt5ReportData) {
+            const mergedData: MT5ReportData = JSON.parse(JSON.stringify(mt5ReportData));
+            const lastReportTime = mergedData.equityCurve.length > 0 ? mergedData.equityCurve[mergedData.equityCurve.length - 1].time : 0;
 
-  // Calculate duration stats from in-app log only, as MT5 report doesn't have this detail.
-  const winningTrades = closedInAppTrades.filter(t => t.pnl >= 0);
-  const losingTrades = closedInAppTrades.filter(t => t.pnl < 0);
+            const newTrades = closedInAppTrades.filter(t => t.closeTimestamp! > lastReportTime);
+            if (newTrades.length === 0) return mergedData;
 
-  const avgWinDurationMs = winningTrades.length > 0
-    ? winningTrades.reduce((sum, t) => sum + (t.closeTimestamp! - t.openTimestamp), 0) / winningTrades.length
-    : 0;
+            newTrades.sort((a, b) => a.closeTimestamp! - b.closeTimestamp!);
 
-  const avgLossDurationMs = losingTrades.length > 0
-    ? losingTrades.reduce((sum, t) => sum + (t.closeTimestamp! - t.openTimestamp), 0) / losingTrades.length
-    : 0;
-    
-  const formattedAvgWinDuration = formatDuration(avgWinDurationMs);
-  const formattedAvgLossDuration = formatDuration(avgLossDurationMs);
-  const durationSentiment = avgWinDurationMs > avgLossDurationMs ? 'positive' : avgLossDurationMs > 0 ? 'negative' : undefined;
+            newTrades.forEach(trade => {
+                const pnl = trade.pnl;
+                mergedData.summary.totalNetProfit += pnl;
+                mergedData.summary.totalTrades += 1;
+                if (pnl > 0) mergedData.summary.grossProfit += pnl;
+                else mergedData.summary.grossLoss += pnl; // Keep it negative
+                if (pnl > mergedData.summary.bestTrade) mergedData.summary.bestTrade = pnl;
+                if (pnl < mergedData.summary.worstTrade) mergedData.summary.worstTrade = pnl;
+                mergedData.summary.profitFactor = mergedData.summary.grossLoss !== 0 ? Math.abs(mergedData.summary.grossProfit / mergedData.summary.grossLoss) : 0;
+                const lastBalance = mergedData.equityCurve.length > 0 ? mergedData.equityCurve[mergedData.equityCurve.length - 1].balance : 0;
+                mergedData.equityCurve.push({ time: trade.closeTimestamp!, balance: lastBalance + pnl });
+                // Note: Merging chart data is complex and omitted for brevity. 
+                // The core summary and equity curve are updated.
+            });
+            return mergedData;
+        }
 
-  const renderContent = () => {
-    const maxLoss = Math.abs(summary.worstTrade);
-    const avgWin = summary.averageProfitTrade;
-    const mlAwRatio = avgWin > 0 ? maxLoss / avgWin : 0;
+        // Priority 2: If no MT5 report, generate full stats from the app log
+        if (closedInAppTrades.length > 0) {
+            return calculateStatsFromLog(closedInAppTrades, accountBalance);
+        }
 
-    let mlAwSentiment: 'positive' | 'warning' | 'negative' | undefined;
-    if (mlAwRatio > 0) {
-        if (mlAwRatio > 3.0) mlAwSentiment = 'negative';
-        else if (mlAwRatio > 1.5) mlAwSentiment = 'warning';
-        else mlAwSentiment = 'positive';
-    }
+        // No data available
+        return null;
+    }, [mt5ReportData, closedInAppTrades, accountBalance]);
 
-    switch (activeTab) {
-        case 'resumen':
-            return (
-                <div className="animate-fade-in grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    <StatCard label="P/L Neto Total" value={`${summary.totalNetProfit.toFixed(2)} USD`} sentiment={summary.totalNetProfit >= 0 ? 'positive' : 'negative'} />
-                    <StatCard label="Factor de Beneficio" value={summary.profitFactor.toFixed(2)} sentiment={summary.profitFactor > 1.5 ? 'positive' : summary.profitFactor > 1 ? 'warning' : 'negative'} />
-                    <StatCard label="ML / AW" value={mlAwRatio > 0 ? `${mlAwRatio.toFixed(1)}x` : 'N/A'} sentiment={mlAwSentiment} description="Pérdida Máxima vs Ganancia Promedio"/>
-                    <StatCard 
-                        label="Duración Media W/L" 
-                        value={avgWinDurationMs > 0 || avgLossDurationMs > 0 ? `${formattedAvgWinDuration} / ${formattedAvgLossDuration}` : 'N/A'} 
-                        sentiment={durationSentiment}
-                        description="Duración media de ganadoras vs. perdedoras. Idealmente, la duración de las ganadoras debe ser mayor."
-                    />
-                    <StatCard label="Drawdown Máximo" value={`${summary.maxDrawdown.toFixed(2)}%`} sentiment='negative' />
-                    <StatCard label="Total Operaciones" value={String(summary.totalTrades)} />
-                    <StatCard label="Ganancia Bruta" value={`+${summary.grossProfit.toFixed(2)}`} sentiment='positive' />
-                    <StatCard label="Pérdida Bruta" value={`${summary.grossLoss.toFixed(2)}`} sentiment='negative' />
-                    <StatCard label="Ganancia Promedio" value={summary.averageProfitTrade.toFixed(2)} sentiment='positive' />
-                    <StatCard label="Pérdida Promedio" value={summary.averageLossTrade.toFixed(2)} sentiment='negative' />
-                    <StatCard label="Mejor Operación" value={`+${summary.bestTrade.toFixed(2)}`} sentiment='positive' />
-                    <StatCard label="Peor Operación" value={`${summary.worstTrade.toFixed(2)}`} sentiment='negative' />
-                    <StatCard label="Victorias Consecutivas" value={String(summary.maxConsecutiveWins)} />
-                    <StatCard label="Pérdidas Consecutivas" value={String(summary.maxConsecutiveLosses)} />
+
+    if (!reportData) {
+        return (
+            <div className="p-4 sm:p-8 max-w-6xl mx-auto animate-fade-in">
+                <div className="flex items-center mb-8">
+                    <ChartPieIcon className="w-10 h-10 text-brand-accent mr-4" />
+                    <h1 className="headline-medium font-bold text-brand-text">Estadísticas de Rendimiento</h1>
                 </div>
-            );
-        case 'graficos':
-            return (
-                <div className="animate-fade-in space-y-6">
-                    <SectionCard title="Curva de Capital">
-                        <LineChart data={equityCurve} />
-                    </SectionCard>
-                    <SectionCard title="Rendimiento Mensual">
-                        {monthlyPerformance.map(yearData => {
-                            const monthOrder = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                            const sortedMonths = [...yearData.months].sort((a, b) => monthOrder.indexOf(a.name) - monthOrder.indexOf(b.name));
-                            return (
-                                <div key={yearData.year}>
-                                    <h3 className="font-bold text-brand-text text-lg mb-4">{yearData.year}</h3>
-                                    <BarChart data={sortedMonths.map(month => ({ label: month.name, value: month.pnl }))} sortByValue={false} />
-                                </div>
-                            );
-                        })}
-                    </SectionCard>
+                <div className="text-center py-16 bg-brand-light rounded-3xl border border-brand-border-secondary/50">
+                    <p className="text-brand-text-secondary title-medium font-semibold">No hay operaciones cerradas para analizar.</p>
+                    <p className="text-brand-text-secondary mt-2 max-w-md mx-auto body-medium">Cierra una operación en el Diario o importa un reporte de MT5 desde Ajustes para empezar.</p>
                 </div>
-            );
-        case 'desglose':
-             return (
-                <div className="animate-fade-in space-y-6">
-                    <SectionCard title="Rendimiento por Símbolo">
-                        <BarChart data={performanceBySymbol || []} />
-                    </SectionCard>
-                    <SectionCard title="Rendimiento por Dirección">
-                        <BarChart data={performanceByDirection || []} />
-                    </SectionCard>
-                    <SectionCard title="Rendimiento por Día de la Semana">
-                        <BarChart data={performanceByDayData} sortByValue={false} />
-                    </SectionCard>
-                </div>
-             );
+            </div>
+        );
     }
-  }
+
+    const { summary, monthlyPerformance, equityCurve, performanceBySymbol, performanceByDirection, performanceByDay } = reportData;
+
+    const performanceByDayData = useMemo(() => {
+        if (performanceByDay) {
+            const dayOrder = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+            return [...performanceByDay]
+                .filter(day => day.value !== 0)
+                .sort((a, b) => dayOrder.indexOf(a.label) - dayOrder.indexOf(b.label));
+        }
+        return [];
+    }, [performanceByDay]);
+
+    // Calculate duration stats from in-app log only, as MT5 report doesn't have this detail.
+    const winningTrades = closedInAppTrades.filter(t => t.pnl >= 0);
+    const losingTrades = closedInAppTrades.filter(t => t.pnl < 0);
+
+    const avgWinDurationMs = winningTrades.length > 0
+        ? winningTrades.reduce((sum, t) => sum + (t.closeTimestamp! - t.openTimestamp), 0) / winningTrades.length
+        : 0;
+
+    const avgLossDurationMs = losingTrades.length > 0
+        ? losingTrades.reduce((sum, t) => sum + (t.closeTimestamp! - t.openTimestamp), 0) / losingTrades.length
+        : 0;
+
+    const formattedAvgWinDuration = formatDuration(avgWinDurationMs);
+    const formattedAvgLossDuration = formatDuration(avgLossDurationMs);
+    const durationSentiment = avgWinDurationMs > avgLossDurationMs ? 'positive' : avgLossDurationMs > 0 ? 'negative' : undefined;
+
+    const renderContent = () => {
+        const maxLoss = Math.abs(summary.worstTrade);
+        const avgWin = summary.averageProfitTrade;
+        const mlAwRatio = avgWin > 0 ? maxLoss / avgWin : 0;
+
+        let mlAwSentiment: 'positive' | 'warning' | 'negative' | undefined;
+        if (mlAwRatio > 0) {
+            if (mlAwRatio > 3.0) mlAwSentiment = 'negative';
+            else if (mlAwRatio > 1.5) mlAwSentiment = 'warning';
+            else mlAwSentiment = 'positive';
+        }
+
+        switch (activeTab) {
+            case 'resumen':
+                return (
+                    <div className="animate-fade-in grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <StatCard label="P/L Neto Total" value={`${summary.totalNetProfit.toFixed(2)} USD`} sentiment={summary.totalNetProfit >= 0 ? 'positive' : 'negative'} />
+                        <StatCard label="Factor de Beneficio" value={summary.profitFactor.toFixed(2)} sentiment={summary.profitFactor > 1.5 ? 'positive' : summary.profitFactor > 1 ? 'warning' : 'negative'} />
+                        <StatCard label="ML / AW" value={mlAwRatio > 0 ? `${mlAwRatio.toFixed(1)}x` : 'N/A'} sentiment={mlAwSentiment} description="Pérdida Máxima vs Ganancia Promedio" />
+                        <StatCard
+                            label="Duración Media W/L"
+                            value={avgWinDurationMs > 0 || avgLossDurationMs > 0 ? `${formattedAvgWinDuration} / ${formattedAvgLossDuration}` : 'N/A'}
+                            sentiment={durationSentiment}
+                            description="Duración media de ganadoras vs. perdedoras. Idealmente, la duración de las ganadoras debe ser mayor."
+                        />
+                        <StatCard label="Drawdown Máximo" value={`${summary.maxDrawdown.toFixed(2)}%`} sentiment='negative' />
+                        <StatCard label="Total Operaciones" value={String(summary.totalTrades)} />
+                        <StatCard label="Ganancia Bruta" value={`+${summary.grossProfit.toFixed(2)}`} sentiment='positive' />
+                        <StatCard label="Pérdida Bruta" value={`${summary.grossLoss.toFixed(2)}`} sentiment='negative' />
+                        <StatCard label="Ganancia Promedio" value={summary.averageProfitTrade.toFixed(2)} sentiment='positive' />
+                        <StatCard label="Pérdida Promedio" value={summary.averageLossTrade.toFixed(2)} sentiment='negative' />
+                        <StatCard label="Mejor Operación" value={`+${summary.bestTrade.toFixed(2)}`} sentiment='positive' />
+                        <StatCard label="Peor Operación" value={`${summary.worstTrade.toFixed(2)}`} sentiment='negative' />
+                        <StatCard label="Victorias Consecutivas" value={String(summary.maxConsecutiveWins)} />
+                        <StatCard label="Pérdidas Consecutivas" value={String(summary.maxConsecutiveLosses)} />
+                    </div>
+                );
+            case 'graficos':
+                return (
+                    <div className="animate-fade-in space-y-6">
+                        <SectionCard title="Curva de Capital">
+                            <LineChart data={equityCurve} />
+                        </SectionCard>
+                        <SectionCard title="Rendimiento Mensual">
+                            {monthlyPerformance.map(yearData => {
+                                const monthOrder = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                                const sortedMonths = [...yearData.months].sort((a, b) => monthOrder.indexOf(a.name) - monthOrder.indexOf(b.name));
+                                return (
+                                    <div key={yearData.year}>
+                                        <h3 className="font-bold text-brand-text title-large mb-4">{yearData.year}</h3>
+                                        <BarChart data={sortedMonths.map(month => ({ label: month.name, value: month.pnl }))} sortByValue={false} />
+                                    </div>
+                                );
+                            })}
+                        </SectionCard>
+                    </div>
+                );
+            case 'desglose':
+                return (
+                    <div className="animate-fade-in space-y-6">
+                        <SectionCard title="Rendimiento por Símbolo">
+                            <BarChart data={performanceBySymbol || []} />
+                        </SectionCard>
+                        <SectionCard title="Rendimiento por Dirección">
+                            <BarChart data={performanceByDirection || []} />
+                        </SectionCard>
+                        <SectionCard title="Rendimiento por Día de la Semana">
+                            <BarChart data={performanceByDayData} sortByValue={false} />
+                        </SectionCard>
+                    </div>
+                );
+        }
+    }
 
 
-  return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto animate-fade-in pb-24">
-      <div className="flex items-center mb-6">
-        <ChartPieIcon className="w-8 h-8 sm:w-10 sm:h-10 text-brand-accent mr-4" />
-        <h1 className="text-2xl sm:text-4xl font-bold text-brand-text">Análisis de Rendimiento</h1>
-      </div>
-      
-        <div className="mb-6 border-b border-brand-border-secondary">
-            <nav className="flex space-x-2 sm:space-x-4 -mb-px" aria-label="Tabs">
-                <TabButton name="Resumen" isActive={activeTab === 'resumen'} onClick={() => setActiveTab('resumen')} />
-                <TabButton name="Gráficos" isActive={activeTab === 'graficos'} onClick={() => setActiveTab('graficos')} />
-                <TabButton name="Desglose" isActive={activeTab === 'desglose'} onClick={() => setActiveTab('desglose')} />
-            </nav>
+    return (
+        <div className="p-4 sm:p-6 max-w-7xl mx-auto animate-fade-in pb-24">
+            <div className="flex items-center mb-6">
+                <ChartPieIcon className="w-8 h-8 sm:w-10 sm:h-10 text-brand-accent mr-4" />
+                <h1 className="headline-medium font-bold text-brand-text">Análisis de Rendimiento</h1>
+            </div>
+
+            <div className="mb-6 border-b border-brand-border-secondary">
+                <nav className="flex space-x-2 sm:space-x-4 -mb-px" aria-label="Tabs">
+                    <TabButton name="Resumen" isActive={activeTab === 'resumen'} onClick={() => setActiveTab('resumen')} />
+                    <TabButton name="Gráficos" isActive={activeTab === 'graficos'} onClick={() => setActiveTab('graficos')} />
+                    <TabButton name="Desglose" isActive={activeTab === 'desglose'} onClick={() => setActiveTab('desglose')} />
+                </nav>
+            </div>
+
+            <div>
+                {renderContent()}
+            </div>
         </div>
-
-        <div>
-            {renderContent()}
-        </div>
-    </div>
-  );
+    );
 };
 
 // Sub-components for stats page
 const TabButton: React.FC<{ name: string; isActive: boolean; onClick: () => void }> = ({ name, isActive, onClick }) => (
-  <button
-    onClick={onClick}
-    className={`whitespace-nowrap py-3 px-2 sm:px-4 border-b-2 font-bold text-sm sm:text-base transition-colors focus:outline-none rounded-t-md
+    <button
+        onClick={onClick}
+        className={`whitespace-nowrap py-3 px-2 sm:px-4 border-b-2 font-bold label-large transition-colors focus:outline-none rounded-t-md
       ${isActive
-        ? 'border-brand-accent text-brand-accent'
-        : 'border-transparent text-brand-text-secondary hover:text-brand-text hover:border-brand-border-secondary'
-      }
+                ? 'border-brand-accent text-brand-accent'
+                : 'border-transparent text-brand-text-secondary hover:text-brand-text hover:border-brand-border-secondary'
+            }
     `}
-     aria-current={isActive ? 'page' : undefined}
-  >
-    {name}
-  </button>
+        aria-current={isActive ? 'page' : undefined}
+    >
+        {name}
+    </button>
 );
 
 const StatCard: React.FC<{
@@ -368,44 +368,44 @@ const StatCard: React.FC<{
 }> = ({ label, value, sentiment, description }) => {
     const sentimentColor =
         sentiment === 'positive' ? 'text-brand-success' :
-        sentiment === 'warning' ? 'text-brand-warning-high' :
-        sentiment === 'negative' ? 'text-brand-danger' :
-        'text-brand-text';
+            sentiment === 'warning' ? 'text-brand-warning-high' :
+                sentiment === 'negative' ? 'text-brand-danger' :
+                    'text-brand-text';
 
     return (
         <div className="bg-brand-light p-4 rounded-2xl border border-brand-border-secondary/50 shadow-sm">
             <div className="flex items-center justify-between mb-1">
-                <p className="text-xs sm:text-sm text-brand-text-secondary truncate pr-2">{label}</p>
+                <p className="label-medium text-brand-text-secondary truncate pr-2">{label}</p>
                 {description && (
                     <div className="group relative flex justify-center">
                         <InfoIcon className="w-4 h-4 text-brand-text-secondary cursor-help" />
-                        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-brand-dark text-brand-text text-xs p-2 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 text-center">
+                        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-brand-dark text-brand-text body-small p-2 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 text-center">
                             {description}
                         </span>
                     </div>
                 )}
             </div>
-            <p className={`text-xl sm:text-2xl font-bold font-mono ${sentimentColor}`}>{value}</p>
+            <p className={`headline-small font-bold font-mono ${sentimentColor}`}>{value}</p>
         </div>
     );
 };
 
 const SectionCard: React.FC<{ title: string; children: React.ReactNode, className?: string }> = ({ title, children, className }) => {
     return (
-      <div className={`bg-brand-light rounded-3xl border border-brand-border-secondary/50 ${className} overflow-hidden shadow-sm`}>
-        <div className="p-4 sm:p-5 border-b border-brand-border-secondary/50">
-          <h2 className="text-base sm:text-lg font-bold text-brand-text">{title}</h2>
+        <div className={`bg-brand-light rounded-3xl border border-brand-border-secondary/50 ${className} overflow-hidden shadow-sm`}>
+            <div className="p-4 sm:p-5 border-b border-brand-border-secondary/50">
+                <h2 className="title-large font-bold text-brand-text">{title}</h2>
+            </div>
+            <div className="p-4 sm:p-5">
+                {children}
+            </div>
         </div>
-        <div className="p-4 sm:p-5">
-          {children}
-        </div>
-      </div>
     );
 };
 
 const BarChart: React.FC<{ data: { label: string; value: number }[]; sortByValue?: boolean }> = ({ data, sortByValue = true }) => {
-    if(data.length === 0) {
-      return <p className="text-sm text-brand-text-secondary italic">No hay datos para mostrar.</p>
+    if (data.length === 0) {
+        return <p className="body-medium text-brand-text-secondary italic">No hay datos para mostrar.</p>
     }
     const maxValue = Math.max(...data.map(d => Math.abs(d.value)), 1);
     const displayData = sortByValue ? [...data].sort((a, b) => b.value - a.value) : data;
@@ -417,7 +417,7 @@ const BarChart: React.FC<{ data: { label: string; value: number }[]; sortByValue
                 const isPositive = value >= 0;
                 return (
                     <div key={label} className="group">
-                        <div className="flex justify-between items-center mb-1 text-sm">
+                        <div className="flex justify-between items-center mb-1 label-medium">
                             <span className="font-medium text-brand-text-secondary truncate pr-2">{label}</span>
                             <span className={`font-mono font-semibold ${isPositive ? 'text-brand-success' : 'text-brand-danger'}`}>{value.toFixed(2)}</span>
                         </div>
@@ -436,7 +436,7 @@ const BarChart: React.FC<{ data: { label: string; value: number }[]; sortByValue
 
 const LineChart: React.FC<{ data: { time: number, balance: number }[] }> = ({ data }) => {
     if (data.length < 2) {
-        return <p className="text-sm text-brand-text-secondary italic">No hay suficientes datos para mostrar el gráfico.</p>;
+        return <p className="body-medium text-brand-text-secondary italic">No hay suficientes datos para mostrar el gráfico.</p>;
     }
 
     const width = 500;
@@ -447,7 +447,7 @@ const LineChart: React.FC<{ data: { time: number, balance: number }[] }> = ({ da
     const maxX = data[data.length - 1].time;
     const minYValue = Math.min(...data.map(d => d.balance));
     const maxYValue = Math.max(...data.map(d => d.balance));
-    
+
     // Add buffer to min/max Y for better visual clarity
     const yRange = maxYValue - minYValue;
     const minY = yRange === 0 ? minYValue - 1 : minYValue - yRange * 0.1;
@@ -502,14 +502,14 @@ const LineChart: React.FC<{ data: { time: number, balance: number }[] }> = ({ da
                             strokeWidth="0.5"
                             strokeDasharray="2,3"
                         />
-                        <text x={padding.left - 8} y={label.y + 3} textAnchor="end" className="font-mono text-[10px] fill-current">
+                        <text x={padding.left - 8} y={label.y + 3} textAnchor="end" className="font-mono label-small fill-current">
                             {label.value}
                         </text>
                     </g>
                 ))}
 
                 {/* X-axis labels */}
-                <g className="text-[10px] fill-current text-brand-text-secondary">
+                <g className="label-small fill-current text-brand-text-secondary">
                     <text x={padding.left} y={height - padding.bottom + 15} textAnchor="start">
                         {new Date(minX).toLocaleDateString()}
                     </text>
@@ -520,7 +520,7 @@ const LineChart: React.FC<{ data: { time: number, balance: number }[] }> = ({ da
 
                 {/* Area and Line */}
                 <path d={areaPath} fill="url(#areaGradient)" />
-                <path d={`M ${linePath}`} stroke="rgb(var(--accent))" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d={`M ${linePath}`} stroke="rgb(var(--accent))" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
         </div>
     );

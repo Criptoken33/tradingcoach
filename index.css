@@ -191,7 +191,7 @@ html.dark {
 
 :root {
   /* Display - Largest text */
-  --md-sys-typescale-display-large-font: 'Roboto', sans-serif;
+  --md-sys-typescale-display-large-font: 'Inter', sans-serif;
   --md-sys-typescale-display-large-size: 57px;
   --md-sys-typescale-display-large-weight: 400;
   --md-sys-typescale-display-large-line-height: 64px;
@@ -416,6 +416,7 @@ body {
 .line-clamp-3 {
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

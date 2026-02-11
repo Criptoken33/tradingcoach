@@ -34,13 +34,13 @@ const AlertMessage: React.FC<AlertMessageProps> = ({ type, text, size = 'large' 
   const { bgColor, textColor, borderColor, Icon } = config[type];
 
   const sizeClasses = isSmall
-    ? 'text-xs p-2 rounded-lg gap-2 mt-1'
-    : 'text-sm p-3 rounded-xl gap-3';
-  
+    ? 'body-small p-2 rounded-lg gap-2 mt-1'
+    : 'body-medium p-3 rounded-xl gap-3';
+
   const iconSize = isSmall ? 'w-4 h-4' : 'w-5 h-5';
 
   return (
-    <div className={`flex items-start sm:items-center font-medium ${bgColor} ${textColor} border ${borderColor} ${sizeClasses}`}>
+    <div className={`flex items-start sm:items-center ${bgColor} ${textColor} border ${borderColor} ${sizeClasses}`}>
       <Icon className={`${iconSize} flex-shrink-0 mt-0.5 sm:mt-0`} />
       <span>{text}</span>
     </div>

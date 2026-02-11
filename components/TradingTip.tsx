@@ -39,8 +39,8 @@ const TradingTip: React.FC = () => {
         <LightBulbIcon className="w-5 h-5" />
       </div>
       <div className="flex-1 min-w-0 self-center">
-        <p 
-          className={`text-brand-text text-sm font-medium italic transition-opacity duration-500 line-clamp-3 ${isFading ? 'opacity-0' : 'opacity-90'}`}
+        <p
+          className={`text-brand-text body-large italic transition-opacity duration-500 line-clamp-3 ${isFading ? 'opacity-0' : 'opacity-90'}`}
         >
           "{tip}"
         </p>
