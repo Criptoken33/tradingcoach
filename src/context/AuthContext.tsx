@@ -128,6 +128,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                         }
                     }
 
+                    // 3. SECURE_SYNC: Verify Custom Claims in Token
+                    try {
+                        const tokenResult = await firebaseUser.getIdTokenResult();
+                        const tokenIsPro = !!tokenResult.claims.isPro;
+
+                        // Case: Firestore says PRO but Token doesn't know it yet
+                        if (profile.isPro && !tokenIsPro) {
+                            console.log("[AuthContext] Token missing isPro claim. Refreshing...");
+                            await firebaseUser.getIdToken(true);
+                        }
+                    } catch (tokenError) {
+                        console.error("[AuthContext] Error verifying token claims:", tokenError);
+                    }
+
                     setUser(profile);
                 } catch (error) {
                     console.error("Error fetching user profile:", error);

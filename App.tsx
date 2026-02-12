@@ -258,6 +258,10 @@ const App: React.FC = () => {
 
     const loadData = async () => {
       try {
+        if (!pro.canBackupToCloud) {
+          console.log("Cloud backup disabled for non-PRO users");
+          return;
+        }
         const cloudData = await UserRepository.getUserData(user.uid);
         if (cloudData) {
           // Merge or Replace? For now, we assume Cloud is source of truth if it exists and is newer?
