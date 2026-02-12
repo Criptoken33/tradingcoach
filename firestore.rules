@@ -14,7 +14,9 @@ service cloud.firestore {
                     && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['isPro']));
 
       match /{document=**} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+        // Enforce PRO status for any additional data (backups, etc.)
+        allow read, write: if request.auth != null && request.auth.uid == userId
+                           && request.auth.token.isPro == true;
       }
     }
   }

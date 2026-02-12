@@ -59,6 +59,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                             const { functions } = await import('../services/firebase');
                             const syncSubscription = httpsCallable(functions, 'syncSubscription');
                             await syncSubscription();
+                            // FORCE TOKEN REFRESH to pick up new Custom Claims
+                            if (auth.currentUser) {
+                                await auth.currentUser.getIdToken(true);
+                                console.log("[AuthContext] Token refreshed with new claims (manual refresh).");
+                            }
                             console.log("[AuthContext] Secure sync triggered.");
                         } catch (error) {
                             console.error("[AuthContext] Secure sync failed:", error);
@@ -106,6 +111,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                                     const { functions } = await import('../services/firebase');
                                     const syncSubscription = httpsCallable(functions, 'syncSubscription');
                                     await syncSubscription();
+                                    // FORCE TOKEN REFRESH to pick up new Custom Claims
+                                    if (auth.currentUser) {
+                                        await auth.currentUser.getIdToken(true);
+                                        console.log("[AuthContext] Token refreshed with new claims.");
+                                    }
                                 } catch (err) {
                                     console.error("[AuthContext] Init sync failed:", err);
                                 }

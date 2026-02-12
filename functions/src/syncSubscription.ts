@@ -68,6 +68,10 @@ export const syncSubscription = functions.https.onCall(
                 }
             }, { merge: true });
 
+            // 4. Set Custom User Claim for Firestore Rules Enforcement
+            await admin.auth().setCustomUserClaims(uid, { isPro: isPro });
+            console.log(`[syncSubscription] Custom claims updated for ${uid}: isPro=${isPro}`);
+
             return {
                 success: true,
                 isPro: isPro,
