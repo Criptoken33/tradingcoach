@@ -1,10 +1,18 @@
-rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      // 1. Permitir leer todo su documento
+      allow read: if request.auth != null && request.auth.uid == userId;
       
+      // 2. Permitir crear solo si NO se intenta establecer 'isPro' a true (o no se envía)
+      allow create: if request.auth != null && request.auth.uid == userId
+                    && (!request.resource.data.keys().hasAny(['isPro']) || request.resource.data.isPro == false);
+
+      // 3. Permitir actualizar SOLO si NO se modifica el campo 'isPro'
+      // Usamos diff() para verificar que 'isPro' no está en los campos afectados
+      allow update: if request.auth != null && request.auth.uid == userId
+                    && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['isPro']));
+
       match /{document=**} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }

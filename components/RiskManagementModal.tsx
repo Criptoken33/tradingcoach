@@ -161,6 +161,11 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
             } else if (baseCurrency === 'USD') {
                 riskPerUnitInAccountCurrency = riskPerUnitInQuoteCurrency / entry;
             } else {
+                // CROSS PAIR DETECTED (e.g. EURGBP with USD account)
+                // Without real-time exchange rates, exact calculation is impossible client-side.
+                // FALLBACK: Use quote currency risk (1:1 assumption) but WARN user.
+                console.warn("Cross pair detected without exchange rate. Using fallback calculation.");
+                setRiskWarning("Par cruzado: Cálculo aproximado (sin tasa de cambio real).");
                 riskPerUnitInAccountCurrency = riskPerUnitInQuoteCurrency;
             }
 

@@ -70,7 +70,6 @@ export const AdMobService = {
             await AdMob.initialize({
                 testingDevices: ['YOUR_TEST_DEVICE_ID'], // Add real device ID for testing if needed
                 initializeForTesting: useTestAds,
-                requestTrackingAuthorization: true,
             });
             console.log('AdMob initialized. Test Mode:', useTestAds);
         } catch (error) {
@@ -171,29 +170,36 @@ export const AdMobService = {
     showRewardVideo: async (onReward: () => void) => {
         if (!isHybrid()) return;
 
-        // Validar si el anuncio está listo antes de intentar mostrarlo
-        // Nota: AdMob plugin no tiene un método directo síncrono para verificar "isReady", 
-        // pero podemos intentar mostrarlo y manejar el error, o confiar en el prepare anterior.
+        let rewardHandler: any;
+        let failHandler: any;
+        let closeHandler: any;
 
-        const handler = await AdMob.addListener(RewardAdPluginEvents.Rewarded, (reward) => {
-            console.log('User rewarded', reward);
-            onReward();
-            handler.remove();
-        });
-
-        // También escuchar si falla al cargar o mostrar para limpiar el listener
-        const failHandler = await AdMob.addListener(RewardAdPluginEvents.FailedToLoad, (error) => {
-            console.error('Reward video failed to load', error);
-            handler.remove();
-            failHandler.remove();
-        });
+        const cleanup = () => {
+            if (rewardHandler) rewardHandler.remove();
+            if (failHandler) failHandler.remove();
+            if (closeHandler) closeHandler.remove();
+        };
 
         try {
+            rewardHandler = await AdMob.addListener(RewardAdPluginEvents.Rewarded, (reward) => {
+                console.log('User rewarded', reward);
+                onReward();
+                cleanup();
+            });
+
+            failHandler = await AdMob.addListener(RewardAdPluginEvents.FailedToLoad, (error) => {
+                console.error('Reward video failed to load', error);
+                cleanup();
+            });
+
+            closeHandler = await AdMob.addListener(RewardAdPluginEvents.Dismissed, () => {
+                cleanup();
+            });
+
             await AdMob.showRewardVideoAd();
         } catch (error) {
             console.error('Error showing reward video. Did you prepare it?', error);
-            handler.remove();
-            failHandler.remove();
+            cleanup();
         }
     },
 

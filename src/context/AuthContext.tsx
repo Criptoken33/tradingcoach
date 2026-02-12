@@ -13,6 +13,7 @@ interface AuthContextType {
     signInWithGoogle: () => Promise<void>;
     logout: () => Promise<void>;
     refreshProStatus: () => Promise<void>;
+    activateTempPro: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,6 +21,16 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
+    const [tempProExpiration, setTempProExpiration] = useState<number>(() => {
+        const stored = localStorage.getItem('tempProExpiration');
+        return stored ? parseInt(stored, 10) : 0;
+    });
+
+    const activateTempPro = () => {
+        const expiration = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+        setTempProExpiration(expiration);
+        localStorage.setItem('tempProExpiration', expiration.toString());
+    };
 
     const refreshProStatus = async () => {
         if (!auth.currentUser) return;
@@ -41,7 +52,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     // Update Firestore if RevenueCat is the source of truth
                     // Only update if it has changed
                     if (isPro !== profile.isPro) {
-                        await UserRepository.updateUserProfile(auth.currentUser.uid, { isPro });
+                        try {
+                            // SECURE_SYNC: Trigger backend to verify and update Firestore
+                            // We don't await this to block UI, but we could if critical
+                            const { httpsCallable } = await import('firebase/functions');
+                            const { functions } = await import('../services/firebase');
+                            const syncSubscription = httpsCallable(functions, 'syncSubscription');
+                            await syncSubscription();
+                            console.log("[AuthContext] Secure sync triggered.");
+                        } catch (error) {
+                            console.error("[AuthContext] Secure sync failed:", error);
+                        }
+                        // Update local state for immediate feedback/session
                         profile.isPro = isPro;
                     }
                     setUser(profile);
@@ -76,8 +98,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                             const isPro = await PurchasesService.isPro();
 
                             // Sync status if needed
+                            // Sync status if needed
                             if (isPro !== profile.isPro) {
-                                await UserRepository.updateUserProfile(firebaseUser.uid, { isPro });
+                                try {
+                                    // SECURE_SYNC: Trigger backend validation
+                                    const { httpsCallable } = await import('firebase/functions');
+                                    const { functions } = await import('../services/firebase');
+                                    const syncSubscription = httpsCallable(functions, 'syncSubscription');
+                                    await syncSubscription();
+                                } catch (err) {
+                                    console.error("[AuthContext] Init sync failed:", err);
+                                }
+                                // We update local state only for the session
                                 profile.isPro = isPro;
                             }
                         } catch (rcError) {
@@ -119,8 +151,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
+    // Derived user object with effective Pro status
+    const effectiveUser = user ? { ...user, isPro: user.isPro || tempProExpiration > Date.now() } : null;
+
     return (
-        <AuthContext.Provider value={{ user, loading, signInWithGoogle, logout, refreshProStatus }}>
+        <AuthContext.Provider value={{ user: effectiveUser, loading, signInWithGoogle, logout, refreshProStatus, activateTempPro }}>
             {children}
         </AuthContext.Provider>
     );

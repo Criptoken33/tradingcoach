@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithCredential, signInWithPopup } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 import { Capacitor } from '@capacitor/core';
 import { FirebaseAnalytics } from '@capacitor-community/firebase-analytics';
@@ -24,6 +25,7 @@ import { getRemoteConfig, fetchAndActivate, getValue } from 'firebase/remote-con
 // Initialize services
 const auth = getAuth(app);
 const db = getFirestore(app);
+const functions = getFunctions(app);
 const remoteConfig = getRemoteConfig(app);
 
 // Remote Config settings
@@ -44,4 +46,4 @@ if (Capacitor.isNativePlatform()) {
 
 console.log('🔥 Firebase Initialized');
 
-export { auth, db, analytics, remoteConfig, fetchAndActivate, getValue, GoogleAuthProvider, signInWithCredential, signInWithPopup };
+export { auth, db, functions, analytics, remoteConfig, fetchAndActivate, getValue, GoogleAuthProvider, signInWithCredential, signInWithPopup };
