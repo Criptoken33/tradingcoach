@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import { googleAuthService } from '../services/googleAuthService';
 import { UserRepository } from '../services/userRepository';
@@ -103,10 +103,67 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
+    // OPTIMIZATION: Background Sync to unblock UI
+    const syncUserSession = async (firebaseUser: User, currentProfile: UserProfile) => {
+        if (Capacitor.getPlatform() === 'web') return;
+
+        try {
+            console.log("[AuthContext] Starting background sync...");
+
+            // 1. Init RevenueCat
+            await PurchasesService.initialize(firebaseUser.uid);
+            let isPro = false;
+            try {
+                isPro = await PurchasesService.isPro();
+            } catch (e) {
+                console.warn("[AuthContext] RC check failed", e);
+            }
+
+            // 2. Sync if needed
+            if (isPro !== currentProfile.isPro) {
+                try {
+                    console.log("[AuthContext] Status mismatch. Triggering Secure Sync...");
+                    const { httpsCallable } = await import('firebase/functions');
+                    const { functions } = await import('../services/firebase');
+                    const syncSubscription = httpsCallable(functions, 'syncSubscription');
+                    await syncSubscription();
+
+                    // 3. Force Token Refresh to get new claims
+                    await firebaseUser.getIdToken(true);
+                    console.log("[AuthContext] Token refreshed with new claims (background).");
+
+                    // Update local state smoothly
+                    setUser(prev => prev ? { ...prev, isPro } : null);
+                } catch (err) {
+                    console.error("[AuthContext] Background sync failed:", err);
+                }
+            } else {
+                // 3. SECURE_SYNC: Verify Custom Claims anyway specifically for isPro
+                // Needed if Firestore has isPro=true but Token expired/doesn't have it
+                try {
+                    const tokenResult = await firebaseUser.getIdTokenResult();
+                    const tokenIsPro = !!tokenResult.claims.isPro;
+
+                    if (currentProfile.isPro && !tokenIsPro) {
+                        console.log("[AuthContext] Firestore is PRO but Token is NOT. Refreshing...");
+                        await firebaseUser.getIdToken(true);
+                    }
+                } catch (tokenError) {
+                    console.error("[AuthContext] Error verifying token claims:", tokenError);
+                }
+            }
+            console.log("[AuthContext] Background sync completed.");
+
+        } catch (error) {
+            console.error("[AuthContext] Error in background sync", error);
+        }
+    };
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
             if (firebaseUser) {
                 try {
+                    // 1. FAST PATH: Get Firestore Profile
                     // Prepare user data
                     const userProfileData: UserProfile = {
                         uid: firebaseUser.uid,
@@ -117,64 +174,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                         createdAt: Date.now(),
                     };
 
-                    // Ensure user exists in Firestore
+                    // Ensure user exists in Firestore (usually fast)
                     let profile = await UserRepository.ensureUserExists(userProfileData);
 
-                    // Initialize RevenueCat on mobile
-                    if (Capacitor.getPlatform() !== 'web') {
-                        try {
-                            await PurchasesService.initialize(firebaseUser.uid);
-                            const isPro = await PurchasesService.isPro();
-
-                            // Sync status if needed
-                            // Sync status if needed
-                            if (isPro !== profile.isPro) {
-                                try {
-                                    // SECURE_SYNC: Trigger backend validation
-                                    const { httpsCallable } = await import('firebase/functions');
-                                    const { functions } = await import('../services/firebase');
-                                    const syncSubscription = httpsCallable(functions, 'syncSubscription');
-                                    await syncSubscription();
-                                    // FORCE TOKEN REFRESH to pick up new Custom Claims
-                                    if (auth.currentUser) {
-                                        await auth.currentUser.getIdToken(true);
-                                        console.log("[AuthContext] Token refreshed with new claims.");
-                                    }
-                                } catch (err) {
-                                    console.error("[AuthContext] Init sync failed:", err);
-                                }
-                                // We update local state only for the session
-                                profile.isPro = isPro;
-                            }
-                        } catch (rcError) {
-                            console.warn("[AuthContext] Could not sync with RevenueCat on init:", rcError);
-                            // We keep the profile as is (trusting Firestore)
-                        }
-                    }
-
-                    // 3. SECURE_SYNC: Verify Custom Claims in Token
-                    try {
-                        const tokenResult = await firebaseUser.getIdTokenResult();
-                        const tokenIsPro = !!tokenResult.claims.isPro;
-
-                        // Case: Firestore says PRO but Token doesn't know it yet
-                        if (profile.isPro && !tokenIsPro) {
-                            console.log("[AuthContext] Token missing isPro claim. Refreshing...");
-                            await firebaseUser.getIdToken(true);
-                        }
-                    } catch (tokenError) {
-                        console.error("[AuthContext] Error verifying token claims:", tokenError);
-                    }
-
+                    // 2. UNBLOCK UI IMMEDIATELY
+                    // We trust Firestore profile initially to show the app
                     setUser(profile);
+                    setLoading(false);
+
+                    // 3. HEAVY LIFTING (Background)
+                    // Fire and forget - don't await this!
+                    syncUserSession(firebaseUser, profile);
+
                 } catch (error) {
                     console.error("Error fetching user profile:", error);
                     setUser(null);
+                    setLoading(false);
                 }
             } else {
                 setUser(null);
+                setLoading(false);
             }
-            setLoading(false);
         });
 
         return unsubscribe;
