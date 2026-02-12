@@ -66,9 +66,20 @@ exports.activateTempPro = functions.https.onCall({ cors: true }, async (request)
                 // The client and other rules will check tempProExpiration.
             });
             // 5. Set Custom Claims (for rules and client token)
-            // We merge with existing claims to not wipe isPro if it exists (unlikely here but safe)
+            // 5. Set Custom Claims (for rules and client token)
+            // Filter out reserved claims from request.auth.token
             const currentClaims = ((_a = request.auth) === null || _a === void 0 ? void 0 : _a.token) || {};
-            await admin.auth().setCustomUserClaims(uid, Object.assign(Object.assign({}, currentClaims), { tempProExpiration: expiration }));
+            const reservedClaims = [
+                'aud', 'auth_time', 'exp', 'iat', 'iss', 'sub', 'firebase',
+                'user_id', 'email', 'email_verified', 'phone_number', 'name', 'picture'
+            ];
+            const newClaims = {};
+            for (const key in currentClaims) {
+                if (!reservedClaims.includes(key)) {
+                    newClaims[key] = currentClaims[key];
+                }
+            }
+            await admin.auth().setCustomUserClaims(uid, Object.assign(Object.assign({}, newClaims), { tempProExpiration: expiration }));
             return {
                 success: true,
                 expiration: expiration,
@@ -84,7 +95,7 @@ exports.activateTempPro = functions.https.onCall({ cors: true }, async (request)
         if (error instanceof functions.https.HttpsError) {
             throw error;
         }
-        throw new functions.https.HttpsError('internal', 'Could not activate trial.');
+        throw new functions.https.HttpsError('internal', `Could not activate trial: ${error.message || error}`);
     }
 });
 //# sourceMappingURL=activateTempPro.js.map

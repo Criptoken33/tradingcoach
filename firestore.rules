@@ -15,8 +15,11 @@ service cloud.firestore {
 
       match /{document=**} {
         // Enforce PRO status for any additional data (backups, etc.)
-        allow read, write: if request.auth != null && request.auth.uid == userId
-                           && request.auth.token.isPro == true;
+        allow read, write: if request.auth != null 
+                           && (
+                             (request.auth.token.keys().hasAny(['isPro']) && request.auth.token.isPro == true) ||
+                             (request.auth.token.keys().hasAny(['tempProExpiration']) && request.auth.token.tempProExpiration > request.time.toMillis())
+                           );
       }
     }
   }

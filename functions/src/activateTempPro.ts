@@ -57,10 +57,23 @@ export const activateTempPro = functions.https.onCall(
                 });
 
                 // 5. Set Custom Claims (for rules and client token)
-                // We merge with existing claims to not wipe isPro if it exists (unlikely here but safe)
+                // 5. Set Custom Claims (for rules and client token)
+                // Filter out reserved claims from request.auth.token
                 const currentClaims = request.auth?.token || {};
+                const reservedClaims = [
+                    'aud', 'auth_time', 'exp', 'iat', 'iss', 'sub', 'firebase',
+                    'user_id', 'email', 'email_verified', 'phone_number', 'name', 'picture'
+                ];
+
+                const newClaims: Record<string, any> = {};
+                for (const key in currentClaims) {
+                    if (!reservedClaims.includes(key)) {
+                        newClaims[key] = currentClaims[key];
+                    }
+                }
+
                 await admin.auth().setCustomUserClaims(uid, {
-                    ...currentClaims,
+                    ...newClaims,
                     tempProExpiration: expiration
                 });
 
@@ -80,7 +93,7 @@ export const activateTempPro = functions.https.onCall(
             if (error instanceof functions.https.HttpsError) {
                 throw error;
             }
-            throw new functions.https.HttpsError('internal', 'Could not activate trial.');
+            throw new functions.https.HttpsError('internal', `Could not activate trial: ${error.message || error}`);
         }
     }
 );

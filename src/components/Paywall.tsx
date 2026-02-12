@@ -69,32 +69,50 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
 
     const handleWatchAd = async () => {
         setAdLoading(true);
-        try {
+        console.log('[Paywall] handleWatchAd started');
+
+        const adTask = async () => {
+            console.log('[Paywall] Preparing reward video...');
             await prepareRewardVideo();
+            console.log('[Paywall] Showing reward video...');
             await showRewardVideo(async () => {
+                console.log('[Paywall] User rewarded, activating Temp Pro...');
                 try {
                     setLoading(true); // Show global loader while activating
                     await activateTempPro();
+                    console.log('[Paywall] Temp Pro activated successfully');
                     setIsSuccess(true);
                     showToast('¡Has desbloqueado PRO por 24 horas!', 'success');
                 } catch (error: any) {
-                    console.error("Temp Pro Activation Failed:", error);
-                    // Handle specific error messages if possible
-                    const msj = error.message?.includes('already active')
-                        ? 'Ya tienes un periodo PRO activo.'
-                        : error.message?.includes('already used')
-                            ? 'Ya has utilizado tu prueba gratuita.'
-                            : 'Error al activar PRO. Contacta soporte.';
+                    console.error("[Paywall] Temp Pro Activation Failed:", error);
+                    let msj = 'Error al activar PRO. Contacta soporte.';
+                    // Show specific error from Cloud Function if available
+                    if (error.message?.includes('already active')) msj = 'Ya tienes un periodo PRO activo.';
+                    else if (error.message?.includes('already used')) msj = 'Ya has utilizado tu prueba gratuita.';
+                    else if (error.message) msj = error.message;
 
                     showToast(msj, 'error');
                 } finally {
                     setLoading(false);
                 }
             });
-        } catch (e) {
-            console.error(e);
-            showToast('No hay anuncios disponibles en este momento', 'error');
+        };
+
+        const timeoutTask = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('TIMEOUT')), 15000);
+        });
+
+        try {
+            await Promise.race([adTask(), timeoutTask]);
+        } catch (e: any) {
+            console.error('[Paywall] Ad Error:', e);
+            if (e.message === 'TIMEOUT') {
+                showToast('El anuncio tardó demasiado en cargar. Inténtalo de nuevo.', 'warning');
+            } else {
+                showToast('No hay anuncios disponibles en este momento', 'error');
+            }
         } finally {
+            console.log('[Paywall] handleWatchAd finally block');
             setAdLoading(false);
         }
     };
