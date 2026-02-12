@@ -65,10 +65,11 @@ export const AdMobService = {
         if (!isHybrid()) return;
 
         try {
-            const useTestAds = import.meta.env.VITE_ENABLE_TEST_ADS === 'true' || import.meta.env.MODE === 'development';
+            // FORCE TEST MODE for debugging
+            const useTestAds = true; // import.meta.env.VITE_ENABLE_TEST_ADS === 'true' || import.meta.env.MODE === 'development';
 
             await AdMob.initialize({
-                testingDevices: ['YOUR_TEST_DEVICE_ID'], // Add real device ID for testing if needed
+                testingDevices: ['EC21962B7AD82E4F483CA4DA3F1C2A61'],
                 initializeForTesting: useTestAds,
             });
             console.log('AdMob initialized. Test Mode:', useTestAds);
@@ -91,7 +92,7 @@ export const AdMobService = {
             adSize: BannerAdSize.ADAPTIVE_BANNER,
             position: BannerAdPosition.TOP_CENTER,
             margin: 0,
-            isTesting: import.meta.env.VITE_ENABLE_TEST_ADS === 'true' || import.meta.env.MODE === 'development',
+            isTesting: true, // Force test ads for debugging
             // npa: true 
         };
 
@@ -156,7 +157,7 @@ export const AdMobService = {
 
         const options: AdOptions = {
             adId: adId,
-            isTesting: import.meta.env.VITE_ENABLE_TEST_ADS === 'true' || import.meta.env.MODE === 'development',
+            isTesting: true, // Force test ads for debugging
             // npa: true
         };
 

@@ -102,7 +102,7 @@ const Toast: React.FC<ToastComponentProps> = ({ state }) => {
                 transform: getTransform(),
             }}
             className={`
-        fixed z-[9998] 
+        fixed z-[10001] 
         bottom-24 left-1/2
         pointer-events-none
         flex items-center justify-center gap-3

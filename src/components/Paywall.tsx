@@ -71,11 +71,25 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
         setAdLoading(true);
         try {
             await prepareRewardVideo();
-            await showRewardVideo(() => {
-                activateTempPro();
-                setIsSuccess(true);
-                // onSuccess(); // Called by effects of success state or manual close
-                showToast('¡Has desbloqueado PRO por 24 horas!', 'success');
+            await showRewardVideo(async () => {
+                try {
+                    setLoading(true); // Show global loader while activating
+                    await activateTempPro();
+                    setIsSuccess(true);
+                    showToast('¡Has desbloqueado PRO por 24 horas!', 'success');
+                } catch (error: any) {
+                    console.error("Temp Pro Activation Failed:", error);
+                    // Handle specific error messages if possible
+                    const msj = error.message?.includes('already active')
+                        ? 'Ya tienes un periodo PRO activo.'
+                        : error.message?.includes('already used')
+                            ? 'Ya has utilizado tu prueba gratuita.'
+                            : 'Error al activar PRO. Contacta soporte.';
+
+                    showToast(msj, 'error');
+                } finally {
+                    setLoading(false);
+                }
             });
         } catch (e) {
             console.error(e);

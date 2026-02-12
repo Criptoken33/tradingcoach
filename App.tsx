@@ -312,8 +312,11 @@ const App: React.FC = () => {
         }
         await UserRepository.saveUserData(user.uid, userData);
         console.log("Data saved to cloud");
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error saving data to cloud", error);
+        if (error.code === 'permission-denied') {
+          showToast('Error de sincronización: Servidor rechazó la copia (Solo PRO)', 'error');
+        }
       }
     };
 
