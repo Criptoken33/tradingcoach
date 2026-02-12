@@ -21,15 +21,39 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
-    const [tempProExpiration, setTempProExpiration] = useState<number>(() => {
-        const stored = localStorage.getItem('tempProExpiration');
-        return stored ? parseInt(stored, 10) : 0;
-    });
+    // Removed insecure localStorage state
 
-    const activateTempPro = () => {
-        const expiration = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
-        setTempProExpiration(expiration);
-        localStorage.setItem('tempProExpiration', expiration.toString());
+    const activateTempPro = async () => {
+        if (!user) return;
+
+        try {
+            // SECURE_ACTIVATION: Call Cloud Function
+            const { httpsCallable } = await import('firebase/functions');
+            const { functions } = await import('../services/firebase');
+            const activateTempProFn = httpsCallable(functions, 'activateTempPro');
+
+            const result = await activateTempProFn();
+            const data = result.data as { success: boolean; expiration: number; message: string };
+
+            if (data.success) {
+                console.log("[AuthContext] Temp PRO activated until:", new Date(data.expiration));
+
+                // Force token refresh to get new claims
+                if (auth.currentUser) {
+                    await auth.currentUser.getIdToken(true);
+                }
+
+                // Update local state immediately for UI response
+                setUser(prev => prev ? {
+                    ...prev,
+                    tempProExpiration: data.expiration,
+                    tempProUsed: true
+                } : null);
+            }
+        } catch (error) {
+            console.error("[AuthContext] Failed to activate Temp PRO:", error);
+            throw error; // Let UI handle error (e.g. show toast)
+        }
     };
 
     const refreshProStatus = async () => {
@@ -176,7 +200,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     // Derived user object with effective Pro status
-    const effectiveUser = user ? { ...user, isPro: user.isPro || tempProExpiration > Date.now() } : null;
+    // Checks Firestore 'isPro' OR valid 'tempProExpiration'
+    const isTempProActive = user?.tempProExpiration ? user.tempProExpiration > Date.now() : false;
+    const effectiveUser = user ? { ...user, isPro: user.isPro || isTempProActive } : null;
 
     return (
         <AuthContext.Provider value={{ user: effectiveUser, loading, signInWithGoogle, logout, refreshProStatus, activateTempPro }}>
