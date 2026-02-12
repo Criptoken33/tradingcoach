@@ -111,7 +111,7 @@ export const PurchasesService = {
                 return null;
             }
             console.error('Error restoring purchases:', error);
-            return null;
+            throw error; // Throw so UI can handle it
         }
     }
 };

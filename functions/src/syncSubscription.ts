@@ -18,7 +18,7 @@ export const syncSubscription = functions.https.onCall(
         }
 
         const uid = request.auth.uid;
-        const apiKey = rcSecret.value();
+        const apiKey = rcSecret.value().trim();
 
         if (!apiKey) {
             console.error("Missing RevenueCat Secret Key");
@@ -36,17 +36,33 @@ export const syncSubscription = functions.https.onCall(
                 }
             });
 
-            const subscriber = response.data.subscriber;
-            const entitlements = subscriber.entitlements;
+            const subscriber = response.data.subscriber || {};
+            const entitlements = subscriber.entitlements || {};
+            const subscriptions = subscriber.subscriptions || {};
+            const now = new Date();
 
-            // Check if user has ANY active entitlement
-            const isPro = Object.keys(entitlements.active).length > 0;
+            // 1. Check Entitlements (Standard)
+            const activeEntitlements = Object.keys(entitlements).filter(id => {
+                const ent = entitlements[id];
+                if (!ent.expires_date) return true;
+                return new Date(ent.expires_date) > now;
+            });
+
+            // 2. Check Subscriptions (Fallback - handles missing entitlement mapping in RC Dashboard)
+            const activeSubs = Object.keys(subscriptions).filter(id => {
+                const sub = subscriptions[id];
+                if (!sub.expires_date) return true;
+                return new Date(sub.expires_date) > now;
+            });
+
+            const isPro = activeEntitlements.length > 0 || activeSubs.length > 0;
 
             // 3. Update Firestore (Trusted Write)
             await admin.firestore().collection('users').doc(uid).set({
                 isPro: isPro,
                 subscriptionStatus: {
-                    activeEntitlements: Object.keys(entitlements),
+                    activeEntitlements: activeEntitlements,
+                    activeSubscriptions: activeSubs,
                     lastSync: admin.firestore.FieldValue.serverTimestamp(),
                     provider: 'revenuecat'
                 }

@@ -286,11 +286,17 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                                 onClick={async () => {
                                     setLoading(true);
                                     try {
-                                        await PurchasesService.restorePurchases();
-                                        await onSuccess();
-                                        showToast('Estado de suscripción actualizado.', 'success');
-                                    } catch (e) {
-                                        showToast('No se encontraron compras anteriores.', 'warning');
+                                        const result = await PurchasesService.restorePurchases();
+
+                                        if (result && result.customerInfo && Object.keys(result.customerInfo.entitlements.active).length > 0) {
+                                            await onSuccess();
+                                            showToast('¡Suscripción restaurada con éxito!', 'success');
+                                        } else {
+                                            showToast('No se encontraron suscripciones activas vinculadas a esta cuenta.', 'warning');
+                                        }
+                                    } catch (e: any) {
+                                        console.error('Restore error:', e);
+                                        showToast('Error al intentar restaurar: ' + (e.message || 'Error desconocido'), 'error');
                                     } finally {
                                         setLoading(false);
                                     }
