@@ -23,11 +23,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.syncSubscription = void 0;
+exports.getExchangeRates = exports.syncSubscription = void 0;
 const admin = __importStar(require("firebase-admin"));
 // Initialize Firebase Admin
 admin.initializeApp();
 // Export functions
 var syncSubscription_1 = require("./syncSubscription");
 Object.defineProperty(exports, "syncSubscription", { enumerable: true, get: function () { return syncSubscription_1.syncSubscription; } });
+var getExchangeRates_1 = require("./getExchangeRates");
+Object.defineProperty(exports, "getExchangeRates", { enumerable: true, get: function () { return getExchangeRates_1.getExchangeRates; } });
 //# sourceMappingURL=index.js.map

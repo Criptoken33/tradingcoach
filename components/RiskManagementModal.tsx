@@ -3,6 +3,7 @@ import { PairState, Direction, RiskPlan } from '../types';
 import { InfoIcon, ArrowLeftIcon, ArrowUpIcon, ArrowDownIcon, CalculatorIcon } from './icons';
 import { CURRENCY_PAIRS } from '../constants';
 import AlertMessage from './AlertMessage';
+import { currencyService, ExchangeRates } from '../src/services/currencyService';
 
 interface RiskManagementScreenProps {
     pairState?: PairState;
@@ -59,10 +60,19 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
     const [stopLossWarning, setStopLossWarning] = useState<string | null>(null);
 
     const [riskPercentage, setRiskPercentage] = useState(String(recommendedRisk));
+    const [rates, setRates] = useState<ExchangeRates | null>(null);
 
     useEffect(() => {
         setRiskPercentage(String(recommendedRisk));
     }, [recommendedRisk]);
+
+    useEffect(() => {
+        const fetchRates = async () => {
+            const data = await currencyService.getLatestRates();
+            setRates(data);
+        };
+        fetchRates();
+    }, []);
 
     const isValid = useMemo(() => {
         return accountBalance > 0 &&
@@ -160,12 +170,22 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
                 riskPerUnitInAccountCurrency = riskPerUnitInQuoteCurrency;
             } else if (baseCurrency === 'USD') {
                 riskPerUnitInAccountCurrency = riskPerUnitInQuoteCurrency / entry;
+            } else if (rates) {
+                // CROSS PAIR CALCULATION (e.g. EURGBP)
+                // Risk is in GBP (Quote). We need GBP/USD rate to convert risk to Account Currency (USD).
+                const quoteToUsdRate = rates[quoteCurrency];
+                if (quoteToUsdRate) {
+                    // exchangerate-api uses USD as base, so rates["GBP"] is USD/GBP? 
+                    // No, typically it's 1 USD = X GBP.
+                    // So result = amount (GBP) / rate (USD/GBP)
+                    riskPerUnitInAccountCurrency = riskPerUnitInQuoteCurrency / quoteToUsdRate;
+                } else {
+                    riskPerUnitInAccountCurrency = riskPerUnitInQuoteCurrency;
+                }
             } else {
-                // CROSS PAIR DETECTED (e.g. EURGBP with USD account)
-                // Without real-time exchange rates, exact calculation is impossible client-side.
                 // FALLBACK: Use quote currency risk (1:1 assumption) but WARN user.
                 console.warn("Cross pair detected without exchange rate. Using fallback calculation.");
-                setRiskWarning("Par cruzado: Cálculo aproximado (sin tasa de cambio real).");
+                setRiskWarning("Par cruzado: Cálculo aproximado (esperando tasas...).");
                 riskPerUnitInAccountCurrency = riskPerUnitInQuoteCurrency;
             }
 
@@ -191,6 +211,14 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
                 pipValueInUSD = pipDecimal * units;
             } else if (baseCurrency === 'USD') {
                 pipValueInUSD = (pipDecimal * units) / entry;
+            } else if (rates) {
+                // CROSS PAIR: Pip value is in Quote Currency. Convert to USD.
+                const quoteToUsdRate = rates[quoteCurrency];
+                if (quoteToUsdRate) {
+                    pipValueInUSD = (pipDecimal * units) / quoteToUsdRate;
+                } else {
+                    pipValueInUSD = null;
+                }
             } else {
                 pipValueInUSD = null;
             }
