@@ -260,13 +260,16 @@ const App: React.FC = () => {
       try {
         if (!pro.canBackupToCloud) {
           console.log("Cloud backup disabled for non-PRO users");
+          // If user just activated temp pro, wait a bit for claims to propagate?
+          // Actually pro.canBackupToCloud already checks the claims/profile.
           return;
         }
+
+        // Add artificial delay to allow token refresh to propagate fully if this triggered by Login/Activation
+        await new Promise(r => setTimeout(r, 1000));
+
         const cloudData = await UserRepository.getUserData(user.uid);
         if (cloudData) {
-          // Merge or Replace? For now, we assume Cloud is source of truth if it exists and is newer?
-          // Or just load it.
-          // Simplest: Load cloud data into state.
           if (cloudData.pairStates) setPairsState(cloudData.pairStates);
           if (cloudData.trades) setTradingLog(cloudData.trades);
           if (cloudData.checklists) setChecklists(cloudData.checklists);
@@ -278,14 +281,16 @@ const App: React.FC = () => {
         }
       } catch (error) {
         console.error("Error loading data from cloud", error);
-        showToast('Error al sincronizar datos', 'error');
+        // Only show error if it's NOT a permission denied (which happens if pro status is lost or syncing)
+        // Or show a friendlier message
+        showToast('Error al sincronizar datos. Reintentando...', 'warning');
       } finally {
         setIsCloudDataLoaded(true);
       }
     };
 
     loadData();
-  }, [user]);
+  }, [user, pro.canBackupToCloud]); // added pro.canBackupToCloud dependency
 
   // Debounced Save
   useEffect(() => {
