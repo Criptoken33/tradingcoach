@@ -139,17 +139,17 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
     if (isSuccess) {
         return (
             <div className={`fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300 ${!isPro ? 'pt-[60px]' : ''}`}>
-                <div className="bg-white dark:bg-[#1C1B1F] w-full max-w-md rounded-[28px] overflow-hidden shadow-2xl flex flex-col items-center p-8 text-center animate-in zoom-in-95 duration-500">
-                    <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-6 animate-bounce">
-                        <CheckIcon className="w-10 h-10 text-green-600 dark:text-green-400" />
+                <div className="bg-tc-bg w-full max-w-md rounded-[28px] overflow-hidden shadow-2xl flex flex-col items-center p-8 text-center animate-in zoom-in-95 duration-500 border border-tc-border-light">
+                    <div className="w-20 h-20 bg-tc-success/10 rounded-full flex items-center justify-center mb-6 animate-bounce">
+                        <CheckIcon className="w-10 h-10 text-tc-success" />
                     </div>
-                    <h2 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">¡Decisión Inteligente!</h2>
-                    <p className="text-gray-600 dark:text-gray-400 mb-8 text-lg">
+                    <h2 className="text-3xl font-bold mb-2 text-tc-text">¡Decisión Inteligente!</h2>
+                    <p className="text-tc-text-secondary mb-8 text-lg">
                         Te has unido al 10% de traders que invierten en su negocio. Vamos a hacer historia.
                     </p>
                     <button
                         onClick={onClose}
-                        className="w-full bg-brand-accent hover:brightness-110 text-white font-bold py-4 rounded-xl transition-all shadow-lg active:scale-[0.98]"
+                        className="w-full bg-tc-growth-green hover:bg-tc-growth-green/90 text-white font-bold py-4 rounded-xl transition-all shadow-lg active:scale-[0.98]"
                     >
                         Empezar a Operar como PRO
                     </button>
@@ -165,7 +165,7 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                 {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 p-2 bg-black/20 dark:bg-black/40 hover:bg-black/30 dark:hover:bg-black/60 rounded-full transition-colors z-20 backdrop-blur-md"
+                    className="absolute top-4 right-4 p-2 bg-black/30 hover:bg-black/40 rounded-full transition-colors z-20 backdrop-blur-md"
                 >
                     <XCircleIcon className="w-6 h-6 text-white" />
                 </button>
@@ -189,12 +189,12 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                     <div className="space-y-5 mb-8">
                         {benefits.map((benefit, i) => (
                             <div key={i} className="flex gap-4 group">
-                                <div className="mt-1 flex-shrink-0 w-8 h-8 bg-brand-accent/10 rounded-xl flex items-center justify-center group-hover:bg-brand-accent group-hover:text-white transition-colors duration-300">
-                                    <CheckIcon className="w-5 h-5 text-brand-accent group-hover:text-white" />
+                                <div className="mt-1 flex-shrink-0 w-8 h-8 bg-tc-growth-green/10 rounded-xl flex items-center justify-center group-hover:bg-tc-growth-green group-hover:text-white transition-colors duration-300 border border-tc-growth-green/20">
+                                    <CheckIcon className="w-5 h-5 text-tc-growth-green group-hover:text-white" />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-gray-900 dark:text-white text-base">{benefit.title}</h4>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-snug mt-0.5">{benefit.desc}</p>
+                                    <h4 className="font-bold text-tc-text text-base">{benefit.title}</h4>
+                                    <p className="text-sm text-tc-text-secondary leading-snug mt-0.5">{benefit.desc}</p>
                                 </div>
                             </div>
                         ))}
@@ -240,8 +240,8 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                                                 className={`
                                                 w-full relative overflow-hidden font-bold py-4 px-6 rounded-2xl transition-all shadow-md active:scale-[0.98] flex items-center justify-between group
                                                 ${isAnnual
-                                                        ? 'bg-brand-accent text-white hover:brightness-110 ring-4 ring-brand-accent/20'
-                                                        : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700'
+                                                        ? 'bg-tc-growth-green text-white hover:bg-tc-growth-green/90 ring-4 ring-tc-growth-green/20'
+                                                        : 'bg-tc-bg-secondary text-tc-text hover:bg-tc-bg-tertiary border border-tc-border-light'
                                                     }
                                             `}
                                             >
@@ -251,12 +251,12 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                                                     </div>
                                                 )}
                                                 <div className="flex flex-col items-start">
-                                                    <span className={`text-base ${isAnnual ? 'text-white' : 'text-gray-900 dark:text-white'}`}>{cleanTitle}</span>
+                                                    <span className={`text-base ${isAnnual ? 'text-white' : 'text-tc-text'}`}>{cleanTitle}</span>
                                                     {isAnnual && <span className="text-[10px] font-normal bg-white/20 px-2 py-0.5 rounded text-white mt-1">Ahorras 2 meses</span>}
                                                 </div>
                                                 <div className="flex flex-col items-end">
                                                     <span className="text-xl">{pkg.product.priceString}</span>
-                                                    <span className={`text-xs font-normal ${isAnnual ? 'text-white/80' : 'text-gray-500'}`}>
+                                                    <span className={`text-xs font-normal ${isAnnual ? 'text-white/80' : 'text-tc-text-secondary'}`}>
                                                         /{isAnnual ? 'año' : 'mes'}
                                                     </span>
                                                 </div>
@@ -265,9 +265,9 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                                     })}
                             </div>
                         ) : (
-                            <div className="text-center p-6 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700">
-                                <LockClosedIcon className="w-10 h-10 mx-auto mb-3 text-gray-300" />
-                                <p className="text-sm text-gray-500 font-medium">
+                            <div className="text-center p-6 bg-tc-bg-secondary rounded-2xl border-2 border-dashed border-tc-border-medium">
+                                <LockClosedIcon className="w-10 h-10 mx-auto mb-3 text-tc-text-secondary" />
+                                <p className="text-sm text-tc-text-secondary font-medium">
                                     {Capacitor.getPlatform() === 'web' ? (
                                         <span className="block">
                                             Para desbloquear PRO:<br />
@@ -284,10 +284,10 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                         <div className="pt-2">
                             <div className="relative">
                                 <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                                    <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
+                                    <div className="w-full border-t border-tc-border-medium"></div>
                                 </div>
                                 <div className="relative flex justify-center">
-                                    <span className="bg-white dark:bg-[#1C1B1F] px-2 text-xs text-gray-400 uppercase tracking-widest">O desbloquea gratis</span>
+                                    <span className="bg-tc-bg px-2 text-xs text-tc-text-secondary uppercase tracking-widest">O desbloquea gratis</span>
                                 </div>
                             </div>
 
@@ -333,7 +333,7 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                                         setLoading(false);
                                     }
                                 }}
-                                className="text-[11px] uppercase tracking-wider text-gray-400 hover:text-brand-accent transition-colors font-semibold"
+                                className="text-[11px] uppercase tracking-wider text-tc-text-secondary hover:text-tc-growth-green transition-colors font-semibold"
                             >
                                 Restaurar Compras
                             </button>
