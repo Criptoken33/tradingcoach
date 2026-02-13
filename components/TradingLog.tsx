@@ -27,8 +27,14 @@ const TradingLog: React.FC<TradingLogProps> = ({ tradingLog, onAddNote, onCloseT
                 </div>
 
                 {sortedTradingLog.length === 0 ? (
-                    <div className="text-center py-16 bg-tc-bg rounded-3xl border border-tc-border-light">
-                        <p className="text-tc-text-secondary text-base font-medium">No hay operaciones registradas.</p>
+                    <div className="text-center py-20 px-8 bg-tc-bg-secondary/20 rounded-[2.5rem] border border-dashed border-tc-border-medium animate-in fade-in zoom-in-95 duration-700">
+                        <div className="w-20 h-20 bg-tc-bg rounded-3xl shadow-sm border border-tc-border-light flex items-center justify-center mx-auto mb-6">
+                            <JournalIcon className="w-10 h-10 text-tc-text-tertiary" />
+                        </div>
+                        <h3 className="text-xl font-semibold text-tc-text mb-2">Tu diario está esperando</h3>
+                        <p className="text-tc-text-secondary text-sm max-w-xs mx-auto">
+                            Cada operación es una lección. Registra tu primera entrada para empezar a construir tu ventaja estadística.
+                        </p>
                     </div>
                 ) : (
                     <div className="space-y-3">

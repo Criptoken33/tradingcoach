@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { PairState, Direction, Probability, OperationStatus, Checklist, MT5ReportData, MT5Summary, Trade } from '../types';
 import { CURRENCY_INFO, CURRENCY_PAIRS } from '../constants';
-import { ArrowUpIcon, ArrowDownIcon, PlusIcon, TrashIcon, XCircleIcon, CheckCircleIcon, InfoIcon, ShieldCheckIcon, StarIcon, ExclamationTriangleIcon, BookOpenIcon, PauseCircleIcon, ShieldAlertIcon } from './icons';
+import { ArrowUpIcon, ArrowDownIcon, PlusIcon, TrashIcon, XCircleIcon, CheckCircleIcon, InfoIcon, ShieldCheckIcon, StarIcon, ExclamationTriangleIcon, BookOpenIcon, PauseCircleIcon, ShieldAlertIcon, PlayIcon } from './icons';
 import TradingTip from './TradingTip';
 import AlertMessage from './AlertMessage';
 import { ReflectionModal } from './ReflectionModal';
@@ -200,60 +200,111 @@ const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPa
 
       <div>
         {Object.keys(pairsState).length === 0 ? (
-          <div className="text-center py-16 px-4 bg-tc-bg rounded-3xl border border-tc-border-light">
-            <p className="text-tc-text-secondary text-lg font-medium">Tu lista está vacía.</p>
-            <p className="text-tc-text-tertiary text-sm mt-1">Usa el botón + para añadir símbolos.</p>
+          <div className="text-center py-20 px-8 bg-tc-bg-secondary/20 rounded-[2.5rem] border border-dashed border-tc-border-medium animate-in fade-in zoom-in-95 duration-700">
+            <div className="w-20 h-20 bg-tc-bg rounded-3xl shadow-sm border border-tc-border-light flex items-center justify-center mx-auto mb-6">
+              <PlusIcon className="w-10 h-10 text-tc-text-tertiary" />
+            </div>
+            <h3 className="text-xl font-semibold text-tc-text mb-2">¿Listo para tu próxima gran operación?</h3>
+            <p className="text-tc-text-secondary text-sm max-w-xs mx-auto mb-8">
+              Tu lista de seguimiento está lista. Añade los pares que planeas operar hoy para activar el Coach.
+            </p>
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="px-8 py-4 bg-tc-growth-green text-white rounded-full font-bold shadow-md hover:shadow-lg active:scale-95 transition-all flex items-center gap-2 mx-auto"
+            >
+              <PlusIcon className="w-5 h-5" /> Añadir Símbolo
+            </button>
           </div>
         ) : (
           <div className="space-y-3">
             {sortedPairs.map((pair: PairState) => {
-              const isPlanComplete = pair.status === OperationStatus.OPEN || pair.status === OperationStatus.CLOSED;
+              const checklist = getChecklistForPair(pair);
+              const probability = calculateProbability(pair, checklist);
+              const isExecuting = pair.status === OperationStatus.OPEN || pair.status === OperationStatus.CLOSED;
+
+              const allItems = checklist?.phases.flatMap(p => p.items) || [];
+              const answeredCount = Object.keys(pair.answers).length;
+              const isChecklistComplete = allItems.length > 0 && answeredCount >= allItems.length;
+              const isChecklistStarted = pair.direction !== Direction.NONE;
 
               const baseCurrency = pair.symbol.substring(0, 3);
               const quoteCurrency = pair.symbol.substring(3, 6);
               const baseInfo = CURRENCY_INFO[baseCurrency];
               const quoteInfo = CURRENCY_INFO[quoteCurrency];
 
+              // Action button config
+              let ActionIcon = PlayIcon;
+              let actionButtonColor = 'bg-tc-bg-secondary text-tc-text-tertiary';
+              let actionButtonLabel = 'Analizar';
+
+              if (isExecuting) {
+                ActionIcon = CheckCircleIcon;
+                actionButtonColor = 'bg-tc-bg-secondary text-tc-growth-green';
+                actionButtonLabel = 'Ver';
+              } else if (isChecklistComplete) {
+                ActionIcon = CheckCircleIcon;
+                // Color based on probability for professional feedback
+                if (probability === Probability.ENTRY) {
+                  actionButtonColor = 'bg-tc-growth-green/10 text-tc-growth-green shadow-sm shadow-tc-growth-green/20';
+                } else {
+                  actionButtonColor = 'bg-tc-warning/10 text-tc-warning shadow-sm shadow-tc-warning/20';
+                }
+                actionButtonLabel = 'Ver Resultados';
+              } else if (isChecklistStarted) {
+                ActionIcon = PlayIcon;
+                actionButtonColor = 'bg-tc-warning/10 text-tc-warning animate-pulse';
+                actionButtonLabel = 'Continuar Análisis';
+              }
+
               return (
-                <div key={pair.symbol} className="bg-tc-bg rounded-2xl p-4 shadow-sm border border-tc-border-light flex items-center justify-between transition-all duration-200 hover:shadow-md hover:border-tc-border-medium active:scale-[0.99]">
-                  <div className="flex items-center flex-1 min-w-0" onClick={() => onSelectPair(pair.symbol)}>
+                <div key={pair.symbol} className="group relative bg-tc-bg rounded-2xl p-4 shadow-sm border border-tc-border-light flex items-center justify-between transition-all duration-300 hover:shadow-md hover:border-tc-growth-green/30 active:scale-[0.98] overflow-hidden">
+                  {/* Subtle hover background jewelry */}
+                  <div className="absolute inset-0 bg-tc-growth-green/0 group-hover:bg-tc-growth-green/[0.02] transition-colors duration-300" />
+
+                  <div className="flex items-center flex-1 min-w-0 relative z-10" onClick={() => onSelectPair(pair.symbol)}>
                     {baseInfo && quoteInfo && (
-                      <div className="relative w-10 h-8 mr-4 flex-shrink-0">
+                      <div className="relative w-12 h-10 mr-4 flex-shrink-0">
+                        {/* Background glow based on flags */}
+                        <div className="absolute inset-0 blur-xl opacity-20 bg-tc-growth-green" />
                         <img
-                          className="absolute left-0 top-0 w-7 h-7 rounded-full object-cover border-2 border-tc-border-light shadow-sm"
-                          src={`https://flagcdn.com/w40/${baseInfo.countryCode.toLowerCase()}.png`}
+                          className="absolute left-0 top-1 w-8 h-8 rounded-full object-cover border-2 border-tc-bg shadow-sm z-20"
+                          src={`https://flagcdn.com/w80/${baseInfo.countryCode.toLowerCase()}.png`}
                           alt={`${baseInfo.name} flag`}
                         />
                         <img
-                          className="absolute left-4 top-0 w-7 h-7 rounded-full object-cover border-2 border-tc-border-light shadow-sm"
-                          src={`https://flagcdn.com/w40/${quoteInfo.countryCode.toLowerCase()}.png`}
+                          className="absolute left-4 top-1 w-8 h-8 rounded-full object-cover border-2 border-tc-bg shadow-sm z-10"
+                          src={`https://flagcdn.com/w80/${quoteInfo.countryCode.toLowerCase()}.png`}
                           alt={`${quoteInfo.name} flag`}
                         />
                       </div>
                     )}
                     <div className="min-w-0 cursor-pointer">
-                      <p className="font-data font-semibold text-tc-text leading-tight">
-                        {pair.symbol}
-                      </p>
-                      <p className="text-xs text-tc-text-secondary truncate">
+                      <div className="flex items-center gap-2">
+                        <p className="font-data font-bold text-tc-text text-lg leading-tight tracking-tight">
+                          {pair.symbol}
+                        </p>
+                        {pair.status === OperationStatus.OPEN && (
+                          <span className="w-2 h-2 rounded-full bg-tc-warning animate-pulse" title="Operación activa" />
+                        )}
+                      </div>
+                      <p className="text-[10px] font-bold text-tc-text-secondary/60 uppercase tracking-widest truncate mt-0.5">
                         {baseInfo && quoteInfo ? `${baseInfo.name} / ${quoteInfo.name}` : 'Personalizado'}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <div className="h-6 w-px bg-tc-border-light"></div>
+                  <div className="flex items-center gap-2 flex-shrink-0 relative z-10">
                     <button
                       onClick={() => onSelectPair(pair.symbol)}
                       disabled={isUiLocked}
-                      className={`min-w-[48px] min-h-[48px] w-12 h-12 flex items-center justify-center rounded-full transition-all duration-200 ${isUiLocked ? 'bg-gray-100 text-tc-text-tertiary' : 'bg-tc-deep-forest hover:bg-tc-deep-forest-light text-white hover:shadow-md active:scale-95'}`}
-                      aria-label={isPlanComplete ? 'Ver' : 'Analizar'}
+                      className={`min-w-[44px] min-h-[44px] w-11 h-11 flex items-center justify-center rounded-2xl transition-all duration-300 ${isUiLocked ? 'bg-tc-bg-secondary text-tc-text-tertiary' : `${actionButtonColor} hover:bg-tc-deep-forest hover:text-white hover:shadow-lg active:scale-95`}`}
+                      aria-label={actionButtonLabel}
                     >
-                      <CheckCircleIcon className="w-6 h-6" />
+                      <ActionIcon className="w-5 h-5" />
                     </button>
                     <button
                       onClick={() => onRemovePair(pair.symbol)}
-                      className="min-w-[48px] min-h-[48px] w-12 h-12 flex items-center justify-center rounded-full text-tc-text-tertiary hover:bg-tc-error/10 hover:text-tc-error transition-all duration-200"
+                      className="min-w-[44px] min-h-[44px] w-11 h-11 flex items-center justify-center rounded-2xl text-tc-text-tertiary hover:bg-tc-error/10 hover:text-tc-error transition-all duration-300 active:scale-95"
                       aria-label={`Eliminar ${pair.symbol}`}
                     >
                       <TrashIcon className="w-5 h-5" />
@@ -270,7 +321,7 @@ const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPa
       <button
         onClick={() => setIsAddModalOpen(true)}
         disabled={isUiLocked}
-        className={`fixed ${isBannerVisible ? 'bottom-40' : 'bottom-24'} right-6 md-medium:bottom-6 md-medium:right-6 w-14 h-14 bg-tc-growth-green hover:bg-tc-growth-green-light active:bg-tc-growth-green-dark text-white shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-200 active:scale-95 z-40 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed`}
+        className="fixed bottom-26 right-6 md-medium:bottom-6 md-medium:right-6 w-14 h-14 bg-tc-growth-green hover:bg-tc-growth-green-light active:bg-tc-growth-green-dark text-white shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-200 active:scale-95 z-40 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed"
         aria-label="Añadir símbolo"
       >
         <PlusIcon className="w-7 h-7" />

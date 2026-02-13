@@ -4,7 +4,6 @@ import { LightBulbIcon } from './icons';
 
 const TradingTip: React.FC = () => {
   const [tip, setTip] = useState('');
-  const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {
     // Select a random tip only once when the component mounts
@@ -13,16 +12,25 @@ const TradingTip: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-tc-bg rounded-3xl p-5 mb-6 flex items-start space-x-4 animate-fade-in shadow-sm border border-tc-border-light min-h-28">
-      <div className="flex-shrink-0 mt-1 bg-tc-warning/20 p-2 rounded-xl text-tc-warning">
-        <LightBulbIcon className="w-5 h-5" />
+    <div className="relative overflow-hidden bg-tc-bg-secondary/30 backdrop-blur-md rounded-3xl p-6 mb-8 border border-tc-border-light shadow-sm group">
+      {/* Decorative background element */}
+      <div className="absolute -right-4 -top-4 w-24 h-24 bg-tc-warning/5 rounded-full blur-2xl group-hover:bg-tc-warning/10 transition-colors duration-700" />
+
+      <div className="relative z-10">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-[10px] font-bold text-tc-warning uppercase tracking-widest px-2 py-0.5 bg-tc-warning/10 rounded-full border border-tc-warning/20">
+              Consejo del Día
+            </span>
+          </div>
+          <p className="text-tc-text text-base sm:text-lg italic font-medium leading-relaxed opacity-90 pr-4">
+            "{tip}"
+          </p>
+        </div>
       </div>
-      <div className="flex-1 min-w-0 self-center">
-        <p
-          className={`text-tc-text text-base italic transition-opacity duration-500 line-clamp-3 ${isFading ? 'opacity-0' : 'opacity-90'}`}
-        >
-          "{tip}"
-        </p>
+
+      <div className="absolute bottom-0 right-0 p-4 opacity-10 pointer-events-none">
+        <LightBulbIcon className="w-12 h-12 rotate-12" />
       </div>
     </div>
   );

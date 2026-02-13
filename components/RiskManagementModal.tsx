@@ -301,21 +301,29 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
                 </div>
 
                 {/* Column 2: Calculations */}
-                <div className="bg-tc-bg p-6 rounded-3xl border border-tc-border-light shadow-sm space-y-5">
-                    <h3 className="text-lg font-semibold text-tc-text pb-2">Resultados</h3>
+                <div className="bg-tc-bg-secondary/30 backdrop-blur-sm p-6 sm:p-8 rounded-[2rem] border border-tc-border-light shadow-sm space-y-6 flex flex-col relative overflow-hidden group">
+                    {/* Decorative background jewelry */}
+                    <div className="absolute -right-4 -top-4 w-32 h-32 bg-tc-growth-green/5 rounded-full blur-3xl group-hover:bg-tc-growth-green/10 transition-colors duration-700" />
+
+                    <h3 className="text-lg font-bold text-tc-text tracking-tight uppercase text-[11px] opacity-60 flex items-center gap-2 relative z-10">
+                        <span className="w-1.5 h-1.5 rounded-full bg-tc-growth-green" />
+                        Resultados Estimados
+                    </h3>
+
                     {priceLogicError && <AlertMessage type="error" text={priceLogicError} />}
-                    <div className={`space-y-4 ${priceLogicError ? 'opacity-50 grayscale' : ''}`}>
+
+                    <div className={`space-y-5 relative z-10 ${priceLogicError ? 'opacity-50 grayscale' : ''}`}>
                         <div className="grid grid-cols-2 gap-4">
-                            <CalculatedField label="Pérdida" value={potentialLoss ? `-$${potentialLoss.toFixed(2)}` : '---'} isLoss />
-                            <CalculatedField label="Ganancia" value={potentialProfit ? `+$${potentialProfit.toFixed(2)}` : '---'} isGain />
+                            <CalculatedField label="Pérdida Máx" value={potentialLoss ? `-$${potentialLoss.toFixed(2)}` : '---'} isLoss />
+                            <CalculatedField label="Ganancia Est" value={potentialProfit ? `+$${potentialProfit.toFixed(2)}` : '---'} isGain />
                         </div>
-                        <div>
+                        <div className="relative">
                             <CalculatedField label="Ratio Riesgo/Beneficio" value={riskRewardRatio ? `1 : ${riskRewardRatio.toFixed(2)}` : '---'} hasError={!!rrError} large />
-                            {rrError && <AlertMessage type="error" text={rrError} size="small" />}
+                            {rrError && <div className="mt-2"><AlertMessage type="error" text={rrError} size="small" /></div>}
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                            <CalculatedField label="Lotes" value={positionSize ? positionSize.toFixed(2) : '---'} />
-                            <CalculatedField label="Valor Pip" value={pipValue ? `$${pipValue.toFixed(2)}` : '---'} />
+                            <CalculatedField label="Tamaño Pos (Lots)" value={positionSize ? positionSize.toFixed(2) : '---'} />
+                            <CalculatedField label="Valor por Pip" value={pipValue ? `$${pipValue.toFixed(2)}` : '---'} />
                         </div>
                     </div>
                 </div>
@@ -339,24 +347,47 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
 };
 
 const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement> & { label: string }> = ({ label, ...props }) => (
-    <div className="relative group">
-        <label className="block text-[10px] font-bold text-tc-text-secondary mb-1 uppercase tracking-widest">{label}</label>
-        <input {...props} className={`w-full bg-tc-bg-secondary border-b-2 border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text text-base focus:border-tc-growth-green outline-none transition-colors placeholder:text-tc-text-tertiary ${props.readOnly ? 'cursor-default' : ''} ${props.className}`} />
+    <div className="relative group/input">
+        <label className="block text-[10px] font-bold text-tc-text-secondary/60 mb-1.5 uppercase tracking-widest pl-1">{label}</label>
+        <div className="relative">
+            <input
+                {...props}
+                className={`w-full bg-tc-bg-secondary/40 backdrop-blur-sm border-2 border-transparent rounded-2xl px-5 py-4 text-tc-text text-base font-data font-semibold focus:border-tc-growth-green/50 focus:bg-tc-bg shadow-inner-sm outline-none transition-all duration-300 placeholder:text-tc-text-tertiary group-hover/input:border-tc-border-medium ${props.readOnly ? 'cursor-default' : ''} ${props.className}`}
+            />
+        </div>
     </div>
 );
 
 const CalculatedField: React.FC<{ label: string, value: string, hasError?: boolean, isGain?: boolean, isLoss?: boolean, large?: boolean }> = ({ label, value, hasError, isGain, isLoss, large }) => {
     let colorClass = 'text-tc-text';
-    if (isGain) colorClass = 'text-tc-success';
-    if (isLoss) colorClass = 'text-tc-error';
-    if (large) colorClass = 'text-tc-growth-green';
+    let bgClass = 'bg-tc-bg-secondary/30';
+    let borderClass = 'border-tc-border-light';
+
+    if (isGain) {
+        colorClass = 'text-tc-success';
+        bgClass = 'bg-tc-success/[0.03]';
+        borderClass = 'border-tc-success/10';
+    }
+    if (isLoss) {
+        colorClass = 'text-tc-error';
+        bgClass = 'bg-tc-error/[0.03]';
+        borderClass = 'border-tc-error/10';
+    }
+    if (large) {
+        colorClass = 'text-tc-growth-green';
+        bgClass = 'bg-tc-growth-green/[0.03]';
+        borderClass = 'border-tc-growth-green/20';
+    }
 
     return (
-        <div className={`bg-tc-bg-secondary rounded-2xl p-4 border border-tc-border-light flex flex-col justify-center items-center ${hasError ? 'ring-2 ring-tc-error bg-tc-error/5' : ''}`}>
-            <span className="text-[10px] font-bold text-tc-text-secondary uppercase tracking-widest mb-1">{label}</span>
-            <span className={`font-data font-bold ${large ? 'text-2xl' : 'text-xl'} ${colorClass}`}>
+        <div className={`relative overflow-hidden ${bgClass} rounded-2xl p-4 sm:p-5 border ${borderClass} flex flex-col justify-center items-center transition-all duration-300 group/field hover:shadow-sm ${hasError ? 'ring-2 ring-tc-error bg-tc-error/5 border-tc-error' : ''}`}>
+            <span className="text-[10px] font-bold text-tc-text-secondary/60 uppercase tracking-widest mb-1.5 relative z-10">{label}</span>
+            <span className={`font-data font-bold ${large ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'} ${colorClass} tracking-tighter relative z-10`}>
                 {value}
             </span>
+
+            {/* Jewel highlight */}
+            <div className={`absolute -right-2 -bottom-2 w-8 h-8 rounded-full blur-lg opacity-0 group-hover/field:opacity-40 transition-opacity duration-700 ${bgClass}`} />
         </div>
     );
 };

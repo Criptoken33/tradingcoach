@@ -994,7 +994,7 @@ const App: React.FC = () => {
             mt5Summary={mt5ReportData?.summary ?? null}
             tradingLog={tradingLog}
             cooldownUntil={cooldownUntil}
-            isBannerVisible={view === 'DASHBOARD'}
+            isBannerVisible={!pro.isPro && view === 'DASHBOARD'}
           />
         );
     }

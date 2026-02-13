@@ -262,26 +262,28 @@ const PerformanceStats: React.FC<PerformanceStatsProps> = ({ tradingLog, mt5Repo
         switch (activeTab) {
             case 'resumen':
                 return (
-                    <div className="animate-fade-in grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        <StatCard label="P/L Neto Total" value={`${summary.totalNetProfit.toFixed(2)} USD`} sentiment={summary.totalNetProfit >= 0 ? 'positive' : 'negative'} />
-                        <StatCard label="Factor de Beneficio" value={summary.profitFactor.toFixed(2)} sentiment={summary.profitFactor > 1.5 ? 'positive' : summary.profitFactor > 1 ? 'warning' : 'negative'} />
-                        <StatCard label="ML / AW" value={mlAwRatio > 0 ? `${mlAwRatio.toFixed(1)}x` : 'N/A'} sentiment={mlAwSentiment} description="Pérdida Máxima vs Ganancia Promedio" />
-                        <StatCard
-                            label="Duración Media W/L"
-                            value={avgWinDurationMs > 0 || avgLossDurationMs > 0 ? `${formattedAvgWinDuration} / ${formattedAvgLossDuration}` : 'N/A'}
-                            sentiment={durationSentiment}
-                            description="Duración media de ganadoras vs. perdedoras. Idealmente, la duración de las ganadoras debe ser mayor."
-                        />
-                        <StatCard label="Drawdown Máximo" value={`${summary.maxDrawdown.toFixed(2)}%`} sentiment='negative' />
-                        <StatCard label="Total Operaciones" value={String(summary.totalTrades)} />
-                        <StatCard label="Ganancia Bruta" value={`+${summary.grossProfit.toFixed(2)}`} sentiment='positive' />
-                        <StatCard label="Pérdida Bruta" value={`${summary.grossLoss.toFixed(2)}`} sentiment='negative' />
-                        <StatCard label="Ganancia Promedio" value={summary.averageProfitTrade.toFixed(2)} sentiment='positive' />
-                        <StatCard label="Pérdida Promedio" value={summary.averageLossTrade.toFixed(2)} sentiment='negative' />
-                        <StatCard label="Mejor Operación" value={`+${summary.bestTrade.toFixed(2)}`} sentiment='positive' />
-                        <StatCard label="Peor Operación" value={`${summary.worstTrade.toFixed(2)}`} sentiment='negative' />
-                        <StatCard label="Victorias Consecutivas" value={String(summary.maxConsecutiveWins)} />
-                        <StatCard label="Pérdidas Consecutivas" value={String(summary.maxConsecutiveLosses)} />
+                    <div className="animate-fade-in space-y-2">
+                        <div className="bg-tc-bg rounded-[2rem] border border-tc-border-light overflow-hidden shadow-sm">
+                            <StatTile label="P/L Neto Total" value={`${summary.totalNetProfit.toFixed(2)} USD`} sentiment={summary.totalNetProfit >= 0 ? 'positive' : 'negative'} />
+                            <StatTile label="Factor de Beneficio" value={summary.profitFactor.toFixed(2)} sentiment={summary.profitFactor > 1.5 ? 'positive' : summary.profitFactor > 1 ? 'warning' : 'negative'} />
+                            <StatTile label="ML / AW" value={mlAwRatio > 0 ? `${mlAwRatio.toFixed(1)}x` : 'N/A'} sentiment={mlAwSentiment} description="Pérdida Máxima vs Ganancia Promedio" />
+                            <StatTile
+                                label="Duración Media W/L"
+                                value={avgWinDurationMs > 0 || avgLossDurationMs > 0 ? `${formattedAvgWinDuration} / ${formattedAvgLossDuration}` : 'N/A'}
+                                sentiment={durationSentiment}
+                                description="Duración media de ganadoras vs. perdedoras."
+                            />
+                            <StatTile label="Drawdown Máximo" value={`${summary.maxDrawdown.toFixed(2)}%`} sentiment='negative' />
+                            <StatTile label="Total Operaciones" value={String(summary.totalTrades)} />
+                            <StatTile label="Ganancia Bruta" value={`+${summary.grossProfit.toFixed(2)}`} sentiment='positive' />
+                            <StatTile label="Pérdida Bruta" value={`${summary.grossLoss.toFixed(2)}`} sentiment='negative' />
+                            <StatTile label="Ganancia Promedio" value={summary.averageProfitTrade.toFixed(2)} sentiment='positive' />
+                            <StatTile label="Pérdida Promedio" value={summary.averageLossTrade.toFixed(2)} sentiment='negative' />
+                            <StatTile label="Mejor Operación" value={`+${summary.bestTrade.toFixed(2)}`} sentiment='positive' />
+                            <StatTile label="Peor Operación" value={`${summary.worstTrade.toFixed(2)}`} sentiment='negative' />
+                            <StatTile label="Victorias Consecutivas" value={String(summary.maxConsecutiveWins)} />
+                            <StatTile label="Pérdidas Consecutivas" value={String(summary.maxConsecutiveLosses)} last />
+                        </div>
                     </div>
                 );
             case 'graficos':
@@ -360,6 +362,41 @@ const TabButton: React.FC<{ name: string; isActive: boolean; onClick: () => void
     </button>
 );
 
+const StatTile: React.FC<{
+    label: string;
+    value: string;
+    sentiment?: 'positive' | 'warning' | 'negative';
+    description?: string;
+    last?: boolean;
+}> = ({ label, value, sentiment, description, last }) => {
+    const sentimentColor =
+        sentiment === 'positive' ? 'text-tc-success' :
+            sentiment === 'warning' ? 'text-tc-warning' :
+                sentiment === 'negative' ? 'text-tc-error' :
+                    'text-tc-text';
+
+    return (
+        <div className={`relative px-6 py-5 flex items-center justify-between transition-all duration-200 hover:bg-tc-bg-secondary active:bg-tc-bg-tertiary ${!last ? 'border-b border-tc-border-light' : ''} group`}>
+            <div className="flex flex-col min-w-0 pr-4">
+                <div className="flex items-center gap-2">
+                    <p className="text-[11px] font-bold text-tc-text-secondary/60 uppercase tracking-widest truncate">{label}</p>
+                    {description && (
+                        <div className="group/tooltip relative">
+                            <InfoIcon className="w-3.5 h-3.5 text-tc-text-tertiary cursor-help hover:text-tc-text-secondary transition-colors" />
+                            <span className="absolute bottom-full left-0 mb-2 w-48 bg-tc-midnight-black text-white text-[10px] p-2 rounded-lg shadow-xl opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none z-50 text-center border border-white/10 backdrop-blur-md">
+                                {description}
+                            </span>
+                        </div>
+                    )}
+                </div>
+            </div>
+            <div className="flex-shrink-0">
+                <p className={`font-data text-xl font-bold ${sentimentColor} tracking-tight`}>{value}</p>
+            </div>
+        </div>
+    );
+};
+
 const StatCard: React.FC<{
     label: string;
     value: string;
@@ -372,31 +409,49 @@ const StatCard: React.FC<{
                 sentiment === 'negative' ? 'text-tc-error' :
                     'text-tc-text';
 
+    const sentimentBg =
+        sentiment === 'positive' ? 'bg-tc-success/5' :
+            sentiment === 'warning' ? 'bg-tc-warning/5' :
+                sentiment === 'negative' ? 'bg-tc-error/5' :
+                    'bg-tc-bg-secondary/50';
+
+    const sentimentBorder =
+        sentiment === 'positive' ? 'border-tc-success/10' :
+            sentiment === 'warning' ? 'border-tc-warning/10' :
+                sentiment === 'negative' ? 'border-tc-error/10' :
+                    'border-tc-border-light';
+
     return (
-        <div className="bg-tc-bg p-4 rounded-2xl border border-tc-border-light shadow-sm">
-            <div className="flex items-center justify-between mb-1">
-                <p className="text-xs font-medium text-tc-text-secondary truncate pr-2">{label}</p>
+        <div className={`relative flex flex-col overflow-hidden ${sentimentBg} p-5 rounded-2xl border ${sentimentBorder} shadow-sm group transition-all duration-300 hover:shadow-md h-full min-h-[110px]`}>
+            <div className="flex items-center justify-between mb-2 pb-1 border-b border-tc-border-light/50 relative z-10">
+                <p className="text-[10px] font-bold text-tc-text-secondary/60 uppercase tracking-widest truncate pr-2">{label}</p>
                 {description && (
-                    <div className="group relative flex justify-center">
-                        <InfoIcon className="w-4 h-4 text-tc-text-secondary cursor-help" />
-                        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-tc-bg-tertiary text-tc-text text-xs p-2 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 text-center border border-tc-border-light">
+                    <div className="group/tooltip relative flex justify-center">
+                        <InfoIcon className="w-3.5 h-3.5 text-tc-text-tertiary cursor-help hover:text-tc-text-secondary transition-colors" />
+                        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-tc-midnight-black text-white text-[10px] p-2 rounded-lg shadow-xl opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none z-50 text-center border border-white/10 backdrop-blur-md">
                             {description}
                         </span>
                     </div>
                 )}
             </div>
-            <p className={`font-data text-xl font-bold ${sentimentColor}`}>{value}</p>
+            <p className={`font-data text-2xl font-bold ${sentimentColor} tracking-tighter relative z-10 mt-auto leading-tight`}>{value}</p>
+
+            {/* Subtle background jewelry */}
+            <div className={`absolute -right-2 -bottom-2 w-12 h-12 rounded-full blur-xl opacity-0 group-hover:opacity-30 transition-opacity duration-700 ${sentimentBg}`} />
         </div>
     );
 };
 
 const SectionCard: React.FC<{ title: string; children: React.ReactNode, className?: string }> = ({ title, children, className }) => {
     return (
-        <div className={`bg-tc-bg rounded-3xl border border-tc-border-light ${className} overflow-hidden shadow-sm`}>
-            <div className="p-4 sm:p-5 border-b border-tc-border-light">
-                <h2 className="text-lg font-semibold text-tc-text">{title}</h2>
+        <div className={`bg-tc-bg rounded-[2rem] border border-tc-border-light ${className} overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300`}>
+            <div className="p-5 sm:p-6 bg-tc-bg-secondary/30 border-b border-tc-border-light/50">
+                <h2 className="text-lg font-bold text-tc-text tracking-tight uppercase text-[11px] opacity-60 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-tc-growth-green" />
+                    {title}
+                </h2>
             </div>
-            <div className="p-4 sm:p-5">
+            <div className="p-5 sm:p-8">
                 {children}
             </div>
         </div>
@@ -405,25 +460,31 @@ const SectionCard: React.FC<{ title: string; children: React.ReactNode, classNam
 
 const BarChart: React.FC<{ data: { label: string; value: number }[]; sortByValue?: boolean }> = ({ data, sortByValue = true }) => {
     if (data.length === 0) {
-        return <p className="text-sm text-tc-text-secondary italic">No hay datos para mostrar.</p>
+        return (
+            <div className="py-8 text-center bg-tc-bg-secondary/20 rounded-2xl border border-dashed border-tc-border-medium">
+                <p className="text-xs font-bold text-tc-text-tertiary uppercase tracking-widest">Sin datos suficientes</p>
+            </div>
+        );
     }
     const maxValue = Math.max(...data.map(d => Math.abs(d.value)), 1);
     const displayData = sortByValue ? [...data].sort((a, b) => b.value - a.value) : data;
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-5">
             {displayData.map(({ label, value }) => {
                 const width = (Math.abs(value) / maxValue) * 100;
                 const isPositive = value >= 0;
                 return (
                     <div key={label} className="group">
-                        <div className="flex justify-between items-center mb-1 text-xs font-medium">
-                            <span className="font-medium text-tc-text-secondary truncate pr-2">{label}</span>
-                            <span className={`font-mono font-semibold ${isPositive ? 'text-tc-success' : 'text-tc-error'}`}>{value.toFixed(2)}</span>
+                        <div className="flex justify-between items-end mb-2">
+                            <span className="text-[10px] font-bold text-tc-text uppercase tracking-wider opacity-60 truncate pr-2">{label}</span>
+                            <span className={`font-data font-bold text-sm ${isPositive ? 'text-tc-success' : 'text-tc-error'} tracking-tight`}>
+                                {isPositive ? '+' : ''}{value.toFixed(2)}
+                            </span>
                         </div>
-                        <div className="w-full bg-tc-bg-secondary rounded-full h-2.5 overflow-hidden">
+                        <div className="w-full bg-tc-bg-secondary/50 rounded-full h-3 p-0.5 border border-tc-border-light overflow-hidden shadow-inner">
                             <div
-                                className={`h-full rounded-full transition-all duration-500 ${isPositive ? 'bg-tc-success' : 'bg-tc-error'}`}
+                                className={`h-full rounded-full transition-all duration-1000 ease-emphasized shadow-sm ${isPositive ? 'bg-tc-growth-green' : 'bg-tc-error'}`}
                                 style={{ width: `${width}%` }}
                             />
                         </div>
