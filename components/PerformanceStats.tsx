@@ -208,12 +208,12 @@ const PerformanceStats: React.FC<PerformanceStatsProps> = ({ tradingLog, mt5Repo
         return (
             <div className="p-4 sm:p-8 max-w-6xl mx-auto animate-fade-in">
                 <div className="flex items-center mb-8">
-                    <ChartPieIcon className="w-10 h-10 text-brand-accent mr-4" />
-                    <h1 className="headline-medium font-bold text-brand-text">Estadísticas de Rendimiento</h1>
+                    <ChartPieIcon className="w-10 h-10 text-tc-growth-green mr-4" />
+                    <h1 className="headline-medium font-bold text-tc-text">Estadísticas de Rendimiento</h1>
                 </div>
-                <div className="text-center py-16 bg-brand-light rounded-3xl border border-brand-border-secondary/50">
-                    <p className="text-brand-text-secondary title-medium font-semibold">No hay operaciones cerradas para analizar.</p>
-                    <p className="text-brand-text-secondary mt-2 max-w-md mx-auto body-medium">Cierra una operación en el Diario o importa un reporte de MT5 desde Ajustes para empezar.</p>
+                <div className="text-center py-16 bg-tc-bg rounded-3xl border border-tc-border-light">
+                    <p className="text-tc-text-secondary title-medium font-semibold">No hay operaciones cerradas para analizar.</p>
+                    <p className="text-tc-text-secondary mt-2 max-w-md mx-auto body-medium">Cierra una operación en el Diario o importa un reporte de MT5 desde Ajustes para empezar.</p>
                 </div>
             </div>
         );
@@ -296,7 +296,7 @@ const PerformanceStats: React.FC<PerformanceStatsProps> = ({ tradingLog, mt5Repo
                                 const sortedMonths = [...yearData.months].sort((a, b) => monthOrder.indexOf(a.name) - monthOrder.indexOf(b.name));
                                 return (
                                     <div key={yearData.year}>
-                                        <h3 className="font-bold text-brand-text title-large mb-4">{yearData.year}</h3>
+                                        <h3 className="font-bold text-tc-text title-large mb-4">{yearData.year}</h3>
                                         <BarChart data={sortedMonths.map(month => ({ label: month.name, value: month.pnl }))} sortByValue={false} />
                                     </div>
                                 );
@@ -325,11 +325,11 @@ const PerformanceStats: React.FC<PerformanceStatsProps> = ({ tradingLog, mt5Repo
     return (
         <div className="p-4 sm:p-6 max-w-7xl mx-auto animate-fade-in pb-24">
             <div className="flex items-center mb-6">
-                <ChartPieIcon className="w-8 h-8 sm:w-10 sm:h-10 text-brand-accent mr-4" />
-                <h1 className="headline-medium font-bold text-brand-text">Análisis de Rendimiento</h1>
+                <ChartPieIcon className="w-8 h-8 sm:w-10 sm:h-10 text-tc-growth-green mr-4" />
+                <h1 className="headline-medium font-bold text-tc-text">Análisis de Rendimiento</h1>
             </div>
 
-            <div className="mb-6 border-b border-brand-border-secondary">
+            <div className="mb-6 border-b border-tc-border-light">
                 <nav className="flex space-x-2 sm:space-x-4 -mb-px" aria-label="Tabs">
                     <TabButton name="Resumen" isActive={activeTab === 'resumen'} onClick={() => setActiveTab('resumen')} />
                     <TabButton name="Gráficos" isActive={activeTab === 'graficos'} onClick={() => setActiveTab('graficos')} />
@@ -350,8 +350,8 @@ const TabButton: React.FC<{ name: string; isActive: boolean; onClick: () => void
         onClick={onClick}
         className={`whitespace-nowrap py-3 px-2 sm:px-4 border-b-2 font-bold label-large transition-colors focus:outline-none rounded-t-md
       ${isActive
-                ? 'border-brand-accent text-brand-accent'
-                : 'border-transparent text-brand-text-secondary hover:text-brand-text hover:border-brand-border-secondary'
+                ? 'border-tc-growth-green text-tc-growth-green'
+                : 'border-transparent text-tc-text-secondary hover:text-tc-text hover:border-tc-border-medium'
             }
     `}
         aria-current={isActive ? 'page' : undefined}
@@ -367,19 +367,19 @@ const StatCard: React.FC<{
     description?: string;
 }> = ({ label, value, sentiment, description }) => {
     const sentimentColor =
-        sentiment === 'positive' ? 'text-brand-success' :
-            sentiment === 'warning' ? 'text-brand-warning-high' :
-                sentiment === 'negative' ? 'text-brand-danger' :
-                    'text-brand-text';
+        sentiment === 'positive' ? 'text-tc-success' :
+            sentiment === 'warning' ? 'text-tc-warning' :
+                sentiment === 'negative' ? 'text-tc-error' :
+                    'text-tc-text';
 
     return (
-        <div className="bg-brand-light p-4 rounded-2xl border border-brand-border-secondary/50 shadow-sm">
+        <div className="bg-tc-bg p-4 rounded-2xl border border-tc-border-light shadow-sm">
             <div className="flex items-center justify-between mb-1">
-                <p className="label-medium text-brand-text-secondary truncate pr-2">{label}</p>
+                <p className="label-medium text-tc-text-secondary truncate pr-2">{label}</p>
                 {description && (
                     <div className="group relative flex justify-center">
-                        <InfoIcon className="w-4 h-4 text-brand-text-secondary cursor-help" />
-                        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-brand-dark text-brand-text body-small p-2 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 text-center">
+                        <InfoIcon className="w-4 h-4 text-tc-text-secondary cursor-help" />
+                        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-tc-bg-tertiary text-tc-text body-small p-2 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 text-center border border-tc-border-light">
                             {description}
                         </span>
                     </div>
@@ -392,9 +392,9 @@ const StatCard: React.FC<{
 
 const SectionCard: React.FC<{ title: string; children: React.ReactNode, className?: string }> = ({ title, children, className }) => {
     return (
-        <div className={`bg-brand-light rounded-3xl border border-brand-border-secondary/50 ${className} overflow-hidden shadow-sm`}>
-            <div className="p-4 sm:p-5 border-b border-brand-border-secondary/50">
-                <h2 className="title-large font-bold text-brand-text">{title}</h2>
+        <div className={`bg-tc-bg rounded-3xl border border-tc-border-light ${className} overflow-hidden shadow-sm`}>
+            <div className="p-4 sm:p-5 border-b border-tc-border-light">
+                <h2 className="title-large font-bold text-tc-text">{title}</h2>
             </div>
             <div className="p-4 sm:p-5">
                 {children}
@@ -405,7 +405,7 @@ const SectionCard: React.FC<{ title: string; children: React.ReactNode, classNam
 
 const BarChart: React.FC<{ data: { label: string; value: number }[]; sortByValue?: boolean }> = ({ data, sortByValue = true }) => {
     if (data.length === 0) {
-        return <p className="body-medium text-brand-text-secondary italic">No hay datos para mostrar.</p>
+        return <p className="body-medium text-tc-text-secondary italic">No hay datos para mostrar.</p>
     }
     const maxValue = Math.max(...data.map(d => Math.abs(d.value)), 1);
     const displayData = sortByValue ? [...data].sort((a, b) => b.value - a.value) : data;
@@ -418,12 +418,12 @@ const BarChart: React.FC<{ data: { label: string; value: number }[]; sortByValue
                 return (
                     <div key={label} className="group">
                         <div className="flex justify-between items-center mb-1 label-medium">
-                            <span className="font-medium text-brand-text-secondary truncate pr-2">{label}</span>
-                            <span className={`font-mono font-semibold ${isPositive ? 'text-brand-success' : 'text-brand-danger'}`}>{value.toFixed(2)}</span>
+                            <span className="font-medium text-tc-text-secondary truncate pr-2">{label}</span>
+                            <span className={`font-mono font-semibold ${isPositive ? 'text-tc-success' : 'text-tc-error'}`}>{value.toFixed(2)}</span>
                         </div>
-                        <div className="w-full bg-brand-tertiary rounded-full h-2.5 overflow-hidden">
+                        <div className="w-full bg-tc-bg-secondary rounded-full h-2.5 overflow-hidden">
                             <div
-                                className={`h-full rounded-full transition-all duration-500 ${isPositive ? 'bg-brand-success' : 'bg-brand-danger'}`}
+                                className={`h-full rounded-full transition-all duration-500 ${isPositive ? 'bg-tc-success' : 'bg-tc-error'}`}
                                 style={{ width: `${width}%` }}
                             />
                         </div>
@@ -436,7 +436,7 @@ const BarChart: React.FC<{ data: { label: string; value: number }[]; sortByValue
 
 const LineChart: React.FC<{ data: { time: number, balance: number }[] }> = ({ data }) => {
     if (data.length < 2) {
-        return <p className="body-medium text-brand-text-secondary italic">No hay suficientes datos para mostrar el gráfico.</p>;
+        return <p className="body-medium text-tc-text-secondary italic">No hay suficientes datos para mostrar el gráfico.</p>;
     }
 
     const width = 500;
@@ -485,22 +485,23 @@ const LineChart: React.FC<{ data: { time: number, balance: number }[] }> = ({ da
             <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full" aria-label={`Gráfico de curva de capital desde ${new Date(minX).toLocaleDateString()} hasta ${new Date(maxX).toLocaleDateString()}`}>
                 <defs>
                     <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="rgb(var(--accent))" stopOpacity="0.3" />
-                        <stop offset="100%" stopColor="rgb(var(--accent))" stopOpacity="0" />
+                        <stop offset="0%" stopColor="#008140" stopOpacity="0.3" />
+                        <stop offset="100%" stopColor="#008140" stopOpacity="0" />
                     </linearGradient>
                 </defs>
 
                 {/* Grid lines and Y-axis labels */}
                 {yAxisLabels.map((label, i) => (
-                    <g key={i} className="text-brand-text-secondary">
+                    <g key={i} className="text-tc-text-secondary">
                         <line
                             x1={padding.left}
                             y1={label.y}
                             x2={width - padding.right}
                             y2={label.y}
-                            stroke="rgb(var(--border-secondary))"
+                            stroke="currentColor"
                             strokeWidth="0.5"
                             strokeDasharray="2,3"
+                            opacity="0.3"
                         />
                         <text x={padding.left - 8} y={label.y + 3} textAnchor="end" className="font-mono label-small fill-current">
                             {label.value}
@@ -509,7 +510,7 @@ const LineChart: React.FC<{ data: { time: number, balance: number }[] }> = ({ da
                 ))}
 
                 {/* X-axis labels */}
-                <g className="label-small fill-current text-brand-text-secondary">
+                <g className="label-small fill-current text-tc-text-secondary">
                     <text x={padding.left} y={height - padding.bottom + 15} textAnchor="start">
                         {new Date(minX).toLocaleDateString()}
                     </text>
@@ -520,7 +521,7 @@ const LineChart: React.FC<{ data: { time: number, balance: number }[] }> = ({ da
 
                 {/* Area and Line */}
                 <path d={areaPath} fill="url(#areaGradient)" />
-                <path d={`M ${linePath}`} stroke="rgb(var(--accent))" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                <path d={`M ${linePath}`} stroke="#008140" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
         </div>
     );
