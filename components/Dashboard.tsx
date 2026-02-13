@@ -1,9 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { PairState, Direction, Probability, OperationStatus, Checklist, MT5ReportData, MT5Summary, Trade } from '../types';
 import { CURRENCY_INFO, CURRENCY_PAIRS } from '../constants';
-import { ArrowUpIcon, ArrowDownIcon, PlusIcon, TrashIcon, XCircleIcon, CheckCircleIcon, InfoIcon, ShieldCheckIcon, StarIcon, ExclamationTriangleIcon, BookOpenIcon, PauseCircleIcon } from './icons';
+import { ArrowUpIcon, ArrowDownIcon, PlusIcon, TrashIcon, XCircleIcon, CheckCircleIcon, InfoIcon, ShieldCheckIcon, StarIcon, ExclamationTriangleIcon, BookOpenIcon, PauseCircleIcon, ShieldAlertIcon } from './icons';
 import TradingTip from './TradingTip';
 import AlertMessage from './AlertMessage';
+import { ReflectionModal } from './ReflectionModal';
 
 const calculateProbability = (pairState: PairState, checklist: Checklist | undefined): Probability => {
   if (pairState.direction === Direction.NONE || !checklist) {
@@ -162,37 +163,7 @@ const EuphoriaAlert: React.FC<{ currentStreak: { type: string, count: number } }
   return <div className="mb-6"><AlertMessage type="info" text={message} /></div>;
 };
 
-const CooldownNotification: React.FC<{ cooldownUntil: number }> = ({ cooldownUntil }) => {
-  const [timeLeft, setTimeLeft] = useState('');
-
-  useEffect(() => {
-    const updateTimer = () => {
-      const remaining = Math.max(0, cooldownUntil - Date.now());
-      const minutes = Math.floor(remaining / 60000);
-      const seconds = Math.floor((remaining % 60000) / 1000);
-      setTimeLeft(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
-    };
-
-    updateTimer();
-    const intervalId = setInterval(updateTimer, 1000);
-    return () => clearInterval(intervalId);
-  }, [cooldownUntil]);
-
-  const message = "Pausa y Analiza: Acabas de cerrar una pérdida. Tómate 15 minutos para revisar la operación en tu diario y despejar la mente antes de buscar una nueva entrada. Un trader profesional protege su estado mental.";
-
-  return (
-    <div className="bg-tc-warning/10 border border-tc-warning/20 text-tc-warning p-4 rounded-3xl mb-6 flex items-start space-x-3">
-      <PauseCircleIcon className="w-6 h-6 flex-shrink-0 mt-0.5" />
-      <div>
-        <div className="flex justify-between items-center">
-          <h3 className="font-semibold">Periodo de Reflexión Activo</h3>
-          <span className="font-data text-lg font-semibold">{timeLeft}</span>
-        </div>
-        <p className="text-sm opacity-90">{message}</p>
-      </div>
-    </div>
-  );
-};
+// CooldownNotification was replaced by ReflectionModal
 
 const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPair, onRemovePair, isTradingLocked, lockReason, recommendedRisk, pairPerformance, showWeeklyReview, onDismissWeeklyReview, onNavigateToStats, getChecklistForPair, currentStreak, mt5Summary, tradingLog, cooldownUntil, isBannerVisible }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -217,7 +188,7 @@ const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPa
 
   return (
     <div className="p-4 md-medium:p-6 md-expanded:p-8 max-w-5xl mx-auto animate-fade-in pb-24">
-      {cooldownUntil && <CooldownNotification cooldownUntil={cooldownUntil} />}
+      {cooldownUntil && <ReflectionModal cooldownUntil={cooldownUntil} />}
       {isTradingLocked && !cooldownUntil && <LockNotification reason={lockReason} />}
       {showWeeklyReview && <WeeklyReviewNotification onReview={onNavigateToStats} onDismiss={onDismissWeeklyReview} />}
       <TradingTip />
