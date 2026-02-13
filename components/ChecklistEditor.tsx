@@ -215,9 +215,9 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setCheckl
         return (
             <div className="p-4 sm:p-6 max-w-4xl mx-auto animate-fade-in pb-24">
                 <div className="flex justify-between items-center mb-6">
-                    <button onClick={() => setEditingChecklist(null)} aria-label="Volver" className="bg-tc-bg border border-tc-border-light text-tc-text p-2 rounded-full hover:bg-tc-bg-secondary transition-colors"><ArrowLeftIcon className="w-6 h-6" /></button>
-                    <h1 className="text-xl sm:text-2xl font-bold text-tc-text text-center">Editor de Checklist</h1>
-                    <button onClick={handleSave} aria-label="Guardar" className="bg-tc-growth-green hover:bg-tc-growth-green/90 text-white p-3 rounded-2xl shadow-md transition-all"><SaveIcon className="w-6 h-6" /></button>
+                    <button onClick={() => setEditingChecklist(null)} aria-label="Volver" className="bg-tc-bg border border-tc-border-light text-tc-text p-2 rounded-full hover:bg-tc-bg-secondary transition-colors"><ArrowLeftIcon className="w-5 h-5" /></button>
+                    <h1 className="text-xl font-semibold text-tc-text text-center">Editor de Checklist</h1>
+                    <button onClick={handleSave} aria-label="Guardar" className="bg-tc-growth-green hover:bg-tc-growth-green/90 text-white p-2.5 rounded-xl shadow-md transition-all"><SaveIcon className="w-5 h-5" /></button>
                 </div>
 
                 <div className="space-y-6">
@@ -246,9 +246,9 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setCheckl
                             {formState.phases[activePhaseTab].items.length > 0 ? (
                                 <div className="space-y-2">
                                     {formState.phases[activePhaseTab].items.map((item, itemIndex) => (
-                                        <div key={item.id} className="flex justify-between items-center p-3 rounded-2xl hover:bg-tc-bg-secondary transition-colors">
+                                        <div key={item.id} className="flex justify-between items-center p-3 rounded-xl hover:bg-tc-bg-secondary transition-colors group">
                                             <span className="text-sm text-tc-text truncate pr-2 flex items-center">
-                                                <span className="font-mono text-tc-text-secondary mr-3 bg-tc-bg-secondary px-2 py-1 rounded-md text-xs">{item.timeframe}</span>
+                                                <span className="font-data font-bold text-tc-text-secondary mr-3 bg-tc-bg-secondary px-2 py-0.5 rounded border border-tc-border-light text-[10px]">{item.timeframe}</span>
                                                 {item.text || <span className="italic text-tc-text-secondary/75">Nueva condición...</span>}
                                             </span>
                                             <div className="flex-shrink-0">
@@ -261,8 +261,8 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setCheckl
                             ) : (
                                 <p className="text-sm text-tc-text-secondary italic text-center py-4">No hay puntos de control en esta fase.</p>
                             )}
-                            <button onClick={() => handleAddItem(activePhaseTab)} className="w-full mt-4 flex items-center justify-center gap-2 bg-tc-bg-secondary hover:bg-tc-bg-tertiary text-tc-text font-bold py-3 px-4 rounded-2xl transition-colors border border-tc-border-light">
-                                <PlusIcon className="w-5 h-5" /> Añadir Punto de Control
+                            <button onClick={() => handleAddItem(activePhaseTab)} className="w-full mt-4 flex items-center justify-center gap-2 bg-tc-bg-secondary hover:bg-tc-bg-tertiary text-tc-text font-semibold py-2.5 px-4 rounded-xl transition-colors border border-tc-border-light text-sm">
+                                <PlusIcon className="w-4 h-4" /> Añadir Punto de Control
                             </button>
                         </div>
                     </SectionCard>
@@ -286,9 +286,9 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setCheckl
         <div className="p-4 sm:p-6 max-w-4xl mx-auto animate-fade-in pb-32">
             <div className="flex items-center gap-4 mb-8">
                 <button onClick={onBack} aria-label="Volver a Ajustes" className="bg-tc-bg border border-tc-border-light text-tc-text p-2 rounded-full hover:bg-tc-bg-secondary transition-colors">
-                    <ArrowLeftIcon className="w-6 h-6" />
+                    <ArrowLeftIcon className="w-5 h-5" />
                 </button>
-                <h1 className="text-2xl sm:text-3xl font-bold text-tc-text">Gestor de Checklists</h1>
+                <h1 className="text-xl sm:text-2xl font-semibold text-tc-text">Gestor de Checklists</h1>
             </div>
 
             <div className="mb-6">
@@ -342,7 +342,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({ checklists, setCheckl
 
 const SectionCard: React.FC<{ title: string; children: React.ReactNode; }> = ({ title, children }) => (
     <div className="bg-tc-bg p-5 sm:p-6 rounded-3xl border border-tc-border-light shadow-sm">
-        <h2 className="text-xl font-bold text-tc-text mb-4">{title}</h2>
+        <h2 className="text-lg font-semibold text-tc-text mb-4 uppercase tracking-wider">{title}</h2>
         <div>{children}</div>
     </div>
 );
@@ -350,7 +350,7 @@ const SectionCard: React.FC<{ title: string; children: React.ReactNode; }> = ({ 
 const TabButton: React.FC<{ name: string; isActive: boolean; onClick: () => void }> = ({ name, isActive, onClick }) => (
     <button
         onClick={onClick}
-        className={`whitespace-nowrap py-3 px-2 sm:px-4 border-b-2 font-bold text-sm sm:text-base transition-colors focus:outline-none rounded-t-md
+        className={`whitespace-nowrap py-3 px-2 sm:px-4 border-b-2 font-semibold text-sm transition-colors focus:outline-none rounded-t-md
       ${isActive
                 ? 'border-tc-growth-green text-tc-growth-green'
                 : 'border-transparent text-tc-text-secondary hover:text-tc-text hover:border-tc-border-medium'
@@ -364,16 +364,16 @@ const TabButton: React.FC<{ name: string; isActive: boolean; onClick: () => void
 
 
 const ActionButton: React.FC<{ onClick: () => void; icon: React.ReactNode; children: React.ReactNode }> = ({ onClick, icon, children }) => (
-    <button onClick={onClick} className="w-full flex items-center justify-center gap-3 bg-tc-bg-secondary hover:bg-tc-bg-tertiary text-tc-text font-bold py-4 px-4 rounded-2xl transition-colors border border-tc-border-light">
-        {icon}
+    <button onClick={onClick} className="w-full flex items-center justify-center gap-3 bg-tc-bg-secondary hover:bg-tc-bg-tertiary text-tc-text font-semibold py-3.5 px-4 rounded-2xl transition-colors border border-tc-border-light text-sm">
+        {React.cloneElement(icon as React.ReactElement, { className: 'w-5 h-5' })}
         <span>{children}</span>
     </button>
 );
 
 const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement> & { label: string }> = ({ label, ...props }) => (
     <div className="relative group">
-        <label className="block text-xs font-bold text-tc-text-secondary mb-1 uppercase tracking-wider">{label}</label>
-        <input {...props} className={`w-full bg-tc-bg-secondary border-b-2 border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text text-lg focus:border-tc-growth-green outline-none transition-colors placeholder:text-tc-text-secondary/30 ${props.className}`} />
+        <label className="block text-[10px] font-bold text-tc-text-secondary mb-1 uppercase tracking-widest">{label}</label>
+        <input {...props} className={`w-full bg-tc-bg-secondary border-b border-tc-border-medium rounded-t-lg px-4 py-2.5 text-tc-text text-base font-medium focus:border-tc-growth-green outline-none transition-colors placeholder:text-tc-text-secondary/30 ${props.className}`} />
     </div>
 );
 
@@ -392,8 +392,8 @@ const ChecklistCard: React.FC<{
         <div className="bg-tc-bg border border-tc-border-light rounded-3xl p-4 shadow-sm">
             <div className="flex justify-between items-start">
                 <div className="flex-1 min-w-0">
-                    <p className="font-bold text-lg text-tc-text truncate">{checklist.name}</p>
-                    <p className="text-sm text-tc-text-secondary">{checklist.phases.flatMap(p => p.items).length} puntos de control</p>
+                    <p className="font-semibold text-base text-tc-text truncate">{checklist.name}</p>
+                    <p className="text-xs text-tc-text-secondary">{checklist.phases.flatMap(p => p.items).length} puntos de control</p>
                 </div>
                 <div className="flex items-center space-x-1 ml-2 flex-shrink-0">
                     <button onClick={onEdit} className="p-2 rounded-full text-tc-text-secondary hover:bg-tc-bg-secondary" title="Editar"><PencilIcon className="w-5 h-5" /></button>
@@ -402,8 +402,8 @@ const ChecklistCard: React.FC<{
             </div>
             <div className="mt-4 pt-4 border-t border-tc-border-light flex flex-col sm:flex-row gap-2">
                 <div className="flex flex-1 gap-2">
-                    <button onClick={onSetActiveLong} className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-sm font-bold transition-colors ${isActiveLong ? 'bg-tc-success text-white' : 'bg-tc-bg-secondary hover:bg-tc-bg-tertiary text-tc-text-secondary'}`}><StarIcon className="w-4 h-4" /> Long</button>
-                    <button onClick={onSetActiveShort} className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-sm font-bold transition-colors ${isActiveShort ? 'bg-tc-error text-white' : 'bg-tc-bg-secondary hover:bg-tc-bg-tertiary text-tc-text-secondary'}`}><StarIcon className="w-4 h-4" /> Short</button>
+                    <button onClick={onSetActiveLong} className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-semibold transition-colors ${isActiveLong ? 'bg-tc-success text-white' : 'bg-tc-bg-secondary hover:bg-tc-bg-tertiary text-tc-text-secondary'}`}><StarIcon className="w-3.5 h-3.5" /> Long</button>
+                    <button onClick={onSetActiveShort} className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-semibold transition-colors ${isActiveShort ? 'bg-tc-error text-white' : 'bg-tc-bg-secondary hover:bg-tc-bg-tertiary text-tc-text-secondary'}`}><StarIcon className="w-3.5 h-3.5" /> Short</button>
                 </div>
                 <div className="flex flex-1 sm:flex-initial sm:w-auto gap-2">
                     <button onClick={onExport} className="flex-1 sm:flex-initial p-2 rounded-xl bg-tc-bg-secondary text-tc-text-secondary hover:bg-tc-bg-tertiary" title="Exportar"><ArrowDownTrayIcon className="w-5 h-5" /></button>
@@ -445,9 +445,9 @@ const ItemEditorModal: React.FC<{
     return (
         <div className="fixed inset-0 bg-black/60 z-50 animate-fade-in flex items-center justify-center backdrop-blur-sm p-4" onClick={onClose}>
             <div className="bg-tc-bg w-full sm:max-w-lg rounded-3xl overflow-hidden flex flex-col shadow-2xl border border-tc-border-light" onClick={e => e.stopPropagation()}>
-                <div className="p-4 border-b border-tc-border-light flex justify-between items-center">
-                    <h3 className="text-lg font-bold text-tc-text">Editar Punto de Control</h3>
-                    <button onClick={onClose} className="p-2 text-tc-text-secondary hover:bg-tc-bg-secondary rounded-full"><XCircleIcon className="w-6 h-6" /></button>
+                <div className="p-4 border-b border-tc-border-light flex justify-between items-center bg-tc-bg-secondary/30">
+                    <h3 className="text-lg font-semibold text-tc-text">Editar Punto de Control</h3>
+                    <button onClick={onClose} className="p-2 text-tc-text-secondary hover:bg-tc-bg-secondary rounded-full transition-colors"><XCircleIcon className="w-5 h-5" /></button>
                 </div>
                 <div className="p-4 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto">
                     <Input label="Texto de la Pregunta" value={item.text} onChange={e => onChange(phaseIndex, itemIndex, 'text', e.target.value)} placeholder="¿Condición a verificar?" />
@@ -470,7 +470,7 @@ const ItemEditorModal: React.FC<{
                                     onChange(phaseIndex, itemIndex, 'type', newType);
                                     setSelectedType(newType);
                                 }}
-                                className="w-full bg-tc-bg-secondary border-b-2 border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text text-lg focus:border-tc-growth-green outline-none transition-colors appearance-none"
+                                className="w-full bg-tc-bg-secondary border-b border-tc-border-medium rounded-t-lg px-4 py-2.5 text-tc-text text-base font-medium focus:border-tc-growth-green outline-none transition-colors appearance-none"
                             >
                                 {Object.keys(itemTypeDescriptions).map(key => (
                                     <option key={key} value={key}>{itemTypeDescriptions[key as ChecklistItemType].label}</option>
@@ -482,9 +482,9 @@ const ItemEditorModal: React.FC<{
 
                     {item.type === ChecklistItemType.OPTIONS && (
                         <div>
-                            <label className="block text-xs font-bold text-tc-text-secondary uppercase tracking-wider mb-2">Opciones</label>
-                            <div className="flex items-center gap-2 bg-tc-bg-secondary rounded-t-lg border-b-2 border-tc-border-medium px-3 py-2 transition-colors focus-within:border-tc-growth-green">
-                                <input type="text" value={optionInput} onChange={e => setOptionInput(e.target.value)} onKeyDown={handleOptionKeyDown} className="flex-grow bg-transparent text-tc-text focus:outline-none placeholder:text-tc-text-secondary/70 text-lg" placeholder="Añadir y presionar Enter..." />
+                            <label className="block text-[10px] font-bold text-tc-text-secondary uppercase tracking-widest mb-2">Opciones</label>
+                            <div className="flex items-center gap-2 bg-tc-bg-secondary rounded-t-lg border-b border-tc-border-medium px-3 py-2 transition-colors focus-within:border-tc-growth-green">
+                                <input type="text" value={optionInput} onChange={e => setOptionInput(e.target.value)} onKeyDown={handleOptionKeyDown} className="flex-grow bg-transparent text-tc-text focus:outline-none placeholder:text-tc-text-secondary/70 text-base font-medium" placeholder="Añadir y presionar Enter..." />
                             </div>
                             <div className="flex flex-wrap gap-2 mt-3">
                                 {(item.options || []).map(option => (

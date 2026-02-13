@@ -143,8 +143,8 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                     <div className="w-20 h-20 bg-tc-success/10 rounded-full flex items-center justify-center mb-6 animate-bounce">
                         <CheckIcon className="w-10 h-10 text-tc-success" />
                     </div>
-                    <h2 className="text-3xl font-bold mb-2 text-tc-text">¡Decisión Inteligente!</h2>
-                    <p className="text-tc-text-secondary mb-8 text-lg">
+                    <h2 className="text-3xl font-semibold mb-2 text-tc-text">¡Decisión Inteligente!</h2>
+                    <p className="text-tc-text-secondary mb-8 text-lg font-medium">
                         Te has unido al 10% de traders que invierten en su negocio. Vamos a hacer historia.
                     </p>
                     <button
@@ -171,7 +171,7 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                 </button>
 
                 {/* Header Section */}
-                <div className="bg-gradient-to-br from-brand-gold via-brand-gold-light to-brand-gold-dark p-8 pb-14 text-black text-center relative overflow-hidden flex-shrink-0">
+                <div className="bg-gradient-to-br from-[#FFD700] via-[#FDB931] to-[#D4AF37] p-8 pb-14 text-black text-center relative overflow-hidden flex-shrink-0">
                     <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
                     <div className="relative z-10">
                         <div className="inline-flex p-3 bg-white/30 backdrop-blur-md rounded-2xl mb-4 shadow-sm ring-1 ring-white/50">
@@ -193,8 +193,8 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                                     <CheckIcon className="w-5 h-5 text-tc-growth-green group-hover:text-white" />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-tc-text text-base">{benefit.title}</h4>
-                                    <p className="text-sm text-tc-text-secondary leading-snug mt-0.5">{benefit.desc}</p>
+                                    <h4 className="font-semibold text-tc-text text-base">{benefit.title}</h4>
+                                    <p className="text-sm text-tc-text-secondary leading-snug mt-0.5 font-medium">{benefit.desc}</p>
                                 </div>
                             </div>
                         ))}
@@ -246,7 +246,7 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                                             `}
                                             >
                                                 {isAnnual && (
-                                                    <div className="absolute top-0 right-0 bg-brand-gold text-black text-[10px] font-extrabold px-3 py-1 rounded-bl-xl shadow-sm">
+                                                    <div className="absolute top-0 right-0 bg-[#FFD700] text-black text-[10px] font-extrabold px-3 py-1 rounded-bl-xl shadow-sm uppercase tracking-widest">
                                                         MEJOR OPCIÓN
                                                     </div>
                                                 )}
@@ -300,9 +300,9 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                                 {adLoading ? (
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                 ) : (
-                                    <PlayIcon className="w-5 h-5 fill-current" />
+                                    <PlayIcon className="w-4 h-4 fill-current" />
                                 )}
-                                <span>{adLoading ? 'Cargando video...' : 'Ver Video para 24h PRO'}</span>
+                                <span className="text-sm">{adLoading ? 'Cargando video...' : 'Ver Video para 24h PRO'}</span>
                             </button>
                             <p className="text-[10px] text-gray-400 mt-2 text-center px-4">
                                 Acceso completo a todas las funciones PRO por 1 día (Importar MT5, Checklists ilimitados, Cloud Sync).

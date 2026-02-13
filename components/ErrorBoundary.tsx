@@ -15,7 +15,7 @@ class ErrorBoundary extends React.Component<React.PropsWithChildren<Props>, Stat
     super(props);
     this.state = { hasError: false };
   }
-  
+
   static getDerivedStateFromError(_: Error): State {
     // Update state so the next render will show the fallback UI.
     return { hasError: true };
@@ -28,18 +28,20 @@ class ErrorBoundary extends React.Component<React.PropsWithChildren<Props>, Stat
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-brand-dark text-brand-text flex flex-col justify-center items-center p-4 text-center">
-            <ExclamationTriangleIcon className="w-16 h-16 text-brand-danger mb-4" />
-            <h1 className="text-3xl font-bold text-brand-text mb-2">Oops! Algo salió mal.</h1>
-            <p className="text-brand-text-secondary max-w-md mb-6">
-                La aplicación encontró un error inesperado. Por favor, intenta refrescar la página. Si el problema persiste, considera restaurar tus datos desde la última copia de seguridad.
-            </p>
-            <button
-                onClick={() => window.location.reload()}
-                className="bg-brand-accent hover:brightness-95 text-white font-bold py-3 px-6 rounded-full transition-colors shadow-lg"
-            >
-                Refrescar Página
-            </button>
+        <div className="min-h-screen bg-tc-bg text-tc-text flex flex-col justify-center items-center p-6 text-center">
+          <div className="bg-tc-error/10 p-6 rounded-[2rem] border border-tc-error/20 mb-8">
+            <ExclamationTriangleIcon className="w-12 h-12 text-tc-error" />
+          </div>
+          <h1 className="text-xl font-semibold text-tc-text mb-3 uppercase tracking-wider">Oops! Algo salió mal.</h1>
+          <p className="text-tc-text-secondary max-w-md mb-10 text-sm font-medium leading-relaxed">
+            La aplicación encontró un error inesperado. Por favor, intenta refrescar la página. Si el problema persiste, considera restaurar tus datos desde la última copia de seguridad.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-tc-growth-green hover:bg-tc-growth-green/90 text-white font-semibold py-3.5 px-10 rounded-xl transition-all shadow-sm active:scale-[0.98]"
+          >
+            Refrescar Página
+          </button>
         </div>
       );
     }

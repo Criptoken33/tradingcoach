@@ -28,8 +28,8 @@ const DirectionButton: React.FC<{ direction: Direction, onClick: () => void }> =
       className={`flex flex-col items-center justify-center p-8 rounded-3xl bg-tc-bg border-2 border-tc-border-light transition-all duration-200 active:scale-95 ${config.colorClasses}`}
     >
       <config.Icon className="w-10 h-10 mb-3" />
-      <span className="text-xl font-bold">{config.label}</span>
-      <span className="text-sm font-medium opacity-70">{config.subLabel}</span>
+      <span className="text-lg font-semibold">{config.label}</span>
+      <span className="text-xs font-medium opacity-70">{config.subLabel}</span>
     </button>
   );
 };
@@ -105,9 +105,9 @@ const Checklist: React.FC<ChecklistProps> = ({ pairState, checklist, onUpdate, o
         <ArrowLeftIcon className="w-6 h-6" />
       </button>
       <div>
-        <h1 className="text-2xl font-bold text-tc-text">{symbol}</h1>
+        <h1 className="text-xl font-semibold text-tc-text">{symbol}</h1>
         {direction !== Direction.NONE && (
-          <p className={`text-sm font-bold ${directionColor} uppercase tracking-wide`}>{`Análisis ${directionText}`}</p>
+          <p className={`text-xs font-bold ${directionColor} uppercase tracking-wider`}>{`Análisis ${directionText}`}</p>
         )}
       </div>
     </div>
@@ -118,8 +118,8 @@ const Checklist: React.FC<ChecklistProps> = ({ pairState, checklist, onUpdate, o
       <div className="p-4 sm:p-6 max-w-2xl mx-auto flex flex-col min-h-[90vh]">
         {header}
         <div className="flex-grow flex flex-col items-center justify-center animate-fade-in-up">
-          <h2 className="text-2xl font-bold text-tc-text mb-2 text-center">Selecciona una Dirección</h2>
-          <p className="text-tc-text-secondary mb-8 text-center">¿Cuál es tu hipótesis para {symbol}?</p>
+          <h2 className="text-xl font-semibold text-tc-text mb-2 text-center">Selecciona una Dirección</h2>
+          <p className="text-sm text-tc-text-secondary mb-8 text-center font-medium">¿Cuál es tu hipótesis para {symbol}?</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-md">
             <DirectionButton
               direction={Direction.LONG}
@@ -208,18 +208,18 @@ const Checklist: React.FC<ChecklistProps> = ({ pairState, checklist, onUpdate, o
           key={currentQuestionIndex}
           className={`bg-tc-bg p-6 sm:p-10 rounded-3xl shadow-sm border border-tc-border-light w-full animate-fade-in-up flex flex-col items-center`}
         >
-          <span className={`px-3 py-1 text-xs font-bold rounded-lg mb-6 uppercase tracking-wider ${phaseTitle === Phase.HINT ? 'bg-tc-deep-forest/10 text-tc-deep-forest' :
-              phaseTitle === Phase.TEST ? 'bg-tc-matte-green/10 text-tc-matte-green' :
-                'bg-tc-growth-green/10 text-tc-growth-green'
+          <span className={`px-2 py-0.5 text-[10px] font-bold rounded-md mb-6 uppercase tracking-widest ${phaseTitle === Phase.HINT ? 'bg-tc-deep-forest/10 text-tc-deep-forest' :
+            phaseTitle === Phase.TEST ? 'bg-tc-matte-green/10 text-tc-matte-green' :
+              'bg-tc-growth-green/10 text-tc-growth-green'
             }`}>{phaseTitle}</span>
 
           <div className="text-center mb-8 w-full">
             <div className="inline-block mb-4">
-              <span className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-tc-bg-secondary text-tc-text font-mono font-bold text-lg">
+              <span className="inline-flex items-center justify-center px-2 py-1 rounded-lg bg-tc-bg-secondary text-tc-text font-data font-bold text-sm">
                 {currentItem.timeframe}
               </span>
             </div>
-            <h2 className="text-xl sm:text-3xl font-medium text-tc-text leading-tight">
+            <h2 className="text-lg sm:text-2xl font-semibold text-tc-text leading-tight px-4">
               {currentItem.text}
             </h2>
           </div>
@@ -229,7 +229,7 @@ const Checklist: React.FC<ChecklistProps> = ({ pairState, checklist, onUpdate, o
             {currentItem.type === ChecklistItemType.OPTIONS && (
               <div className="max-w-xs mx-auto">
                 <div className="flex items-center justify-between mb-2">
-                  <label htmlFor="option-select" className="text-sm font-medium text-tc-text-secondary">Selecciona una opción</label>
+                  <label htmlFor="option-select" className="text-xs font-semibold text-tc-text-secondary uppercase tracking-wider">Opción</label>
                   {currentItem.tooltip && (
                     <div className="group relative flex justify-center">
                       <InfoIcon className="w-4 h-4 text-tc-text-secondary cursor-help" />
@@ -248,7 +248,7 @@ const Checklist: React.FC<ChecklistProps> = ({ pairState, checklist, onUpdate, o
                     onUpdateOptionSelection(currentItem.id, value);
                     if (optionError) setOptionError(false);
                   }}
-                  className={`w-full bg-tc-bg-secondary border-b border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text focus:border-tc-growth-green outline-none transition-colors appearance-none text-lg ${optionError ? 'border-tc-error' : ''}`}
+                  className={`w-full bg-tc-bg-secondary border-b border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text focus:border-tc-growth-green outline-none transition-colors appearance-none text-base font-medium ${optionError ? 'border-tc-error' : ''}`}
                 >
                   <option value="" disabled>Elige una opción...</option>
                   {currentItem.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -258,13 +258,13 @@ const Checklist: React.FC<ChecklistProps> = ({ pairState, checklist, onUpdate, o
             )}
             {currentItem.type === ChecklistItemType.VALUE && (
               <div className="max-w-xs mx-auto">
-                <label htmlFor="value-input" className="text-sm font-medium text-tc-text-secondary mb-2 block">Valor / Nota</label>
+                <label htmlFor="value-input" className="text-xs font-semibold text-tc-text-secondary mb-2 block uppercase tracking-wider">Valor / Nota</label>
                 <input
                   id="value-input"
                   type="text"
                   value={valueInput}
                   onChange={e => setValueInput(e.target.value)}
-                  className="w-full bg-tc-bg-secondary border-b border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text focus:border-tc-growth-green outline-none transition-colors text-lg"
+                  className="w-full bg-tc-bg-secondary border-b border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text focus:border-tc-growth-green outline-none transition-colors text-base font-medium"
                   placeholder="Escribe aquí..."
                 />
               </div>
@@ -276,16 +276,16 @@ const Checklist: React.FC<ChecklistProps> = ({ pairState, checklist, onUpdate, o
               <>
                 <button
                   onClick={() => handleAnswerChange(currentItem.id, false)}
-                  className="flex flex-col items-center justify-center py-5 rounded-2xl bg-tc-error/10 text-tc-error hover:bg-tc-error/20 transition-colors font-bold text-lg active:scale-95"
+                  className="flex flex-col items-center justify-center py-4 rounded-2xl bg-tc-error/10 text-tc-error hover:bg-tc-error/20 transition-colors font-semibold text-sm active:scale-95 border border-tc-error/20"
                 >
-                  <XCircleIcon className="w-8 h-8 mb-2" />
+                  <XCircleIcon className="w-6 h-6 mb-2" />
                   No
                 </button>
                 <button
                   onClick={() => handleAnswerChange(currentItem.id, true)}
-                  className="flex flex-col items-center justify-center py-5 rounded-2xl bg-tc-success/10 text-tc-success hover:bg-tc-success/20 transition-colors font-bold text-lg active:scale-95"
+                  className="flex flex-col items-center justify-center py-4 rounded-2xl bg-tc-success/10 text-tc-success hover:bg-tc-success/20 transition-colors font-semibold text-sm active:scale-95 border border-tc-success/20"
                 >
-                  <CheckCircleIcon className="w-8 h-8 mb-2" />
+                  <CheckCircleIcon className="w-6 h-6 mb-2" />
                   Sí
                 </button>
               </>
@@ -294,9 +294,9 @@ const Checklist: React.FC<ChecklistProps> = ({ pairState, checklist, onUpdate, o
               <button
                 onClick={() => handleAnswerChange(currentItem.id, valueInput)}
                 disabled={!valueInput.trim()}
-                className="col-span-2 flex items-center justify-center gap-2 py-4 rounded-full bg-tc-growth-green hover:bg-tc-growth-green-light active:bg-tc-growth-green-dark text-white font-bold text-lg hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+                className="col-span-2 flex items-center justify-center gap-2 py-4 rounded-full bg-tc-growth-green hover:bg-tc-growth-green-light active:bg-tc-growth-green-dark text-white font-semibold text-sm hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
               >
-                <SaveIcon className="w-6 h-6" />
+                <SaveIcon className="w-5 h-5" />
                 Confirmar
               </button>
             )}

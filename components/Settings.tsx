@@ -249,7 +249,7 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
                         <div>
                             <h3 className="text-base font-semibold text-tc-text mb-2 flex items-center gap-2">
                                 Sincronización de Historial
-                                {!isPro && <span className="bg-tc-growth-green/10 text-tc-growth-green label-small px-1.5 py-0.5 rounded-full border border-tc-growth-green/20">PRO</span>}
+                                {!isPro && <span className="bg-tc-growth-green/10 text-tc-growth-green text-[10px] font-bold px-1.5 py-0.5 rounded-full border border-tc-growth-green/20 uppercase tracking-widest">PRO</span>}
                             </h3>
                             <button onClick={isPro ? handleImportMt5ReportClick : onShowPaywall} className="w-full flex items-center justify-center gap-3 bg-tc-growth-green hover:bg-tc-growth-green/90 text-white font-bold py-4 px-4 rounded-2xl transition-colors shadow-lg relative overflow-hidden group">
                                 <ArrowUpTrayIcon className="w-6 h-6" />
@@ -266,7 +266,7 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
                         <div className="pt-6 border-t border-tc-border-light">
                             <h3 className="text-base font-semibold text-tc-text mb-4 flex items-center gap-2">
                                 Copias de Seguridad
-                                {isPro && <span className="bg-tc-success/10 text-tc-success label-small px-1.5 py-0.5 rounded-full border border-tc-success/20">SINCRONIZADO</span>}
+                                {isPro && <span className="bg-tc-success/10 text-tc-success text-[10px] font-bold px-1.5 py-0.5 rounded-full border border-tc-success/20 uppercase tracking-widest">SINCRONIZADO</span>}
                             </h3>
                             <div className="space-y-3">
                                 {!isPro && (
@@ -479,7 +479,7 @@ const ThemeSwitcher: React.FC<{ theme: Theme, setTheme: (theme: Theme) => void }
 
 const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement> & { label: string }> = ({ label, ...props }) => (
     <div className="relative group">
-        <label className="block label-small font-bold text-tc-text-secondary mb-1 uppercase tracking-wider">{label}</label>
+        <label className="block text-[10px] font-bold text-tc-text-secondary mb-1 uppercase tracking-widest">{label}</label>
         <input {...props} className={`w-full bg-tc-bg-secondary border-b-2 border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text text-base focus:border-tc-growth-green outline-none transition-colors placeholder:text-tc-text-secondary/30 ${props.readOnly ? 'cursor-default' : ''} ${props.className}`} />
     </div>
 );

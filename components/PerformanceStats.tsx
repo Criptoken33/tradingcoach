@@ -503,14 +503,14 @@ const LineChart: React.FC<{ data: { time: number, balance: number }[] }> = ({ da
                             strokeDasharray="2,3"
                             opacity="0.3"
                         />
-                        <text x={padding.left - 8} y={label.y + 3} textAnchor="end" className="font-mono label-small fill-current">
+                        <text x={padding.left - 8} y={label.y + 3} textAnchor="end" className="font-data text-[10px] font-bold fill-tc-text-secondary">
                             {label.value}
                         </text>
                     </g>
                 ))}
 
                 {/* X-axis labels */}
-                <g className="label-small fill-current text-tc-text-secondary">
+                <g className="text-[10px] font-bold fill-tc-text-secondary uppercase tracking-widest">
                     <text x={padding.left} y={height - padding.bottom + 15} textAnchor="start">
                         {new Date(minX).toLocaleDateString()}
                     </text>

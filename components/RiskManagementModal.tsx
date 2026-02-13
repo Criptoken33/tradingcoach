@@ -273,7 +273,7 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
                     {isCalculatorMode && (
                         <div className="space-y-4">
                             <div>
-                                <label className="block label-small font-bold text-tc-text-secondary mb-1 uppercase tracking-wider">Símbolo</label>
+                                <label className="block text-[10px] font-bold text-tc-text-secondary mb-1 uppercase tracking-widest">Símbolo</label>
                                 <div className="relative">
                                     <select value={internalSymbol} onChange={e => setInternalSymbol(e.target.value)} className="w-full bg-tc-bg-secondary border-b border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text focus:border-tc-growth-green outline-none appearance-none transition-colors text-base">
                                         {CURRENCY_PAIRS.map(p => <option key={p} value={p}>{p}</option>)}
@@ -340,7 +340,7 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
 
 const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement> & { label: string }> = ({ label, ...props }) => (
     <div className="relative group">
-        <label className="block label-small font-bold text-tc-text-secondary mb-1 uppercase tracking-wider">{label}</label>
+        <label className="block text-[10px] font-bold text-tc-text-secondary mb-1 uppercase tracking-widest">{label}</label>
         <input {...props} className={`w-full bg-tc-bg-secondary border-b-2 border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text text-base focus:border-tc-growth-green outline-none transition-colors placeholder:text-tc-text-tertiary ${props.readOnly ? 'cursor-default' : ''} ${props.className}`} />
     </div>
 );
@@ -353,7 +353,7 @@ const CalculatedField: React.FC<{ label: string, value: string, hasError?: boole
 
     return (
         <div className={`bg-tc-bg-secondary rounded-2xl p-4 border border-tc-border-light flex flex-col justify-center items-center ${hasError ? 'ring-2 ring-tc-error bg-tc-error/5' : ''}`}>
-            <span className="label-small font-bold text-tc-text-secondary uppercase tracking-wider mb-1">{label}</span>
+            <span className="text-[10px] font-bold text-tc-text-secondary uppercase tracking-widest mb-1">{label}</span>
             <span className={`font-data font-bold ${large ? 'text-2xl' : 'text-xl'} ${colorClass}`}>
                 {value}
             </span>

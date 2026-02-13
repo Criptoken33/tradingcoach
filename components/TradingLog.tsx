@@ -117,7 +117,7 @@ const TradeCard: React.FC<TradeCardProps> = ({ trade, onViewDetails }) => {
                 </div>
                 <div className="min-w-0">
                     <h2 className="font-data font-semibold text-tc-text truncate">{trade.symbol}</h2>
-                    <span className={`label-small font-bold uppercase tracking-wide ${trade.direction === Direction.LONG ? 'text-tc-success' : 'text-tc-error'}`}>
+                    <span className={`text-[10px] font-bold uppercase tracking-widest ${trade.direction === Direction.LONG ? 'text-tc-success' : 'text-tc-error'}`}>
                         {trade.direction}
                     </span>
                 </div>
@@ -210,11 +210,11 @@ const TradeDetailModal: React.FC<TradeDetailModalProps> = ({ trade, onClose, onA
                 <div>
                     <div className="flex items-center gap-3 mb-2">
                         <h2 className="text-xl font-semibold text-tc-text">{trade.symbol}</h2>
-                        <span className={`px-2 py-0.5 label-small font-bold uppercase rounded-full ${trade.direction === Direction.LONG ? 'bg-tc-success/10 text-tc-success' : 'bg-tc-error/10 text-tc-error'}`}>
+                        <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-full ${trade.direction === Direction.LONG ? 'bg-tc-success/10 text-tc-success' : 'bg-tc-error/10 text-tc-error'}`}>
                             {trade.direction === Direction.LONG ? 'Long' : 'Short'}
                         </span>
                         {trade.status === OperationStatus.CLOSED && (
-                            <span className={`px-2 py-0.5 label-small font-bold rounded-full ${statusInfo.color}`}>{statusInfo.text}</span>
+                            <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${statusInfo.color}`}>{statusInfo.text}</span>
                         )}
                     </div>
                     {pnl && (
@@ -231,19 +231,19 @@ const TradeDetailModal: React.FC<TradeDetailModalProps> = ({ trade, onClose, onA
             <div className="p-6 overflow-y-auto space-y-6 flex-1 min-h-0">
                 <div className="bg-tc-bg-secondary rounded-2xl border border-tc-border-light grid grid-cols-2">
                     <div className="p-4 border-r border-b border-tc-border-light">
-                        <label className="block label-small font-bold text-tc-text-secondary uppercase tracking-wider mb-1">Entrada</label>
+                        <label className="block text-[10px] font-bold text-tc-text-secondary uppercase tracking-wider mb-1">Entrada</label>
                         <p className="text-tc-text font-data font-bold">{riskPlan.entryPrice?.toFixed(5) ?? '---'}</p>
                     </div>
                     <div className="p-4 border-b border-tc-border-light">
-                        <label className="block label-small font-bold text-tc-text-secondary uppercase tracking-wider mb-1">Lotes</label>
+                        <label className="block text-[10px] font-bold text-tc-text-secondary uppercase tracking-wider mb-1">Lotes</label>
                         <p className="text-tc-text font-data font-bold">{riskPlan.positionSizeLots?.toFixed(2) ?? '---'}</p>
                     </div>
                     <div className="p-4 border-r border-tc-border-light">
-                        <label className="block label-small font-bold text-tc-text-secondary uppercase tracking-wider mb-1">Stop Loss</label>
+                        <label className="block text-[10px] font-bold text-tc-text-secondary uppercase tracking-wider mb-1">Stop Loss</label>
                         <p className="text-tc-text font-data font-bold">{riskPlan.stopLossPrice?.toFixed(5) ?? '---'}</p>
                     </div>
                     <div className="p-4">
-                        <label className="block label-small font-bold text-tc-text-secondary uppercase tracking-wider mb-1">Take Profit</label>
+                        <label className="block text-[10px] font-bold text-tc-text-secondary uppercase tracking-wider mb-1">Take Profit</label>
                         <p className="text-tc-text font-data font-bold">{riskPlan.takeProfitPrice?.toFixed(5) ?? '---'}</p>
                     </div>
                 </div>
@@ -278,14 +278,14 @@ const TradeDetailModal: React.FC<TradeDetailModalProps> = ({ trade, onClose, onA
                                 readOnly={isPriceLocked}
                             />
                             <div>
-                                <label className="block label-small font-bold text-tc-text-secondary mb-1 uppercase tracking-wider">Razón</label>
+                                <label className="block text-[10px] font-bold text-tc-text-secondary mb-1 uppercase tracking-widest">Razón</label>
                                 <select value={exitReason} onChange={e => setExitReason(e.target.value)} className="w-full bg-tc-bg-secondary border-b-2 border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text outline-none appearance-none text-base">
                                     {EXIT_REASONS.map(r => <option key={r} value={r}>{r}</option>)}
                                 </select>
                             </div>
 
                             {exitPriceWarning && (
-                                <div className="label-small text-tc-warning font-bold flex items-center gap-1">
+                                <div className="text-[10px] text-tc-warning font-bold flex items-center gap-1 uppercase tracking-widest">
                                     <InfoIcon className="w-4 h-4" /> {exitPriceWarning}
                                 </div>
                             )}
@@ -308,7 +308,7 @@ const TradeDetailModal: React.FC<TradeDetailModalProps> = ({ trade, onClose, onA
 
 const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement> & { label: string }> = ({ label, ...props }) => (
     <div>
-        <label className="block label-small font-bold text-tc-text-secondary mb-1 uppercase tracking-wider">{label}</label>
+        <label className="block text-[10px] font-bold text-tc-text-secondary mb-1 uppercase tracking-widest">{label}</label>
         <input
             {...props}
             className={`w-full bg-tc-bg-secondary border-b-2 border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text outline-none focus:border-tc-growth-green transition-colors text-base ${props.readOnly ? 'opacity-70' : ''}`}
