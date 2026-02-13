@@ -13,13 +13,13 @@ const TradingTip: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-brand-light rounded-3xl p-5 mb-6 flex items-start space-x-4 animate-fade-in shadow-sm border border-brand-border-secondary/50 min-h-28">
-      <div className="flex-shrink-0 mt-1 bg-brand-warning-medium/20 p-2 rounded-xl text-brand-warning-medium">
+    <div className="bg-tc-bg rounded-3xl p-5 mb-6 flex items-start space-x-4 animate-fade-in shadow-sm border border-tc-border-light min-h-28">
+      <div className="flex-shrink-0 mt-1 bg-tc-warning/20 p-2 rounded-xl text-tc-warning">
         <LightBulbIcon className="w-5 h-5" />
       </div>
       <div className="flex-1 min-w-0 self-center">
         <p
-          className={`text-brand-text body-large italic transition-opacity duration-500 line-clamp-3 ${isFading ? 'opacity-0' : 'opacity-90'}`}
+          className={`text-tc-text body-large italic transition-opacity duration-500 line-clamp-3 ${isFading ? 'opacity-0' : 'opacity-90'}`}
         >
           "{tip}"
         </p>

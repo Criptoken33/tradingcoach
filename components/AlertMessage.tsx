@@ -12,20 +12,20 @@ const AlertMessage: React.FC<AlertMessageProps> = ({ type, text, size = 'large' 
 
   const config = {
     warning: {
-      bgColor: 'bg-brand-warning-high/10',
-      textColor: 'text-brand-warning-high',
-      borderColor: 'border-transparent', // Often not needed for inline warnings
+      bgColor: 'bg-tc-warning/10',
+      textColor: 'text-tc-warning',
+      borderColor: 'border-transparent',
       Icon: InfoIcon,
     },
     error: {
-      bgColor: 'bg-brand-danger/10',
-      textColor: 'text-brand-danger',
-      borderColor: 'border-brand-danger/20',
+      bgColor: 'bg-tc-error/10',
+      textColor: 'text-tc-error',
+      borderColor: 'border-tc-error/20',
       Icon: ExclamationTriangleIcon,
     },
     info: {
-      bgColor: 'bg-brand-accent/10',
-      textColor: 'text-brand-accent',
+      bgColor: 'bg-tc-growth-green/10',
+      textColor: 'text-tc-growth-green',
       borderColor: 'border-transparent',
       Icon: StarIcon,
     },
