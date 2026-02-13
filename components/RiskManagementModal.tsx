@@ -230,7 +230,8 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
     }, [accountBalance, riskPercentage, entryPrice, stopLossPrice, takeProfitPrice, direction, isValid, symbol]);
 
     const handleSave = () => {
-        if (!isValid || !!priceLogicError || !riskRewardRatio || riskRewardRatio < 2 || !onSavePlan) return;
+        // Removed `riskRewardRatio < 2` check to allow execution with warning
+        if (!isValid || !!priceLogicError || !riskRewardRatio || !onSavePlan) return;
 
         onSavePlan({
             riskPercentage: parseFloat(riskPercentage),
@@ -319,7 +320,7 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
                         </div>
                         <div className="relative">
                             <CalculatedField label="Ratio Riesgo/Beneficio" value={riskRewardRatio ? `1 : ${riskRewardRatio.toFixed(2)}` : '---'} hasError={!!rrError} large />
-                            {rrError && <div className="mt-2"><AlertMessage type="error" text={rrError} size="small" /></div>}
+                            {rrError && <div className="mt-2"><AlertMessage type="warning" text={rrError} size="small" /></div>}
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <CalculatedField label="Tamaño Pos (Lots)" value={positionSize ? positionSize.toFixed(2) : '---'} />
@@ -334,7 +335,7 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
                 <div className="mt-10 flex justify-center w-full animate-fade-in-up">
                     <button
                         onClick={handleSave}
-                        disabled={!isValid || !!priceLogicError || !riskRewardRatio || riskRewardRatio < 2}
+                        disabled={!isValid || !!priceLogicError || !riskRewardRatio}
                         aria-label="Ejecutar"
                         className="w-full sm:w-auto sm:min-w-[240px] bg-tc-growth-green hover:bg-tc-growth-green-light active:bg-tc-growth-green-dark text-white text-sm font-semibold py-4 px-12 rounded-full shadow-xl transition-all active:scale-95 disabled:bg-tc-bg-secondary disabled:text-tc-text-tertiary disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center"
                     >
