@@ -390,6 +390,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: var(--md-sys-typescale-display-large-font);
+  background-color: #388656; /* Matches Splash Screen */
 }
 
 /* Remove tap highlight on mobile */

@@ -4,6 +4,9 @@ const config: CapacitorConfig = {
   appId: 'com.tradingcoach.app',
   appName: 'TradingCoach',
   webDir: 'dist',
+  // This sets the NATIVE WebView background color — prevents white flash
+  // before HTML/CSS loads. Different from SplashScreen.backgroundColor.
+  backgroundColor: '#388656',
   server: {
     androidScheme: 'https'
   },
@@ -15,8 +18,8 @@ const config: CapacitorConfig = {
       forceCodeForRefreshToken: true,
     },
     SplashScreen: {
-      launchShowDuration: 2000,
-      launchAutoHide: true,
+      launchShowDuration: 0,
+      launchAutoHide: false,
       backgroundColor: "#388656",
       androidSplashResourceName: "splash",
       androidScaleType: "CENTER_CROP",

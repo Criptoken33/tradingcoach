@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { PairState, Direction, View, ChecklistAnswers, RiskPlan, OperationStatus, Trade, Checklist as ChecklistType, ChecklistItemType, Phase, MT5ReportData, MT5Summary } from './types';
+import { SplashScreen } from '@capacitor/splash-screen';
+import AnimatedSplash from './src/components/Splash/AnimatedSplash';
 import Dashboard from './components/Dashboard';
 import Checklist from './components/Checklist';
 import RiskManagementScreen from './components/RiskManagementModal';
@@ -139,7 +141,23 @@ const App: React.FC = () => {
 
   const [view, setView] = useState<View>('DASHBOARD');
   const [showPaywall, setShowPaywall] = useState(false);
+  const [showSplash, setShowSplash] = useState(true); // New Splash State
   const pro = useProFeatures(); // This `pro` object is still used for `pro.isPro` and `pro.canBackupToCloud`
+
+  // Handle Splash Screen Logic
+  useEffect(() => {
+    const handleSplash = async () => {
+      // Hide native splash immediately (it's handled by capacitor.config.ts duration too, but good to be explicit)
+      await SplashScreen.hide();
+
+      // Keep React splash visible for animation duration (e.g., 2.5s total)
+      setTimeout(() => {
+        setShowSplash(false);
+      }, 2500);
+    };
+
+    handleSplash();
+  }, []);
 
   // Android Back Button Handler
   useAndroidBackButton(() => {
@@ -1059,6 +1077,33 @@ const App: React.FC = () => {
 // Conditional rendering moved to end after all hooks
 const AppWithAuth: React.FC = () => {
   const { user, loading } = useAuth();
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    const handleSplash = async () => {
+      // Small delay (270ms) to ensure React has fully painted the green background 
+      // BEFORE we start fading out the native splash. This prevents the "white flash" or "flicker".
+      await new Promise(resolve => setTimeout(resolve, 270));
+
+      // Hide native splash with a fade out effect to smooth the transition
+      await SplashScreen.hide({
+        fadeOutDuration: 500
+      });
+
+      // Keep React splash visible for animation duration (e.g., 2.5s total)
+      setTimeout(() => {
+        // Remove the inline splash background so the app's normal colors take over
+        document.body.style.backgroundColor = '';
+        setShowSplash(false);
+      }, 2500);
+    };
+
+    handleSplash();
+  }, []);
+
+  if (showSplash) {
+    return <AnimatedSplash />;
+  }
 
   if (loading) {
     return (
