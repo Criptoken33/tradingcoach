@@ -14,6 +14,16 @@ const config: CapacitorConfig = {
       serverClientId: '146126403535-ndns8fuslk4ao424lvj2tnru2ajtus82.apps.googleusercontent.com',
       forceCodeForRefreshToken: true,
     },
+    SplashScreen: {
+      launchShowDuration: 2000,
+      launchAutoHide: true,
+      backgroundColor: "#388656",
+      androidSplashResourceName: "splash",
+      androidScaleType: "CENTER_CROP",
+      showSpinner: false,
+      splashFullScreen: true,
+      splashImmersive: true,
+    },
   },
 };
 
