@@ -204,7 +204,7 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                     <div className="mt-auto space-y-4">
                         {loading ? (
                             <div className="flex justify-center py-8">
-                                <div className="animate-spin rounded-full h-10 w-10 border-4 border-brand-accent border-t-transparent"></div>
+                                <div className="animate-spin rounded-full h-10 w-10 border-4 border-tc-growth-green border-t-transparent"></div>
                             </div>
                         ) : offerings?.availablePackages?.length > 0 ? (
                             <div className="space-y-3">

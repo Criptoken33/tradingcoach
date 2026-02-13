@@ -375,7 +375,7 @@ const AddSymbolModal: React.FC<AddSymbolModalProps> = ({ availablePairs, onAddPa
                           title={performance >= 0 ? `P/L: ${performance.toFixed(2)}` : `P/L: ${performance.toFixed(2)}`}
                         >
                           {performance >= 0 ? (
-                            <StarIcon className="w-4 h-4 text-yellow-500" />
+                            <StarIcon className="w-4 h-4 text-tc-warning" />
                           ) : (
                             <ExclamationTriangleIcon className="w-4 h-4 text-tc-warning" />
                           )}
