@@ -58,7 +58,7 @@ interface DashboardProps {
 }
 
 const LockNotification: React.FC<{ reason: string }> = ({ reason }) => (
-  <div className="bg-brand-danger/10 border border-brand-danger/20 text-brand-danger p-4 rounded-3xl mb-6 flex items-start space-x-3">
+  <div className="bg-tc-error/10 border border-tc-error/20 text-tc-error p-4 rounded-3xl mb-6 flex items-start space-x-3">
     <InfoIcon className="w-6 h-6 flex-shrink-0 mt-0.5" />
     <div>
       <h3 className="title-medium">Operativa Bloqueada</h3>
@@ -70,25 +70,25 @@ const LockNotification: React.FC<{ reason: string }> = ({ reason }) => (
 const RiskStatusIndicator: React.FC<{ recommendedRisk: number }> = ({ recommendedRisk }) => {
   let message = '';
   let Icon = ShieldCheckIcon;
-  let bgColor = 'bg-brand-success/10';
-  let textColor = 'text-brand-success';
+  let bgColor = 'bg-tc-success/10';
+  let textColor = 'text-tc-success';
 
   if (recommendedRisk <= 0.25) {
     message = 'Conservador';
   } else if (recommendedRisk <= 0.5) {
     message = 'Controlado';
-    bgColor = 'bg-brand-warning-medium/10';
-    textColor = 'text-brand-warning-medium';
+    bgColor = 'bg-tc-warning/10';
+    textColor = 'text-tc-warning';
     Icon = InfoIcon;
   } else if (recommendedRisk <= 0.75) {
     message = 'Moderado';
-    bgColor = 'bg-brand-warning-high/10';
-    textColor = 'text-brand-warning-high';
+    bgColor = 'bg-tc-warning/10';
+    textColor = 'text-tc-warning';
     Icon = ExclamationTriangleIcon;
   } else { // 1.0%
     message = 'Máximo';
-    bgColor = 'bg-brand-danger/10';
-    textColor = 'text-brand-danger';
+    bgColor = 'bg-tc-error/10';
+    textColor = 'text-tc-error';
     Icon = ExclamationTriangleIcon;
   }
 
@@ -109,9 +109,9 @@ interface WeeklyReviewNotificationProps {
 
 const WeeklyReviewNotification: React.FC<WeeklyReviewNotificationProps> = ({ onReview, onDismiss }) => {
   return (
-    <div className="bg-brand-accent-container text-brand-text p-4 rounded-3xl mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in shadow-sm">
+    <div className="bg-tc-bg-tertiary text-tc-text p-4 rounded-3xl mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in shadow-sm border border-tc-border-light">
       <div className="flex items-start space-x-3">
-        <BookOpenIcon className="w-6 h-6 flex-shrink-0 mt-0.5 text-brand-accent" />
+        <BookOpenIcon className="w-6 h-6 flex-shrink-0 mt-0.5 text-tc-growth-green" />
         <div>
           <h3 className="title-medium">Revisión Semanal</h3>
           <p className="body-medium opacity-90">Es fin de semana. Revisa tu rendimiento y prepara la próxima semana.</p>
@@ -120,16 +120,16 @@ const WeeklyReviewNotification: React.FC<WeeklyReviewNotificationProps> = ({ onR
       <div className="flex items-center space-x-2 flex-shrink-0 self-end sm:self-center">
         <button
           onClick={onReview}
-          className="bg-brand-accent text-white label-large py-2 px-4 rounded-full shadow-sm hover:shadow-md transition-all whitespace-nowrap"
+          className="bg-tc-growth-green hover:bg-tc-growth-green-light active:bg-tc-growth-green-dark text-white label-large py-2 px-4 rounded-full shadow-sm hover:shadow-md transition-all whitespace-nowrap"
         >
           Revisar Ahora
         </button>
         <button
           onClick={onDismiss}
-          className="p-2 rounded-full hover:bg-brand-light/50"
+          className="p-2 rounded-full hover:bg-tc-bg-secondary"
           aria-label="Cerrar notificación"
         >
-          <XCircleIcon className="w-6 h-6 text-brand-text-secondary" />
+          <XCircleIcon className="w-6 h-6 text-tc-text-secondary" />
         </button>
       </div>
     </div>
@@ -142,7 +142,7 @@ const ContextualRiskAlert: React.FC<{ currentStreak: { type: string, count: numb
   }
 
   return (
-    <div className="bg-brand-warning-high/10 text-brand-warning-high p-4 rounded-3xl mb-6 flex items-start space-x-3 animate-fade-in">
+    <div className="bg-tc-warning/10 text-tc-warning p-4 rounded-3xl mb-6 flex items-start space-x-3 animate-fade-in border border-tc-warning/20">
       <ExclamationTriangleIcon className="w-6 h-6 flex-shrink-0 mt-0.5" />
       <div>
         <h3 className="title-medium">Racha Perdedora Detectada</h3>
@@ -181,7 +181,7 @@ const CooldownNotification: React.FC<{ cooldownUntil: number }> = ({ cooldownUnt
   const message = "Pausa y Analiza: Acabas de cerrar una pérdida. Tómate 15 minutos para revisar la operación en tu diario y despejar la mente antes de buscar una nueva entrada. Un trader profesional protege su estado mental.";
 
   return (
-    <div className="bg-brand-warning-medium/10 border border-brand-warning-medium/20 text-brand-warning-medium p-4 rounded-3xl mb-6 flex items-start space-x-3">
+    <div className="bg-tc-warning/10 border border-tc-warning/20 text-tc-warning p-4 rounded-3xl mb-6 flex items-start space-x-3">
       <PauseCircleIcon className="w-6 h-6 flex-shrink-0 mt-0.5" />
       <div>
         <div className="flex justify-between items-center">
@@ -225,13 +225,13 @@ const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPa
       <ContextualRiskAlert currentStreak={currentStreak} mt5Summary={mt5Summary} />
       <RiskStatusIndicator recommendedRisk={recommendedRisk} />
 
-      <h1 className="headline-medium text-md-on-surface mb-6 px-2">Lista de Seguimiento</h1>
+      <h1 className="headline-medium text-tc-text mb-6 px-2">Lista de Seguimiento</h1>
 
       <div>
         {Object.keys(pairsState).length === 0 ? (
-          <div className="text-center py-16 px-4 bg-md-surface-container-low rounded-md-xl border border-md-outline-variant">
-            <p className="text-md-on-surface-variant title-large">Tu lista está vacía.</p>
-            <p className="text-md-on-surface-variant body-medium mt-1">Usa el botón + para añadir símbolos.</p>
+          <div className="text-center py-16 px-4 bg-white rounded-3xl border border-tc-border-light">
+            <p className="text-tc-text-secondary title-large">Tu lista está vacía.</p>
+            <p className="text-tc-text-tertiary body-medium mt-1">Usa el botón + para añadir símbolos.</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -244,45 +244,45 @@ const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPa
               const quoteInfo = CURRENCY_INFO[quoteCurrency];
 
               return (
-                <div key={pair.symbol} className="bg-md-surface-container-low rounded-md-md p-4 shadow-md-elevation-1 flex items-center justify-between transition-all duration-md-short4 ease-md-standard hover:shadow-md-elevation-2 active:scale-[0.99]">
+                <div key={pair.symbol} className="bg-white rounded-2xl p-4 shadow-sm border border-tc-border-light flex items-center justify-between transition-all duration-200 hover:shadow-md hover:border-tc-border-medium active:scale-[0.99]">
                   <div className="flex items-center flex-1 min-w-0" onClick={() => onSelectPair(pair.symbol)}>
                     {baseInfo && quoteInfo && (
                       <div className="relative w-10 h-8 mr-4 flex-shrink-0">
                         <img
-                          className="absolute left-0 top-0 w-7 h-7 rounded-full object-cover border-2 border-md-surface-container-low shadow-sm"
+                          className="absolute left-0 top-0 w-7 h-7 rounded-full object-cover border-2 border-white shadow-sm"
                           src={`https://flagcdn.com/w40/${baseInfo.countryCode.toLowerCase()}.png`}
                           alt={`${baseInfo.name} flag`}
                         />
                         <img
-                          className="absolute left-4 top-0 w-7 h-7 rounded-full object-cover border-2 border-md-surface-container-low shadow-sm"
+                          className="absolute left-4 top-0 w-7 h-7 rounded-full object-cover border-2 border-white shadow-sm"
                           src={`https://flagcdn.com/w40/${quoteInfo.countryCode.toLowerCase()}.png`}
                           alt={`${quoteInfo.name} flag`}
                         />
                       </div>
                     )}
                     <div className="min-w-0 cursor-pointer">
-                      <p className="title-large text-md-on-surface leading-tight">
+                      <p className="title-large text-tc-text leading-tight">
                         {pair.symbol}
                       </p>
-                      <p className="body-small text-md-on-surface-variant truncate">
+                      <p className="body-small text-tc-text-secondary truncate">
                         {baseInfo && quoteInfo ? `${baseInfo.name} / ${quoteInfo.name}` : 'Personalizado'}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <div className="h-6 w-px bg-md-outline-variant"></div>
+                    <div className="h-6 w-px bg-tc-border-light"></div>
                     <button
                       onClick={() => onSelectPair(pair.symbol)}
                       disabled={isUiLocked}
-                      className={`min-w-[48px] min-h-[48px] w-12 h-12 flex items-center justify-center rounded-md-full transition-all duration-md-short4 ease-md-standard ${isUiLocked ? 'bg-md-surface-container text-md-on-surface-variant' : 'bg-md-secondary-container text-md-on-secondary-container hover:shadow-md-elevation-1 active:bg-md-secondary'}`}
+                      className={`min-w-[48px] min-h-[48px] w-12 h-12 flex items-center justify-center rounded-full transition-all duration-200 ${isUiLocked ? 'bg-gray-100 text-tc-text-tertiary' : 'bg-tc-deep-forest hover:bg-tc-deep-forest-light text-white hover:shadow-md active:scale-95'}`}
                       aria-label={isPlanComplete ? 'Ver' : 'Analizar'}
                     >
                       <CheckCircleIcon className="w-6 h-6" />
                     </button>
                     <button
                       onClick={() => onRemovePair(pair.symbol)}
-                      className="min-w-[48px] min-h-[48px] w-12 h-12 flex items-center justify-center rounded-md-full text-md-on-surface-variant hover:bg-md-error-container hover:text-md-error transition-all duration-md-short4 ease-md-standard"
+                      className="min-w-[48px] min-h-[48px] w-12 h-12 flex items-center justify-center rounded-full text-tc-text-tertiary hover:bg-tc-error/10 hover:text-tc-error transition-all duration-200"
                       aria-label={`Eliminar ${pair.symbol}`}
                     >
                       <TrashIcon className="w-5 h-5" />
@@ -295,11 +295,11 @@ const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPa
         )}
       </div>
 
-      {/* MD3 FAB (Floating Action Button) */}
+      {/* FAB (Floating Action Button) */}
       <button
         onClick={() => setIsAddModalOpen(true)}
         disabled={isUiLocked}
-        className={`fixed ${isBannerVisible ? 'bottom-40' : 'bottom-24'} right-6 md-medium:bottom-6 md-medium:right-6 w-14 h-14 bg-md-primary-container text-md-on-primary-container shadow-md-elevation-3 hover:shadow-md-elevation-4 flex items-center justify-center transition-all duration-md-short4 ease-md-standard active:scale-95 z-40 rounded-md-lg disabled:opacity-50 disabled:cursor-not-allowed`}
+        className={`fixed ${isBannerVisible ? 'bottom-40' : 'bottom-24'} right-6 md-medium:bottom-6 md-medium:right-6 w-14 h-14 bg-tc-growth-green hover:bg-tc-growth-green-light active:bg-tc-growth-green-dark text-white shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-200 active:scale-95 z-40 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed`}
         aria-label="Añadir símbolo"
       >
         <PlusIcon className="w-7 h-7" />
@@ -336,23 +336,23 @@ const AddSymbolModal: React.FC<AddSymbolModalProps> = ({ availablePairs, onAddPa
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 p-4 animate-fade-in backdrop-blur-sm" onClick={onClose}>
-      <div className="bg-brand-light/95 dark:bg-brand-light/90 backdrop-blur-xl rounded-4xl shadow-2xl w-full max-w-xs overflow-hidden border border-white/20" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-tc-bg-overlay flex justify-center items-center z-50 p-4 animate-fade-in backdrop-blur-sm" onClick={onClose}>
+      <div className="bg-white backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-xs overflow-hidden border border-tc-border-light" onClick={e => e.stopPropagation()}>
         <div className="p-5 flex justify-between items-center bg-transparent">
-          <h2 className="headline-small text-brand-text">Añadir Símbolo</h2>
+          <h2 className="headline-small text-tc-text">Añadir Símbolo</h2>
         </div>
         <div className="px-4 pb-6 max-h-[60vh] overflow-y-auto">
           <div className="mb-4">
-            <div className="w-full flex items-center gap-2 bg-brand-tertiary rounded-t-lg border-b border-brand-text-secondary/50 px-3 py-3 transition-colors focus-within:bg-brand-tertiary/70">
+            <div className="w-full flex items-center gap-2 bg-tc-bg-secondary rounded-t-lg border-b border-tc-border-medium px-3 py-3 transition-colors focus-within:bg-tc-bg-tertiary">
               <input
                 type="text"
                 value={customSymbol}
                 onChange={(e) => setCustomSymbol(e.target.value)}
                 placeholder="Escribe un símbolo..."
-                className="flex-grow bg-transparent text-brand-text focus:outline-none body-large placeholder:text-brand-text-secondary/70"
+                className="flex-grow bg-transparent text-tc-text focus:outline-none body-large placeholder:text-tc-text-tertiary"
                 onKeyDown={(e) => { if (e.key === 'Enter') handleAddCustom(); }}
               />
-              <button onClick={handleAddCustom} className="bg-brand-accent text-white p-2 rounded-full shadow-sm hover:shadow-md transition-all">
+              <button onClick={handleAddCustom} className="bg-tc-growth-green hover:bg-tc-growth-green-light active:bg-tc-growth-green-dark text-white p-2 rounded-full shadow-sm hover:shadow-md transition-all">
                 <PlusIcon className="w-5 h-5" />
               </button>
             </div>
@@ -365,10 +365,10 @@ const AddSymbolModal: React.FC<AddSymbolModalProps> = ({ availablePairs, onAddPa
                 <li key={symbol}>
                   <button
                     onClick={() => onAddPair(symbol)}
-                    className="w-full text-left p-3 rounded-2xl hover:bg-brand-tertiary transition-colors flex items-center justify-between group"
+                    className="w-full text-left p-3 rounded-2xl hover:bg-tc-bg-secondary transition-colors flex items-center justify-between group"
                   >
                     <div className="flex items-center">
-                      <span className="title-medium text-brand-text">{symbol}</span>
+                      <span className="title-medium text-tc-text">{symbol}</span>
                       {performance !== undefined && (
                         <span
                           className="ml-2"
@@ -377,12 +377,12 @@ const AddSymbolModal: React.FC<AddSymbolModalProps> = ({ availablePairs, onAddPa
                           {performance >= 0 ? (
                             <StarIcon className="w-4 h-4 text-yellow-500" />
                           ) : (
-                            <ExclamationTriangleIcon className="w-4 h-4 text-brand-warning-high" />
+                            <ExclamationTriangleIcon className="w-4 h-4 text-tc-warning" />
                           )}
                         </span>
                       )}
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-brand-tertiary group-hover:bg-brand-accent group-hover:text-white flex items-center justify-center transition-colors text-brand-text-secondary">
+                    <div className="w-8 h-8 rounded-full bg-tc-bg-secondary group-hover:bg-tc-growth-green group-hover:text-white flex items-center justify-center transition-colors text-tc-text-secondary">
                       <PlusIcon className="w-5 h-5" />
                     </div>
                   </button>
@@ -391,7 +391,7 @@ const AddSymbolModal: React.FC<AddSymbolModalProps> = ({ availablePairs, onAddPa
             })}
           </ul>
           {availablePairs.length === 0 && (
-            <p className="text-brand-text-secondary text-center py-4 body-medium">Lista sugerida vacía.</p>
+            <p className="text-tc-text-secondary text-center py-4 body-medium">Lista sugerida vacía.</p>
           )}
         </div>
       </div>

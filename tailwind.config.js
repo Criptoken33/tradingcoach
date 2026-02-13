@@ -73,6 +73,59 @@ export default {
                 'brand-gold': '#FFD700',
                 'brand-gold-light': '#FDB931',
                 'brand-gold-dark': '#D4AF37',
+
+                // ============================================
+                // TRADINGCOACH DESIGN SYSTEM - NEW PALETTE
+                // ============================================
+
+                // Primary Colors
+                'tc-growth-green': {
+                    DEFAULT: 'rgb(var(--tc-color-growth-green))',
+                    light: 'rgb(var(--tc-color-growth-green-light))',
+                    dark: 'rgb(var(--tc-color-growth-green-dark))',
+                },
+                'tc-deep-forest': {
+                    DEFAULT: 'rgb(var(--tc-color-deep-forest))',
+                    light: 'rgb(var(--tc-color-deep-forest-light))',
+                },
+                'tc-midnight-black': 'rgb(var(--tc-color-midnight-black))',
+                'tc-pure-white': 'rgb(var(--tc-color-pure-white))',
+                'tc-matte-green': {
+                    DEFAULT: 'rgb(var(--tc-color-matte-green))',
+                    light: 'rgb(var(--tc-color-matte-green-light))',
+                    dark: 'rgb(var(--tc-color-matte-green-dark))',
+                },
+
+                // Semantic Colors
+                'tc-success': 'rgb(var(--tc-color-success))',
+                'tc-error': 'rgb(var(--tc-color-error))',
+                'tc-warning': 'rgb(var(--tc-color-warning))',
+                'tc-info': 'rgb(var(--tc-color-info))',
+
+                // Text Colors
+                'tc-text': {
+                    DEFAULT: 'rgb(var(--tc-color-text-primary))',
+                    secondary: 'var(--tc-color-text-secondary)',
+                    tertiary: 'var(--tc-color-text-tertiary)',
+                    'on-dark': 'rgb(var(--tc-color-text-on-dark))',
+                    'on-green': 'rgb(var(--tc-color-text-on-green))',
+                },
+
+                // Background Colors
+                'tc-bg': {
+                    DEFAULT: 'rgb(var(--tc-color-bg-primary))',
+                    secondary: 'var(--tc-color-bg-secondary)',
+                    tertiary: 'var(--tc-color-bg-tertiary)',
+                    overlay: 'var(--tc-color-bg-overlay)',
+                },
+
+                // Border Colors
+                'tc-border': {
+                    DEFAULT: 'var(--tc-color-border-light)',
+                    light: 'var(--tc-color-border-light)',
+                    medium: 'var(--tc-color-border-medium)',
+                    dark: 'var(--tc-color-border-dark)',
+                },
             },
             boxShadow: {
                 'md-elevation-0': 'var(--md-sys-elevation-0)',

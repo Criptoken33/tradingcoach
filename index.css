@@ -79,6 +79,61 @@
   /* Scrim */
   --md-sys-color-scrim: 0 0 0;
   --md-sys-color-shadow: 0 0 0;
+
+  /* ============================================
+     TRADINGCOACH DESIGN SYSTEM - NEW PALETTE
+     ============================================ */
+
+  /* Primary Palette */
+  --tc-color-growth-green: 0 129 64;
+  /* #008140 - Primary actions, CTAs */
+  --tc-color-growth-green-light: 0 168 85;
+  /* #00A855 - Hover states */
+  --tc-color-growth-green-dark: 0 102 51;
+  /* #006633 - Active/pressed states */
+
+  --tc-color-deep-forest: 0 104 122;
+  /* #00687A - Secondary actions */
+  --tc-color-deep-forest-light: 0 133 153;
+  /* #008599 - Hover on secondary */
+
+  --tc-color-midnight-black: 26 26 26;
+  /* #1A1A1A - Text, headers */
+  --tc-color-pure-white: 255 255 255;
+  /* #FFFFFF - Light backgrounds */
+
+  --tc-color-matte-green: 53 133 107;
+  /* #35856B - Tertiary accents */
+  --tc-color-matte-green-light: 74 157 130;
+  /* #4A9D82 - Lighter accents */
+  --tc-color-matte-green-dark: 42 109 90;
+  /* #2A6D5A - Darker accents */
+
+  /* Semantic Colors */
+  --tc-color-success: var(--tc-color-growth-green);
+  --tc-color-error: 220 38 38;
+  /* #DC2626 - Keep red for errors */
+  --tc-color-warning: 255 165 0;
+  /* #FFA500 - Keep orange for warnings */
+  --tc-color-info: var(--tc-color-deep-forest);
+
+  /* Text Colors */
+  --tc-color-text-primary: var(--tc-color-midnight-black);
+  --tc-color-text-secondary: rgba(26, 26, 26, 0.7);
+  --tc-color-text-tertiary: rgba(26, 26, 26, 0.5);
+  --tc-color-text-on-dark: var(--tc-color-pure-white);
+  --tc-color-text-on-green: var(--tc-color-pure-white);
+
+  /* Background Colors */
+  --tc-color-bg-primary: var(--tc-color-pure-white);
+  --tc-color-bg-secondary: rgba(0, 129, 64, 0.03);
+  --tc-color-bg-tertiary: rgba(0, 129, 64, 0.08);
+  --tc-color-bg-overlay: rgba(26, 26, 26, 0.8);
+
+  /* Border Colors */
+  --tc-color-border-light: rgba(26, 26, 26, 0.1);
+  --tc-color-border-medium: rgba(26, 26, 26, 0.2);
+  --tc-color-border-dark: rgba(26, 26, 26, 0.3);
 }
 
 html.dark {
@@ -149,6 +204,28 @@ html.dark {
   /* Scrim */
   --md-sys-color-scrim: 0 0 0;
   --md-sys-color-shadow: 0 0 0;
+
+  /* ============================================
+     TRADINGCOACH DESIGN SYSTEM - DARK MODE
+     ============================================ */
+
+  /* Text Colors - Inverted for dark mode */
+  --tc-color-text-primary: var(--tc-color-pure-white);
+  --tc-color-text-secondary: rgba(255, 255, 255, 0.7);
+  --tc-color-text-tertiary: rgba(255, 255, 255, 0.5);
+  --tc-color-text-on-dark: var(--tc-color-midnight-black);
+
+  /* Background Colors - Dark surfaces */
+  --tc-color-bg-primary: 20 18 24;
+  /* Dark surface */
+  --tc-color-bg-secondary: rgba(0, 129, 64, 0.08);
+  --tc-color-bg-tertiary: rgba(0, 129, 64, 0.12);
+  --tc-color-bg-overlay: rgba(0, 0, 0, 0.85);
+
+  /* Border Colors - Lighter for visibility on dark */
+  --tc-color-border-light: rgba(255, 255, 255, 0.1);
+  --tc-color-border-medium: rgba(255, 255, 255, 0.2);
+  --tc-color-border-dark: rgba(255, 255, 255, 0.3);
 }
 
 /* ============================================
