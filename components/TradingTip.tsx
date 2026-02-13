@@ -19,7 +19,7 @@ const TradingTip: React.FC = () => {
       </div>
       <div className="flex-1 min-w-0 self-center">
         <p
-          className={`text-tc-text body-large italic transition-opacity duration-500 line-clamp-3 ${isFading ? 'opacity-0' : 'opacity-90'}`}
+          className={`text-tc-text text-base italic transition-opacity duration-500 line-clamp-3 ${isFading ? 'opacity-0' : 'opacity-90'}`}
         >
           "{tip}"
         </p>

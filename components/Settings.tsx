@@ -174,7 +174,7 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
         <div className="p-4 sm:p-6 max-w-3xl mx-auto animate-fade-in pb-24">
             <div className="flex items-center mb-6">
                 <Cog6ToothIcon className="w-8 h-8 sm:w-10 sm:h-10 text-tc-growth-green mr-4" />
-                <h1 className="headline-medium font-bold text-tc-text">Ajustes</h1>
+                <h1 className="text-xl font-semibold text-tc-text">Ajustes</h1>
             </div>
 
             <div className="space-y-6">
@@ -236,7 +236,7 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
                 >
                     <button onClick={onNavigateToChecklistEditor} className="w-full flex items-center justify-center gap-3 bg-tc-growth-green/10 hover:bg-tc-growth-green/20 text-tc-growth-green font-bold py-4 px-4 rounded-2xl transition-colors border border-tc-growth-green/20">
                         <ChecklistIcon className="w-6 h-6" />
-                        <span className="label-large">Abrir Gestor de Checklists</span>
+                        <span className="text-sm font-medium">Abrir Gestor de Checklists</span>
                     </button>
                 </SectionCard>
 
@@ -247,13 +247,13 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
                 >
                     <div className="space-y-6">
                         <div>
-                            <h3 className="title-medium font-bold text-tc-text mb-2 flex items-center gap-2">
+                            <h3 className="text-base font-semibold text-tc-text mb-2 flex items-center gap-2">
                                 Sincronización de Historial
                                 {!isPro && <span className="bg-tc-growth-green/10 text-tc-growth-green label-small px-1.5 py-0.5 rounded-full border border-tc-growth-green/20">PRO</span>}
                             </h3>
                             <button onClick={isPro ? handleImportMt5ReportClick : onShowPaywall} className="w-full flex items-center justify-center gap-3 bg-tc-growth-green hover:bg-tc-growth-green/90 text-white font-bold py-4 px-4 rounded-2xl transition-colors shadow-lg relative overflow-hidden group">
                                 <ArrowUpTrayIcon className="w-6 h-6" />
-                                <span className="label-large">Importar Reporte de MT5</span>
+                                <span className="text-sm font-medium">Importar Reporte de MT5</span>
                                 {!isPro && (
                                     <div className="absolute inset-0 bg-black/5 flex items-center justify-end pr-4 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <Cog6ToothIcon className="w-5 h-5 animate-spin-slow opacity-20" />
@@ -264,13 +264,13 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
                         </div>
 
                         <div className="pt-6 border-t border-tc-border-light">
-                            <h3 className="title-medium font-bold text-tc-text mb-4 flex items-center gap-2">
+                            <h3 className="text-base font-semibold text-tc-text mb-4 flex items-center gap-2">
                                 Copias de Seguridad
                                 {isPro && <span className="bg-tc-success/10 text-tc-success label-small px-1.5 py-0.5 rounded-full border border-tc-success/20">SINCRONIZADO</span>}
                             </h3>
                             <div className="space-y-3">
                                 {!isPro && (
-                                    <p className="body-small text-tc-text-secondary mb-4 bg-tc-bg-secondary p-3 rounded-xl italic">
+                                    <p className="text-xs text-tc-text-secondary mb-4 bg-tc-bg-secondary p-3 rounded-xl italic">
                                         Las copias de seguridad automáticas en la nube son una función <strong>PRO</strong>. Tus datos actuales se guardan localmente.
                                     </p>
                                 )}
@@ -297,7 +297,7 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
                     >
                         Reiniciar Diario y Registro
                     </ActionButton>
-                    <p className="body-small text-tc-text-secondary mt-2">
+                    <p className="text-xs text-tc-text-secondary mt-2">
                         Esto borrará tu diario de operaciones y la lista de seguimiento. Los ajustes y checklists no se verán afectados.
                     </p>
                     {mt5ReportData && (
@@ -309,7 +309,7 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
                             >
                                 Eliminar Reporte de MT5
                             </ActionButton>
-                            <p className="body-small text-tc-text-secondary mt-2">
+                            <p className="text-xs text-tc-text-secondary mt-2">
                                 Desvinculará el reporte importado. El capital volverá a ser gestionado manualmente.
                             </p>
                         </div>
@@ -325,7 +325,7 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
                             onClick={onLogout}
                             icon={<ArrowUpTrayIcon className="w-6 h-6 rotate-90" />}
                         >
-                            <span className="label-large">Cerrar Sesión</span>
+                            <span className="text-sm font-medium">Cerrar Sesión</span>
                         </ActionButton>
                     </div>
                 </SectionCard>
@@ -357,8 +357,8 @@ const SectionCard: React.FC<{ title: string; description: string; children: Reac
     <div className="bg-tc-bg p-5 sm:p-6 rounded-3xl border border-tc-border-light shadow-sm">
         <div className="flex justify-between items-start mb-4">
             <div>
-                <h2 className="title-large font-bold text-tc-text">{title}</h2>
-                <p className="body-medium text-tc-text-secondary mt-1">{description}</p>
+                <h2 className="text-lg font-semibold text-tc-text">{title}</h2>
+                <p className="text-sm text-tc-text-secondary mt-1">{description}</p>
             </div>
             {headerAction && <div className="ml-4 flex-shrink-0">{headerAction}</div>}
         </div>
@@ -389,21 +389,21 @@ const ResetConfirmationModal: React.FC<{ onConfirm: () => void; onCancel: () => 
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-tc-error/10 mb-4">
                     <ExclamationTriangleIcon className="h-7 w-7 text-tc-error" aria-hidden="true" />
                 </div>
-                <h3 className="headline-small font-bold text-tc-text">¿Estás seguro?</h3>
-                <p className="mt-2 body-medium text-tc-text-secondary">
+                <h3 className="text-lg font-semibold text-tc-text">¿Estás seguro?</h3>
+                <p className="mt-2 text-sm text-tc-text-secondary">
                     Esta acción eliminará permanentemente tu diario de operaciones y tu lista de seguimiento. No podrás recuperar estos datos.
                 </p>
                 <div className="mt-6 flex flex-col sm:flex-row-reverse gap-3">
                     <button
                         type="button"
-                        className="w-full justify-center rounded-2xl bg-tc-error px-4 py-3 label-large font-semibold text-white shadow-sm hover:bg-tc-error/90 transition-all"
+                        className="w-full justify-center rounded-2xl bg-tc-error px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-tc-error/90 transition-all"
                         onClick={onConfirm}
                     >
                         Sí, reiniciar datos
                     </button>
                     <button
                         type="button"
-                        className="w-full justify-center rounded-2xl bg-tc-bg-secondary px-4 py-3 label-large font-semibold text-tc-text shadow-sm hover:bg-tc-bg-tertiary transition-colors border border-tc-border-light"
+                        className="w-full justify-center rounded-2xl bg-tc-bg-secondary px-4 py-3 text-sm font-semibold text-tc-text shadow-sm hover:bg-tc-bg-tertiary transition-colors border border-tc-border-light"
                         onClick={onCancel}
                     >
                         Cancelar
@@ -421,21 +421,21 @@ const DeleteReportConfirmationModal: React.FC<{ onConfirm: () => void; onCancel:
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-tc-error/10 mb-4">
                     <ExclamationTriangleIcon className="h-7 w-7 text-tc-error" aria-hidden="true" />
                 </div>
-                <h3 className="headline-small font-bold text-tc-text">¿Eliminar Reporte de MT5?</h3>
-                <p className="mt-2 body-medium text-tc-text-secondary">
+                <h3 className="text-lg font-semibold text-tc-text">¿Eliminar Reporte de MT5?</h3>
+                <p className="mt-2 text-sm text-tc-text-secondary">
                     Esta acción es irreversible. Se eliminará el reporte y el capital de la cuenta se desvinculará.
                 </p>
                 <div className="mt-6 flex flex-col sm:flex-row-reverse gap-3">
                     <button
                         type="button"
-                        className="w-full justify-center rounded-2xl bg-tc-error px-4 py-3 label-large font-semibold text-white shadow-sm hover:bg-tc-error/90 transition-all"
+                        className="w-full justify-center rounded-2xl bg-tc-error px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-tc-error/90 transition-all"
                         onClick={onConfirm}
                     >
                         Sí, eliminar
                     </button>
                     <button
                         type="button"
-                        className="w-full justify-center rounded-2xl bg-tc-bg-secondary px-4 py-3 label-large font-semibold text-tc-text shadow-sm hover:bg-tc-bg-tertiary transition-colors border border-tc-border-light"
+                        className="w-full justify-center rounded-2xl bg-tc-bg-secondary px-4 py-3 text-sm font-semibold text-tc-text shadow-sm hover:bg-tc-bg-tertiary transition-colors border border-tc-border-light"
                         onClick={onCancel}
                     >
                         Cancelar
@@ -461,7 +461,7 @@ const ThemeSwitcher: React.FC<{ theme: Theme, setTheme: (theme: Theme) => void }
                     key={option.value}
                     onClick={() => setTheme(option.value)}
                     className={`
-                        flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-full label-medium font-bold transition-all
+                        flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-full text-xs font-semibold transition-all
                         ${theme === option.value
                             ? 'bg-tc-growth-green text-white shadow'
                             : 'text-tc-text-secondary hover:bg-tc-bg-tertiary'
@@ -480,7 +480,7 @@ const ThemeSwitcher: React.FC<{ theme: Theme, setTheme: (theme: Theme) => void }
 const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement> & { label: string }> = ({ label, ...props }) => (
     <div className="relative group">
         <label className="block label-small font-bold text-tc-text-secondary mb-1 uppercase tracking-wider">{label}</label>
-        <input {...props} className={`w-full bg-tc-bg-secondary border-b-2 border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text body-large focus:border-tc-growth-green outline-none transition-colors placeholder:text-tc-text-secondary/30 ${props.readOnly ? 'cursor-default' : ''} ${props.className}`} />
+        <input {...props} className={`w-full bg-tc-bg-secondary border-b-2 border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text text-base focus:border-tc-growth-green outline-none transition-colors placeholder:text-tc-text-secondary/30 ${props.readOnly ? 'cursor-default' : ''} ${props.className}`} />
     </div>
 );
 

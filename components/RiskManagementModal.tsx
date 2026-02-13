@@ -22,13 +22,13 @@ const DirectionButtons: React.FC<DirectionButtonsProps> = ({ direction, onChange
     <div className="flex items-center bg-tc-bg-secondary rounded-full p-1">
         <button
             onClick={() => onChangeDirection(Direction.LONG)}
-            className={`flex-1 rounded-full transition-colors flex justify-center items-center gap-2 label-large font-bold py-3 ${direction === Direction.LONG ? 'bg-tc-success text-white shadow-sm' : 'text-tc-text-secondary hover:bg-tc-bg-tertiary'}`}
+            className={`flex-1 rounded-full transition-colors flex justify-center items-center gap-2 text-sm font-semibold py-3 ${direction === Direction.LONG ? 'bg-tc-success text-white shadow-sm' : 'text-tc-text-secondary hover:bg-tc-bg-tertiary'}`}
         >
             <ArrowUpIcon className="w-4 h-4" /> COMPRA
         </button>
         <button
             onClick={() => onChangeDirection(Direction.SHORT)}
-            className={`flex-1 rounded-full transition-colors flex justify-center items-center gap-2 label-large font-bold py-3 ${direction === Direction.SHORT ? 'bg-tc-error text-white shadow-sm' : 'text-tc-text-secondary hover:bg-tc-bg-tertiary'}`}
+            className={`flex-1 rounded-full transition-colors flex justify-center items-center gap-2 text-sm font-semibold py-3 ${direction === Direction.SHORT ? 'bg-tc-error text-white shadow-sm' : 'text-tc-text-secondary hover:bg-tc-bg-tertiary'}`}
         >
             <ArrowDownIcon className="w-4 h-4" /> VENTA
         </button>
@@ -250,7 +250,7 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
             {isCalculatorMode ? (
                 <div className="flex items-center mb-6">
                     <CalculatorIcon className="w-8 h-8 sm:w-10 sm:h-10 text-tc-growth-green mr-4" />
-                    <h1 className="headline-medium font-bold text-tc-text">Calculadora</h1>
+                    <h1 className="text-xl font-semibold text-tc-text">Calculadora</h1>
                 </div>
             ) : (
                 <div className="flex justify-between items-center mb-6">
@@ -259,8 +259,8 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
                             <ArrowLeftIcon className="w-6 h-6" />
                         </button>
                         <div>
-                            <h1 className="headline-medium font-bold text-tc-text">Gestión del Riesgo</h1>
-                            <p className="label-large font-bold text-tc-text-secondary">{symbol} &bull; <span className={directionColor}>{directionText}</span></p>
+                            <h1 className="text-xl font-semibold text-tc-text">Gestión del Riesgo</h1>
+                            <p className="text-sm font-medium text-tc-text-secondary">{symbol} &bull; <span className={directionColor}>{directionText}</span></p>
                         </div>
                     </div>
                 </div>
@@ -269,13 +269,13 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Column 1: Inputs */}
                 <div className="bg-tc-bg p-6 rounded-3xl border border-tc-border-light shadow-sm space-y-5">
-                    <h3 className="title-large font-bold text-tc-text pb-2">Parámetros</h3>
+                    <h3 className="text-lg font-semibold text-tc-text pb-2">Parámetros</h3>
                     {isCalculatorMode && (
                         <div className="space-y-4">
                             <div>
                                 <label className="block label-small font-bold text-tc-text-secondary mb-1 uppercase tracking-wider">Símbolo</label>
                                 <div className="relative">
-                                    <select value={internalSymbol} onChange={e => setInternalSymbol(e.target.value)} className="w-full bg-tc-bg-secondary border-b border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text focus:border-tc-growth-green outline-none appearance-none transition-colors body-large">
+                                    <select value={internalSymbol} onChange={e => setInternalSymbol(e.target.value)} className="w-full bg-tc-bg-secondary border-b border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text focus:border-tc-growth-green outline-none appearance-none transition-colors text-base">
                                         {CURRENCY_PAIRS.map(p => <option key={p} value={p}>{p}</option>)}
                                     </select>
                                     <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-tc-text-secondary">
@@ -302,7 +302,7 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
 
                 {/* Column 2: Calculations */}
                 <div className="bg-tc-bg p-6 rounded-3xl border border-tc-border-light shadow-sm space-y-5">
-                    <h3 className="title-large font-bold text-tc-text pb-2">Resultados</h3>
+                    <h3 className="text-lg font-semibold text-tc-text pb-2">Resultados</h3>
                     {priceLogicError && <AlertMessage type="error" text={priceLogicError} />}
                     <div className={`space-y-4 ${priceLogicError ? 'opacity-50 grayscale' : ''}`}>
                         <div className="grid grid-cols-2 gap-4">
@@ -328,7 +328,7 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
                         onClick={handleSave}
                         disabled={!isValid || !!priceLogicError || !riskRewardRatio || riskRewardRatio < 2}
                         aria-label="Ejecutar"
-                        className="w-full sm:w-auto sm:min-w-[240px] bg-tc-growth-green hover:bg-tc-growth-green-light active:bg-tc-growth-green-dark text-white label-large font-bold py-4 px-12 rounded-full shadow-xl transition-all active:scale-95 disabled:bg-tc-bg-secondary disabled:text-tc-text-tertiary disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center"
+                        className="w-full sm:w-auto sm:min-w-[240px] bg-tc-growth-green hover:bg-tc-growth-green-light active:bg-tc-growth-green-dark text-white text-sm font-semibold py-4 px-12 rounded-full shadow-xl transition-all active:scale-95 disabled:bg-tc-bg-secondary disabled:text-tc-text-tertiary disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center"
                     >
                         Ejecutar
                     </button>
@@ -341,7 +341,7 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
 const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement> & { label: string }> = ({ label, ...props }) => (
     <div className="relative group">
         <label className="block label-small font-bold text-tc-text-secondary mb-1 uppercase tracking-wider">{label}</label>
-        <input {...props} className={`w-full bg-tc-bg-secondary border-b-2 border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text body-large focus:border-tc-growth-green outline-none transition-colors placeholder:text-tc-text-tertiary ${props.readOnly ? 'cursor-default' : ''} ${props.className}`} />
+        <input {...props} className={`w-full bg-tc-bg-secondary border-b-2 border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text text-base focus:border-tc-growth-green outline-none transition-colors placeholder:text-tc-text-tertiary ${props.readOnly ? 'cursor-default' : ''} ${props.className}`} />
     </div>
 );
 
@@ -354,7 +354,7 @@ const CalculatedField: React.FC<{ label: string, value: string, hasError?: boole
     return (
         <div className={`bg-tc-bg-secondary rounded-2xl p-4 border border-tc-border-light flex flex-col justify-center items-center ${hasError ? 'ring-2 ring-tc-error bg-tc-error/5' : ''}`}>
             <span className="label-small font-bold text-tc-text-secondary uppercase tracking-wider mb-1">{label}</span>
-            <span className={`font-mono font-bold ${large ? 'headline-medium' : 'title-large'} ${colorClass}`}>
+            <span className={`font-data font-bold ${large ? 'text-2xl' : 'text-xl'} ${colorClass}`}>
                 {value}
             </span>
         </div>

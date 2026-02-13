@@ -118,7 +118,7 @@ const Toast: React.FC<ToastComponentProps> = ({ state }) => {
         >
             <div className="flex items-center gap-3 pointer-events-auto">
                 <IconComponent className={`w-5 h-5 flex-shrink-0 ${config.icon}`} />
-                <p className="label-large text-md-on-surface flex-1 break-words text-center">
+                <p className="text-sm font-medium text-md-on-surface flex-1 break-words text-center">
                     {state.message}
                 </p>
             </div>
@@ -169,12 +169,12 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ state, onResolve }) => {
                 )}
 
                 {/* Title */}
-                <h2 className={`title-large text-md-on-surface ${isDestructive ? 'text-center' : ''} mb-2`}>
+                <h2 className={`text-lg font-semibold text-md-on-surface ${isDestructive ? 'text-center' : ''} mb-2`}>
                     {state.title}
                 </h2>
 
                 {/* Body */}
-                <p className={`body-medium text-md-on-surface-variant ${isDestructive ? 'text-center' : ''} mb-6`}>
+                <p className={`text-sm text-md-on-surface-variant ${isDestructive ? 'text-center' : ''} mb-6`}>
                     {state.message}
                 </p>
 
@@ -184,7 +184,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ state, onResolve }) => {
                         onClick={() => onResolve(false)}
                         className="
               px-5 py-2.5 rounded-full
-              label-large text-md-primary
+              text-sm font-medium text-md-primary
               hover:bg-md-primary/8 active:bg-md-primary/12
               transition-colors duration-200
               min-h-[40px]
@@ -196,7 +196,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ state, onResolve }) => {
                         onClick={() => onResolve(true)}
                         className={`
               px-5 py-2.5 rounded-full
-              label-large min-h-[40px]
+              text-sm font-medium min-h-[40px]
               transition-all duration-200
               active:scale-[0.97]
               ${isDestructive
@@ -236,10 +236,10 @@ const FullScreenLoader: React.FC<FullScreenLoaderProps> = ({ state }) => {
 
             {/* Brand */}
             <div className="text-center space-y-2">
-                <h1 className="title-large text-md-on-surface font-semibold">
+                <h1 className="text-lg font-semibold text-md-on-surface">
                     Trading Coach
                 </h1>
-                <p className="body-medium text-md-on-surface-variant animate-pulse">
+                <p className="text-sm text-md-on-surface-variant animate-pulse">
                     {state.message || 'Cargando...'}
                 </p>
             </div>

@@ -1113,8 +1113,8 @@ const AppWithAuth: React.FC = () => {
           <div className="absolute inset-0 w-16 h-16 rounded-full border-[3px] border-transparent border-t-md-primary animate-spin" />
         </div>
         <div className="text-center space-y-2">
-          <h1 className="title-large text-md-on-surface font-semibold">Trading Coach</h1>
-          <p className="body-medium text-md-on-surface-variant animate-pulse">Cargando tu espacio de trading...</p>
+          <h1 className="text-lg font-semibold text-md-on-surface">Trading Coach</h1>
+          <p className="text-sm text-md-on-surface-variant animate-pulse">Cargando tu espacio de trading...</p>
         </div>
       </div>
     );

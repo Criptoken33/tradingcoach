@@ -23,12 +23,12 @@ const TradingLog: React.FC<TradingLogProps> = ({ tradingLog, onAddNote, onCloseT
             <div className="p-4 sm:p-8 max-w-6xl mx-auto animate-fade-in pb-24">
                 <div className="flex items-center mb-8">
                     <JournalIcon className="w-10 h-10 text-tc-growth-green mr-4" />
-                    <h1 className="headline-medium font-bold text-tc-text">Diario de Operaciones</h1>
+                    <h1 className="text-xl font-semibold text-tc-text">Diario de Operaciones</h1>
                 </div>
 
                 {sortedTradingLog.length === 0 ? (
                     <div className="text-center py-16 bg-tc-bg rounded-3xl border border-tc-border-light">
-                        <p className="text-tc-text-secondary title-medium">No hay operaciones registradas.</p>
+                        <p className="text-tc-text-secondary text-base font-medium">No hay operaciones registradas.</p>
                     </div>
                 ) : (
                     <div className="space-y-3">
@@ -116,13 +116,13 @@ const TradeCard: React.FC<TradeCardProps> = ({ trade, onViewDetails }) => {
                     <Icon className="w-5 h-5 text-white" />
                 </div>
                 <div className="min-w-0">
-                    <h2 className="title-medium font-bold text-tc-text truncate">{trade.symbol}</h2>
+                    <h2 className="font-data font-semibold text-tc-text truncate">{trade.symbol}</h2>
                     <span className={`label-small font-bold uppercase tracking-wide ${trade.direction === Direction.LONG ? 'text-tc-success' : 'text-tc-error'}`}>
                         {trade.direction}
                     </span>
                 </div>
             </div>
-            <div className={`font-mono font-bold title-large ${pnlColor} ml-2`}>
+            <div className={`font-data font-bold text-lg ${pnlColor} ml-2`}>
                 {pnlText}
             </div>
         </div>
@@ -209,7 +209,7 @@ const TradeDetailModal: React.FC<TradeDetailModalProps> = ({ trade, onClose, onA
             <div className="p-6 border-b border-tc-border-light flex-none flex justify-between items-start">
                 <div>
                     <div className="flex items-center gap-3 mb-2">
-                        <h2 className="headline-small font-bold text-tc-text">{trade.symbol}</h2>
+                        <h2 className="text-xl font-semibold text-tc-text">{trade.symbol}</h2>
                         <span className={`px-2 py-0.5 label-small font-bold uppercase rounded-full ${trade.direction === Direction.LONG ? 'bg-tc-success/10 text-tc-success' : 'bg-tc-error/10 text-tc-error'}`}>
                             {trade.direction === Direction.LONG ? 'Long' : 'Short'}
                         </span>
@@ -218,7 +218,7 @@ const TradeDetailModal: React.FC<TradeDetailModalProps> = ({ trade, onClose, onA
                         )}
                     </div>
                     {pnl && (
-                        <div className={`title-large font-mono font-bold ${pnl.profit >= 0 ? 'text-tc-success' : 'text-tc-error'}`}>
+                        <div className={`font-data font-bold text-lg ${pnl.profit >= 0 ? 'text-tc-success' : 'text-tc-error'}`}>
                             {pnl.profit > 0 ? '+' : ''}{pnl.profit.toFixed(2)} USD
                         </div>
                     )}
@@ -232,41 +232,41 @@ const TradeDetailModal: React.FC<TradeDetailModalProps> = ({ trade, onClose, onA
                 <div className="bg-tc-bg-secondary rounded-2xl border border-tc-border-light grid grid-cols-2">
                     <div className="p-4 border-r border-b border-tc-border-light">
                         <label className="block label-small font-bold text-tc-text-secondary uppercase tracking-wider mb-1">Entrada</label>
-                        <p className="text-tc-text font-mono font-bold title-medium">{riskPlan.entryPrice?.toFixed(5) ?? '---'}</p>
+                        <p className="text-tc-text font-data font-bold">{riskPlan.entryPrice?.toFixed(5) ?? '---'}</p>
                     </div>
                     <div className="p-4 border-b border-tc-border-light">
                         <label className="block label-small font-bold text-tc-text-secondary uppercase tracking-wider mb-1">Lotes</label>
-                        <p className="text-tc-text font-mono font-bold title-medium">{riskPlan.positionSizeLots?.toFixed(2) ?? '---'}</p>
+                        <p className="text-tc-text font-data font-bold">{riskPlan.positionSizeLots?.toFixed(2) ?? '---'}</p>
                     </div>
                     <div className="p-4 border-r border-tc-border-light">
                         <label className="block label-small font-bold text-tc-text-secondary uppercase tracking-wider mb-1">Stop Loss</label>
-                        <p className="text-tc-text font-mono font-bold title-medium">{riskPlan.stopLossPrice?.toFixed(5) ?? '---'}</p>
+                        <p className="text-tc-text font-data font-bold">{riskPlan.stopLossPrice?.toFixed(5) ?? '---'}</p>
                     </div>
                     <div className="p-4">
                         <label className="block label-small font-bold text-tc-text-secondary uppercase tracking-wider mb-1">Take Profit</label>
-                        <p className="text-tc-text font-mono font-bold title-medium">{riskPlan.takeProfitPrice?.toFixed(5) ?? '---'}</p>
+                        <p className="text-tc-text font-data font-bold">{riskPlan.takeProfitPrice?.toFixed(5) ?? '---'}</p>
                     </div>
                 </div>
 
                 <div>
-                    <h3 className="label-large font-bold text-tc-text uppercase tracking-wider mb-3">Notas</h3>
+                    <h3 className="text-xs font-semibold text-tc-text uppercase tracking-wider mb-3">Notas</h3>
                     <div className="space-y-2 mb-4">
                         {trade.notes.length > 0 ? trade.notes.map((n, i) => (
-                            <div key={i} className="bg-tc-bg-secondary p-4 rounded-2xl body-medium text-tc-text border border-tc-border-light">{n}</div>
-                        )) : <p className="body-medium text-tc-text-secondary italic">Sin notas.</p>}
+                            <div key={i} className="bg-tc-bg-secondary p-4 rounded-2xl text-sm text-tc-text border border-tc-border-light">{n}</div>
+                        )) : <p className="text-sm text-tc-text-secondary italic">Sin notas.</p>}
                     </div>
 
                     {trade.status === OperationStatus.OPEN && (
                         <div className="flex gap-2">
-                            <input type="text" value={note} onChange={e => setNote(e.target.value)} placeholder="Nueva nota..." className="flex-grow bg-tc-bg-secondary border-b-2 border-tc-border-medium rounded-t-lg px-4 py-2 text-tc-text outline-none focus:border-tc-growth-green body-medium" />
-                            <button onClick={handleAddNote} className="bg-tc-bg-secondary text-tc-text label-large font-bold py-2 px-4 rounded-xl hover:bg-tc-bg-tertiary transition-colors">Enviar</button>
+                            <input type="text" value={note} onChange={e => setNote(e.target.value)} placeholder="Nueva nota..." className="flex-grow bg-tc-bg-secondary border-b-2 border-tc-border-medium rounded-t-lg px-4 py-2 text-tc-text outline-none focus:border-tc-growth-green text-sm" />
+                            <button onClick={handleAddNote} className="bg-tc-bg-secondary text-tc-text text-sm font-medium py-2 px-4 rounded-xl hover:bg-tc-bg-tertiary transition-colors">Enviar</button>
                         </div>
                     )}
                 </div>
 
                 {trade.status === OperationStatus.OPEN && (
                     <div className="bg-tc-bg-secondary p-4 rounded-3xl border border-tc-border-light">
-                        <h3 className="label-large font-bold text-tc-error uppercase tracking-wider mb-4">Cerrar Operación</h3>
+                        <h3 className="text-xs font-semibold text-tc-error uppercase tracking-wider mb-4">Cerrar Operación</h3>
                         <div className="space-y-4">
                             <Input
                                 label="Precio de Salida"
@@ -279,7 +279,7 @@ const TradeDetailModal: React.FC<TradeDetailModalProps> = ({ trade, onClose, onA
                             />
                             <div>
                                 <label className="block label-small font-bold text-tc-text-secondary mb-1 uppercase tracking-wider">Razón</label>
-                                <select value={exitReason} onChange={e => setExitReason(e.target.value)} className="w-full bg-tc-bg-secondary border-b-2 border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text outline-none appearance-none body-large">
+                                <select value={exitReason} onChange={e => setExitReason(e.target.value)} className="w-full bg-tc-bg-secondary border-b-2 border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text outline-none appearance-none text-base">
                                     {EXIT_REASONS.map(r => <option key={r} value={r}>{r}</option>)}
                                 </select>
                             </div>
@@ -297,7 +297,7 @@ const TradeDetailModal: React.FC<TradeDetailModalProps> = ({ trade, onClose, onA
             {/* Footer for close button */}
             {trade.status === OperationStatus.OPEN && (
                 <div className="p-4 sm:p-6 border-t border-tc-border-light shadow-[0_-4px_10px_-5px_rgba(0,0,0,0.1)] bg-tc-bg flex-none">
-                    <button onClick={handleCloseTrade} disabled={!exitPrice} className="w-full bg-tc-error hover:bg-tc-error/90 active:bg-tc-error text-white label-large font-bold py-4 px-4 rounded-2xl shadow-lg transition-all active:scale-95 disabled:opacity-50 disabled:shadow-none">
+                    <button onClick={handleCloseTrade} disabled={!exitPrice} className="w-full bg-tc-error hover:bg-tc-error/90 active:bg-tc-error text-white text-sm font-semibold py-4 px-4 rounded-2xl shadow-lg transition-all active:scale-95 disabled:opacity-50 disabled:shadow-none">
                         Confirmar Cierre
                     </button>
                 </div>
@@ -311,7 +311,7 @@ const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement> & { label: str
         <label className="block label-small font-bold text-tc-text-secondary mb-1 uppercase tracking-wider">{label}</label>
         <input
             {...props}
-            className={`w-full bg-tc-bg-secondary border-b-2 border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text outline-none focus:border-tc-growth-green transition-colors body-large ${props.readOnly ? 'opacity-70' : ''}`}
+            className={`w-full bg-tc-bg-secondary border-b-2 border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text outline-none focus:border-tc-growth-green transition-colors text-base ${props.readOnly ? 'opacity-70' : ''}`}
         />
     </div>
 );

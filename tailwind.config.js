@@ -10,7 +10,9 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Inter', 'sans-serif'],
+                sans: ['IBM Plex Sans', 'sans-serif'],
+                mono: ['IBM Plex Mono', 'monospace'],
+                data: ['IBM Plex Mono', 'monospace'],
             },
             colors: {
                 // MD3 Surface Colors

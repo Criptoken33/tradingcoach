@@ -209,11 +209,11 @@ const PerformanceStats: React.FC<PerformanceStatsProps> = ({ tradingLog, mt5Repo
             <div className="p-4 sm:p-8 max-w-6xl mx-auto animate-fade-in">
                 <div className="flex items-center mb-8">
                     <ChartPieIcon className="w-10 h-10 text-tc-growth-green mr-4" />
-                    <h1 className="headline-medium font-bold text-tc-text">Estadísticas de Rendimiento</h1>
+                    <h1 className="text-xl font-semibold text-tc-text">Estadísticas de Rendimiento</h1>
                 </div>
                 <div className="text-center py-16 bg-tc-bg rounded-3xl border border-tc-border-light">
-                    <p className="text-tc-text-secondary title-medium font-semibold">No hay operaciones cerradas para analizar.</p>
-                    <p className="text-tc-text-secondary mt-2 max-w-md mx-auto body-medium">Cierra una operación en el Diario o importa un reporte de MT5 desde Ajustes para empezar.</p>
+                    <p className="text-tc-text-secondary text-base font-medium">No hay operaciones cerradas para analizar.</p>
+                    <p className="text-tc-text-secondary mt-2 max-w-md mx-auto text-sm">Cierra una operación en el Diario o importa un reporte de MT5 desde Ajustes para empezar.</p>
                 </div>
             </div>
         );
@@ -296,7 +296,7 @@ const PerformanceStats: React.FC<PerformanceStatsProps> = ({ tradingLog, mt5Repo
                                 const sortedMonths = [...yearData.months].sort((a, b) => monthOrder.indexOf(a.name) - monthOrder.indexOf(b.name));
                                 return (
                                     <div key={yearData.year}>
-                                        <h3 className="font-bold text-tc-text title-large mb-4">{yearData.year}</h3>
+                                        <h3 className="font-data font-bold text-tc-text text-lg mb-4">{yearData.year}</h3>
                                         <BarChart data={sortedMonths.map(month => ({ label: month.name, value: month.pnl }))} sortByValue={false} />
                                     </div>
                                 );
@@ -326,7 +326,7 @@ const PerformanceStats: React.FC<PerformanceStatsProps> = ({ tradingLog, mt5Repo
         <div className="p-4 sm:p-6 max-w-7xl mx-auto animate-fade-in pb-24">
             <div className="flex items-center mb-6">
                 <ChartPieIcon className="w-8 h-8 sm:w-10 sm:h-10 text-tc-growth-green mr-4" />
-                <h1 className="headline-medium font-bold text-tc-text">Análisis de Rendimiento</h1>
+                <h1 className="text-xl font-semibold text-tc-text">Análisis de Rendimiento</h1>
             </div>
 
             <div className="mb-6 border-b border-tc-border-light">
@@ -348,7 +348,7 @@ const PerformanceStats: React.FC<PerformanceStatsProps> = ({ tradingLog, mt5Repo
 const TabButton: React.FC<{ name: string; isActive: boolean; onClick: () => void }> = ({ name, isActive, onClick }) => (
     <button
         onClick={onClick}
-        className={`whitespace-nowrap py-3 px-2 sm:px-4 border-b-2 font-bold label-large transition-colors focus:outline-none rounded-t-md
+        className={`whitespace-nowrap py-3 px-2 sm:px-4 border-b-2 font-semibold text-sm transition-colors focus:outline-none rounded-t-md
       ${isActive
                 ? 'border-tc-growth-green text-tc-growth-green'
                 : 'border-transparent text-tc-text-secondary hover:text-tc-text hover:border-tc-border-medium'
@@ -375,17 +375,17 @@ const StatCard: React.FC<{
     return (
         <div className="bg-tc-bg p-4 rounded-2xl border border-tc-border-light shadow-sm">
             <div className="flex items-center justify-between mb-1">
-                <p className="label-medium text-tc-text-secondary truncate pr-2">{label}</p>
+                <p className="text-xs font-medium text-tc-text-secondary truncate pr-2">{label}</p>
                 {description && (
                     <div className="group relative flex justify-center">
                         <InfoIcon className="w-4 h-4 text-tc-text-secondary cursor-help" />
-                        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-tc-bg-tertiary text-tc-text body-small p-2 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 text-center border border-tc-border-light">
+                        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-tc-bg-tertiary text-tc-text text-xs p-2 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 text-center border border-tc-border-light">
                             {description}
                         </span>
                     </div>
                 )}
             </div>
-            <p className={`headline-small font-bold font-mono ${sentimentColor}`}>{value}</p>
+            <p className={`font-data text-xl font-bold ${sentimentColor}`}>{value}</p>
         </div>
     );
 };
@@ -394,7 +394,7 @@ const SectionCard: React.FC<{ title: string; children: React.ReactNode, classNam
     return (
         <div className={`bg-tc-bg rounded-3xl border border-tc-border-light ${className} overflow-hidden shadow-sm`}>
             <div className="p-4 sm:p-5 border-b border-tc-border-light">
-                <h2 className="title-large font-bold text-tc-text">{title}</h2>
+                <h2 className="text-lg font-semibold text-tc-text">{title}</h2>
             </div>
             <div className="p-4 sm:p-5">
                 {children}
@@ -405,7 +405,7 @@ const SectionCard: React.FC<{ title: string; children: React.ReactNode, classNam
 
 const BarChart: React.FC<{ data: { label: string; value: number }[]; sortByValue?: boolean }> = ({ data, sortByValue = true }) => {
     if (data.length === 0) {
-        return <p className="body-medium text-tc-text-secondary italic">No hay datos para mostrar.</p>
+        return <p className="text-sm text-tc-text-secondary italic">No hay datos para mostrar.</p>
     }
     const maxValue = Math.max(...data.map(d => Math.abs(d.value)), 1);
     const displayData = sortByValue ? [...data].sort((a, b) => b.value - a.value) : data;
@@ -417,7 +417,7 @@ const BarChart: React.FC<{ data: { label: string; value: number }[]; sortByValue
                 const isPositive = value >= 0;
                 return (
                     <div key={label} className="group">
-                        <div className="flex justify-between items-center mb-1 label-medium">
+                        <div className="flex justify-between items-center mb-1 text-xs font-medium">
                             <span className="font-medium text-tc-text-secondary truncate pr-2">{label}</span>
                             <span className={`font-mono font-semibold ${isPositive ? 'text-tc-success' : 'text-tc-error'}`}>{value.toFixed(2)}</span>
                         </div>
@@ -436,7 +436,7 @@ const BarChart: React.FC<{ data: { label: string; value: number }[]; sortByValue
 
 const LineChart: React.FC<{ data: { time: number, balance: number }[] }> = ({ data }) => {
     if (data.length < 2) {
-        return <p className="body-medium text-tc-text-secondary italic">No hay suficientes datos para mostrar el gráfico.</p>;
+        return <p className="text-sm text-tc-text-secondary italic">No hay suficientes datos para mostrar el gráfico.</p>;
     }
 
     const width = 500;

@@ -61,8 +61,8 @@ const LockNotification: React.FC<{ reason: string }> = ({ reason }) => (
   <div className="bg-tc-error/10 border border-tc-error/20 text-tc-error p-4 rounded-3xl mb-6 flex items-start space-x-3">
     <InfoIcon className="w-6 h-6 flex-shrink-0 mt-0.5" />
     <div>
-      <h3 className="title-medium">Operativa Bloqueada</h3>
-      <p className="body-medium opacity-90">{reason}</p>
+      <h3 className="font-semibold">Operativa Bloqueada</h3>
+      <p className="text-sm opacity-90">{reason}</p>
     </div>
   </div>
 );
@@ -96,7 +96,7 @@ const RiskStatusIndicator: React.FC<{ recommendedRisk: number }> = ({ recommende
     <div className={`${bgColor} ${textColor} p-4 rounded-3xl mb-6 flex items-center space-x-3 animate-fade-in`}>
       <Icon className="w-6 h-6 flex-shrink-0" />
       <div>
-        <p className="body-medium">Riesgo por Operación: <span className="label-large">{recommendedRisk.toFixed(2)}%</span> ({message})</p>
+        <p className="text-sm">Riesgo por Operación: <span className="font-semibold">{recommendedRisk.toFixed(2)}%</span> ({message})</p>
       </div>
     </div>
   );
@@ -113,14 +113,14 @@ const WeeklyReviewNotification: React.FC<WeeklyReviewNotificationProps> = ({ onR
       <div className="flex items-start space-x-3">
         <BookOpenIcon className="w-6 h-6 flex-shrink-0 mt-0.5 text-tc-growth-green" />
         <div>
-          <h3 className="title-medium">Revisión Semanal</h3>
-          <p className="body-medium opacity-90">Es fin de semana. Revisa tu rendimiento y prepara la próxima semana.</p>
+          <h3 className="font-semibold">Revisión Semanal</h3>
+          <p className="text-sm opacity-90">Es fin de semana. Revisa tu rendimiento y prepara la próxima semana.</p>
         </div>
       </div>
       <div className="flex items-center space-x-2 flex-shrink-0 self-end sm:self-center">
         <button
           onClick={onReview}
-          className="bg-tc-growth-green hover:bg-tc-growth-green-light active:bg-tc-growth-green-dark text-white label-large py-2 px-4 rounded-full shadow-sm hover:shadow-md transition-all whitespace-nowrap"
+          className="bg-tc-growth-green hover:bg-tc-growth-green-light active:bg-tc-growth-green-dark text-white text-sm font-medium py-2 px-4 rounded-full shadow-sm hover:shadow-md transition-all whitespace-nowrap"
         >
           Revisar Ahora
         </button>
@@ -145,8 +145,8 @@ const ContextualRiskAlert: React.FC<{ currentStreak: { type: string, count: numb
     <div className="bg-tc-warning/10 text-tc-warning p-4 rounded-3xl mb-6 flex items-start space-x-3 animate-fade-in border border-tc-warning/20">
       <ExclamationTriangleIcon className="w-6 h-6 flex-shrink-0 mt-0.5" />
       <div>
-        <h3 className="title-medium">Racha Perdedora Detectada</h3>
-        <p className="body-medium opacity-90">
+        <h3 className="font-semibold">Racha Perdedora Detectada</h3>
+        <p className="text-sm opacity-90">
           Llevas {currentStreak.count} pérdidas consecutivas. Tu máximo histórico es {mt5Summary.maxConsecutiveLosses}. Reduce el riesgo.
         </p>
       </div>
@@ -185,10 +185,10 @@ const CooldownNotification: React.FC<{ cooldownUntil: number }> = ({ cooldownUnt
       <PauseCircleIcon className="w-6 h-6 flex-shrink-0 mt-0.5" />
       <div>
         <div className="flex justify-between items-center">
-          <h3 className="title-medium">Periodo de Reflexión Activo</h3>
-          <span className="title-large font-mono">{timeLeft}</span>
+          <h3 className="font-semibold">Periodo de Reflexión Activo</h3>
+          <span className="font-data text-lg font-semibold">{timeLeft}</span>
         </div>
-        <p className="body-medium opacity-90">{message}</p>
+        <p className="text-sm opacity-90">{message}</p>
       </div>
     </div>
   );
@@ -225,13 +225,13 @@ const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPa
       <ContextualRiskAlert currentStreak={currentStreak} mt5Summary={mt5Summary} />
       <RiskStatusIndicator recommendedRisk={recommendedRisk} />
 
-      <h1 className="headline-medium text-tc-text mb-6 px-2">Lista de Seguimiento</h1>
+      <h1 className="text-xl font-semibold text-tc-text mb-6 px-2">Lista de Seguimiento</h1>
 
       <div>
         {Object.keys(pairsState).length === 0 ? (
           <div className="text-center py-16 px-4 bg-tc-bg rounded-3xl border border-tc-border-light">
-            <p className="text-tc-text-secondary title-large">Tu lista está vacía.</p>
-            <p className="text-tc-text-tertiary body-medium mt-1">Usa el botón + para añadir símbolos.</p>
+            <p className="text-tc-text-secondary text-lg font-medium">Tu lista está vacía.</p>
+            <p className="text-tc-text-tertiary text-sm mt-1">Usa el botón + para añadir símbolos.</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -261,10 +261,10 @@ const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPa
                       </div>
                     )}
                     <div className="min-w-0 cursor-pointer">
-                      <p className="title-large text-tc-text leading-tight">
+                      <p className="font-data font-semibold text-tc-text leading-tight">
                         {pair.symbol}
                       </p>
-                      <p className="body-small text-tc-text-secondary truncate">
+                      <p className="text-xs text-tc-text-secondary truncate">
                         {baseInfo && quoteInfo ? `${baseInfo.name} / ${quoteInfo.name}` : 'Personalizado'}
                       </p>
                     </div>
@@ -339,7 +339,7 @@ const AddSymbolModal: React.FC<AddSymbolModalProps> = ({ availablePairs, onAddPa
     <div className="fixed inset-0 bg-tc-bg-overlay flex justify-center items-center z-50 p-4 animate-fade-in backdrop-blur-sm" onClick={onClose}>
       <div className="bg-tc-bg backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-xs overflow-hidden border border-tc-border-light" onClick={e => e.stopPropagation()}>
         <div className="p-5 flex justify-between items-center bg-transparent">
-          <h2 className="headline-small text-tc-text">Añadir Símbolo</h2>
+          <h2 className="text-lg font-semibold text-tc-text">Añadir Símbolo</h2>
         </div>
         <div className="px-4 pb-6 max-h-[60vh] overflow-y-auto">
           <div className="mb-4">
@@ -349,7 +349,7 @@ const AddSymbolModal: React.FC<AddSymbolModalProps> = ({ availablePairs, onAddPa
                 value={customSymbol}
                 onChange={(e) => setCustomSymbol(e.target.value)}
                 placeholder="Escribe un símbolo..."
-                className="flex-grow bg-transparent text-tc-text focus:outline-none body-large placeholder:text-tc-text-tertiary"
+                className="flex-grow bg-transparent text-tc-text focus:outline-none text-base placeholder:text-tc-text-tertiary"
                 onKeyDown={(e) => { if (e.key === 'Enter') handleAddCustom(); }}
               />
               <button onClick={handleAddCustom} className="bg-tc-growth-green hover:bg-tc-growth-green-light active:bg-tc-growth-green-dark text-white p-2 rounded-full shadow-sm hover:shadow-md transition-all">
@@ -385,7 +385,7 @@ const AddSymbolModal: React.FC<AddSymbolModalProps> = ({ availablePairs, onAddPa
                       className="w-full text-left p-3 rounded-2xl hover:bg-tc-bg-secondary transition-colors flex items-center justify-between group"
                     >
                       <div className="flex items-center">
-                        <span className="title-medium text-tc-text">{symbol}</span>
+                        <span className="font-data font-semibold text-tc-text">{symbol}</span>
                         {performance !== undefined && (
                           <span
                             className="ml-2"
@@ -408,7 +408,7 @@ const AddSymbolModal: React.FC<AddSymbolModalProps> = ({ availablePairs, onAddPa
               })}
           </ul>
           {availablePairs.length === 0 && (
-            <p className="text-tc-text-secondary text-center py-4 body-medium">Lista sugerida vacía.</p>
+            <p className="text-tc-text-secondary text-center py-4 text-sm">Lista sugerida vacía.</p>
           )}
         </div>
       </div>
