@@ -1012,15 +1012,15 @@ const App: React.FC = () => {
         {renderView()}
       </main>
 
-      {/* MD3 Navigation Bar (Bottom on mobile, Rail on tablet+) */}
+      {/* Navigation Bar (Bottom on mobile, Rail on tablet+) */}
       <nav className={`
         fixed left-0 right-0 z-30 
         bottom-0
-        bg-md-surface-container 
+        bg-tc-bg 
         h-20 
         md-medium:bottom-0 md-medium:h-screen md-medium:w-20 md-medium:flex-col md-medium:justify-start md-medium:pt-2
-        border-t md-medium:border-t-0 md-medium:border-r border-md-outline-variant
-        shadow-md-elevation-2
+        border-t md-medium:border-t-0 md-medium:border-r border-tc-border-light
+        shadow-lg
       `}>
         <div className="flex items-center justify-around h-full md-medium:flex-col md-medium:justify-start md-medium:h-auto md-medium:gap-1 w-full">
           <NavButton
@@ -1149,17 +1149,17 @@ const NavButton: React.FC<NavButtonProps> = ({ label, icon, isActive, onClick, n
             "
       aria-label={label}
     >
-      {/* MD3 State Layer Container */}
+      {/* State Layer Container */}
       <div className={`
                 flex flex-col items-center justify-center gap-1
                 md-medium:gap-0.5
                 w-16 h-12 
                 md-medium:w-14 md-medium:h-14
-                rounded-md-lg
-                transition-all duration-md-short4 ease-md-standard
+                rounded-2xl
+                transition-all duration-200 ease-in-out
                 ${isActive
-          ? 'bg-md-secondary-container text-md-on-surface'
-          : 'text-md-on-surface-variant hover:bg-md-surface-container-highest active:bg-md-surface-container-highest'
+          ? 'bg-tc-growth-green/10 text-tc-growth-green'
+          : 'text-tc-text-secondary hover:bg-tc-bg-secondary active:bg-tc-bg-tertiary'
         }
             `}>
         {/* Icon */}
@@ -1169,8 +1169,8 @@ const NavButton: React.FC<NavButtonProps> = ({ label, icon, isActive, onClick, n
 
         {/* Label */}
         <span className={`
-                    label-medium
-                    transition-colors duration-md-short3
+                    text-xs
+                    transition-colors duration-200
                     ${isActive ? 'font-bold' : 'font-medium'}
                 `}>
           {label}
@@ -1183,9 +1183,9 @@ const NavButton: React.FC<NavButtonProps> = ({ label, icon, isActive, onClick, n
                   absolute top-1 right-1/4 
                   md-medium:top-1 md-medium:right-2
                   flex h-2 w-2 items-center justify-center 
-                  rounded-md-full 
-                  bg-md-error 
-                  ring-2 ring-md-surface-container
+                  rounded-full 
+                  bg-tc-error 
+                  ring-2 ring-tc-bg
                 ">
         </span>
       )}
