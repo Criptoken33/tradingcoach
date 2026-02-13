@@ -359,36 +359,53 @@ const AddSymbolModal: React.FC<AddSymbolModalProps> = ({ availablePairs, onAddPa
           </div>
 
           <ul className="space-y-2">
-            {availablePairs.map(symbol => {
-              const performance = pairPerformance[symbol];
-              return (
-                <li key={symbol}>
-                  <button
-                    onClick={() => onAddPair(symbol)}
-                    className="w-full text-left p-3 rounded-2xl hover:bg-tc-bg-secondary transition-colors flex items-center justify-between group"
-                  >
-                    <div className="flex items-center">
-                      <span className="title-medium text-tc-text">{symbol}</span>
-                      {performance !== undefined && (
-                        <span
-                          className="ml-2"
-                          title={performance >= 0 ? `P/L: ${performance.toFixed(2)}` : `P/L: ${performance.toFixed(2)}`}
-                        >
-                          {performance >= 0 ? (
-                            <StarIcon className="w-4 h-4 text-tc-success" />
-                          ) : (
-                            <ExclamationTriangleIcon className="w-4 h-4 text-tc-error" />
-                          )}
-                        </span>
-                      )}
-                    </div>
-                    <div className="w-8 h-8 rounded-full bg-tc-bg-secondary group-hover:bg-tc-growth-green group-hover:text-white flex items-center justify-center transition-colors text-tc-text-secondary">
-                      <PlusIcon className="w-5 h-5" />
-                    </div>
-                  </button>
-                </li>
-              );
-            })}
+            {availablePairs
+              .sort((a, b) => {
+                const perfA = pairPerformance[a];
+                const perfB = pairPerformance[b];
+
+                // If both have performance data, sort by performance (highest first)
+                if (perfA !== undefined && perfB !== undefined) {
+                  return perfB - perfA;
+                }
+
+                // Symbols with performance data come before those without
+                if (perfA !== undefined && perfB === undefined) return -1;
+                if (perfA === undefined && perfB !== undefined) return 1;
+
+                // If neither has performance data, maintain alphabetical order
+                return a.localeCompare(b);
+              })
+              .map(symbol => {
+                const performance = pairPerformance[symbol];
+                return (
+                  <li key={symbol}>
+                    <button
+                      onClick={() => onAddPair(symbol)}
+                      className="w-full text-left p-3 rounded-2xl hover:bg-tc-bg-secondary transition-colors flex items-center justify-between group"
+                    >
+                      <div className="flex items-center">
+                        <span className="title-medium text-tc-text">{symbol}</span>
+                        {performance !== undefined && (
+                          <span
+                            className="ml-2"
+                            title={performance >= 0 ? `P/L: ${performance.toFixed(2)}` : `P/L: ${performance.toFixed(2)}`}
+                          >
+                            {performance >= 0 ? (
+                              <StarIcon className="w-4 h-4 text-tc-success" />
+                            ) : (
+                              <ExclamationTriangleIcon className="w-4 h-4 text-tc-error" />
+                            )}
+                          </span>
+                        )}
+                      </div>
+                      <div className="w-8 h-8 rounded-full bg-tc-bg-secondary group-hover:bg-tc-growth-green group-hover:text-white flex items-center justify-center transition-colors text-tc-text-secondary">
+                        <PlusIcon className="w-5 h-5" />
+                      </div>
+                    </button>
+                  </li>
+                );
+              })}
           </ul>
           {availablePairs.length === 0 && (
             <p className="text-tc-text-secondary text-center py-4 body-medium">Lista sugerida vacía.</p>
