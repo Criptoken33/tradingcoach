@@ -229,7 +229,7 @@ const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPa
 
       <div>
         {Object.keys(pairsState).length === 0 ? (
-          <div className="text-center py-16 px-4 bg-white rounded-3xl border border-tc-border-light">
+          <div className="text-center py-16 px-4 bg-tc-bg rounded-3xl border border-tc-border-light">
             <p className="text-tc-text-secondary title-large">Tu lista está vacía.</p>
             <p className="text-tc-text-tertiary body-medium mt-1">Usa el botón + para añadir símbolos.</p>
           </div>
@@ -244,17 +244,17 @@ const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPa
               const quoteInfo = CURRENCY_INFO[quoteCurrency];
 
               return (
-                <div key={pair.symbol} className="bg-white rounded-2xl p-4 shadow-sm border border-tc-border-light flex items-center justify-between transition-all duration-200 hover:shadow-md hover:border-tc-border-medium active:scale-[0.99]">
+                <div key={pair.symbol} className="bg-tc-bg rounded-2xl p-4 shadow-sm border border-tc-border-light flex items-center justify-between transition-all duration-200 hover:shadow-md hover:border-tc-border-medium active:scale-[0.99]">
                   <div className="flex items-center flex-1 min-w-0" onClick={() => onSelectPair(pair.symbol)}>
                     {baseInfo && quoteInfo && (
                       <div className="relative w-10 h-8 mr-4 flex-shrink-0">
                         <img
-                          className="absolute left-0 top-0 w-7 h-7 rounded-full object-cover border-2 border-white shadow-sm"
+                          className="absolute left-0 top-0 w-7 h-7 rounded-full object-cover border-2 border-tc-border-light shadow-sm"
                           src={`https://flagcdn.com/w40/${baseInfo.countryCode.toLowerCase()}.png`}
                           alt={`${baseInfo.name} flag`}
                         />
                         <img
-                          className="absolute left-4 top-0 w-7 h-7 rounded-full object-cover border-2 border-white shadow-sm"
+                          className="absolute left-4 top-0 w-7 h-7 rounded-full object-cover border-2 border-tc-border-light shadow-sm"
                           src={`https://flagcdn.com/w40/${quoteInfo.countryCode.toLowerCase()}.png`}
                           alt={`${quoteInfo.name} flag`}
                         />
@@ -337,7 +337,7 @@ const AddSymbolModal: React.FC<AddSymbolModalProps> = ({ availablePairs, onAddPa
 
   return (
     <div className="fixed inset-0 bg-tc-bg-overlay flex justify-center items-center z-50 p-4 animate-fade-in backdrop-blur-sm" onClick={onClose}>
-      <div className="bg-white backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-xs overflow-hidden border border-tc-border-light" onClick={e => e.stopPropagation()}>
+      <div className="bg-tc-bg backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-xs overflow-hidden border border-tc-border-light" onClick={e => e.stopPropagation()}>
         <div className="p-5 flex justify-between items-center bg-transparent">
           <h2 className="headline-small text-tc-text">Añadir Símbolo</h2>
         </div>
