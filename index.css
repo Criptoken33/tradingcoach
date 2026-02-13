@@ -390,7 +390,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: var(--md-sys-typescale-display-large-font);
-  background-color: #388656; /* Matches Splash Screen */
+  background-color: #388656;
+  /* Matches Splash Screen */
 }
 
 /* Remove tap highlight on mobile */
@@ -578,4 +579,36 @@ body {
   100% {
     opacity: 1;
   }
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   12. GLASSMORPHISM UTILITIES
+   ============================================ */
+
+.glassmorphism-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+}
+
+.glassmorphism-card-strong {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
 }
