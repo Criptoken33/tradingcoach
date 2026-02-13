@@ -19,16 +19,16 @@ interface DirectionButtonsProps {
 }
 
 const DirectionButtons: React.FC<DirectionButtonsProps> = ({ direction, onChangeDirection }) => (
-    <div className="flex items-center bg-brand-tertiary/50 rounded-full p-1">
+    <div className="flex items-center bg-tc-bg-secondary rounded-full p-1">
         <button
             onClick={() => onChangeDirection(Direction.LONG)}
-            className={`flex-1 rounded-full transition-colors flex justify-center items-center gap-2 label-large font-bold py-3 ${direction === Direction.LONG ? 'bg-brand-success text-white shadow-sm' : 'text-brand-text-secondary hover:bg-brand-tertiary'}`}
+            className={`flex-1 rounded-full transition-colors flex justify-center items-center gap-2 label-large font-bold py-3 ${direction === Direction.LONG ? 'bg-tc-success text-white shadow-sm' : 'text-tc-text-secondary hover:bg-tc-bg-tertiary'}`}
         >
             <ArrowUpIcon className="w-4 h-4" /> COMPRA
         </button>
         <button
             onClick={() => onChangeDirection(Direction.SHORT)}
-            className={`flex-1 rounded-full transition-colors flex justify-center items-center gap-2 label-large font-bold py-3 ${direction === Direction.SHORT ? 'bg-brand-danger text-white shadow-sm' : 'text-brand-text-secondary hover:bg-brand-tertiary'}`}
+            className={`flex-1 rounded-full transition-colors flex justify-center items-center gap-2 label-large font-bold py-3 ${direction === Direction.SHORT ? 'bg-tc-error text-white shadow-sm' : 'text-tc-text-secondary hover:bg-tc-bg-tertiary'}`}
         >
             <ArrowDownIcon className="w-4 h-4" /> VENTA
         </button>
@@ -242,25 +242,25 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
         });
     };
 
-    const directionColor = direction === Direction.LONG ? 'text-brand-success' : 'text-brand-danger';
+    const directionColor = direction === Direction.LONG ? 'text-tc-success' : 'text-tc-error';
     const directionText = direction === Direction.LONG ? 'COMPRA' : 'VENTA';
 
     return (
         <div className="p-4 sm:p-6 max-w-4xl mx-auto animate-fade-in pb-24">
             {isCalculatorMode ? (
                 <div className="flex items-center mb-6">
-                    <CalculatorIcon className="w-8 h-8 sm:w-10 sm:h-10 text-brand-accent mr-4" />
-                    <h1 className="headline-medium font-bold text-brand-text">Calculadora</h1>
+                    <CalculatorIcon className="w-8 h-8 sm:w-10 sm:h-10 text-tc-growth-green mr-4" />
+                    <h1 className="headline-medium font-bold text-tc-text">Calculadora</h1>
                 </div>
             ) : (
                 <div className="flex justify-between items-center mb-6">
                     <div className="flex items-center gap-4">
-                        <button onClick={onBack} aria-label="Volver" className="bg-brand-light border border-brand-border-secondary text-brand-text p-2 rounded-full hover:bg-brand-tertiary transition-colors">
+                        <button onClick={onBack} aria-label="Volver" className="bg-tc-bg border border-tc-border-light text-tc-text p-2 rounded-full hover:bg-tc-bg-secondary transition-colors">
                             <ArrowLeftIcon className="w-6 h-6" />
                         </button>
                         <div>
-                            <h1 className="headline-medium font-bold text-brand-text">Gestión del Riesgo</h1>
-                            <p className="label-large font-bold text-brand-text-secondary">{symbol} &bull; <span className={directionColor}>{directionText}</span></p>
+                            <h1 className="headline-medium font-bold text-tc-text">Gestión del Riesgo</h1>
+                            <p className="label-large font-bold text-tc-text-secondary">{symbol} &bull; <span className={directionColor}>{directionText}</span></p>
                         </div>
                     </div>
                 </div>
@@ -268,17 +268,17 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Column 1: Inputs */}
-                <div className="bg-brand-light p-6 rounded-3xl border border-brand-border-secondary shadow-sm space-y-5">
-                    <h3 className="title-large font-bold text-brand-text pb-2">Parámetros</h3>
+                <div className="bg-tc-bg p-6 rounded-3xl border border-tc-border-light shadow-sm space-y-5">
+                    <h3 className="title-large font-bold text-tc-text pb-2">Parámetros</h3>
                     {isCalculatorMode && (
                         <div className="space-y-4">
                             <div>
-                                <label className="block label-small font-bold text-brand-text-secondary mb-1 uppercase tracking-wider">Símbolo</label>
+                                <label className="block label-small font-bold text-tc-text-secondary mb-1 uppercase tracking-wider">Símbolo</label>
                                 <div className="relative">
-                                    <select value={internalSymbol} onChange={e => setInternalSymbol(e.target.value)} className="w-full bg-brand-tertiary border-b border-brand-text-secondary rounded-t-lg px-4 py-3 text-brand-text focus:border-brand-accent outline-none appearance-none transition-colors body-large">
+                                    <select value={internalSymbol} onChange={e => setInternalSymbol(e.target.value)} className="w-full bg-tc-bg-secondary border-b border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text focus:border-tc-growth-green outline-none appearance-none transition-colors body-large">
                                         {CURRENCY_PAIRS.map(p => <option key={p} value={p}>{p}</option>)}
                                     </select>
-                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-brand-text-secondary">
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-tc-text-secondary">
                                         <ArrowDownIcon className="w-4 h-4" />
                                     </div>
                                 </div>
@@ -289,7 +289,7 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
                         </div>
                     )}
                     <div>
-                        <Input label="Riesgo (%)" type="number" value={riskPercentage} onChange={e => setRiskPercentage(e.target.value)} step="0.01" className="font-bold text-brand-accent !bg-brand-tertiary/50" />
+                        <Input label="Riesgo (%)" type="number" value={riskPercentage} onChange={e => setRiskPercentage(e.target.value)} step="0.01" className="font-bold text-tc-growth-green !bg-tc-bg-secondary" />
                         {riskWarning && <AlertMessage type="warning" text={riskWarning} size="small" />}
                     </div>
                     <Input label="Entrada" type="number" min="0" value={entryPrice} onChange={e => setEntryPrice(e.target.value)} placeholder="0.00000" step="0.00001" />
@@ -301,8 +301,8 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
                 </div>
 
                 {/* Column 2: Calculations */}
-                <div className="bg-brand-light p-6 rounded-3xl border border-brand-border-secondary shadow-sm space-y-5">
-                    <h3 className="title-large font-bold text-brand-text pb-2">Resultados</h3>
+                <div className="bg-tc-bg p-6 rounded-3xl border border-tc-border-light shadow-sm space-y-5">
+                    <h3 className="title-large font-bold text-tc-text pb-2">Resultados</h3>
                     {priceLogicError && <AlertMessage type="error" text={priceLogicError} />}
                     <div className={`space-y-4 ${priceLogicError ? 'opacity-50 grayscale' : ''}`}>
                         <div className="grid grid-cols-2 gap-4">
@@ -328,7 +328,7 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
                         onClick={handleSave}
                         disabled={!isValid || !!priceLogicError || !riskRewardRatio || riskRewardRatio < 2}
                         aria-label="Ejecutar"
-                        className="w-full sm:w-auto sm:min-w-[240px] bg-brand-accent hover:brightness-110 text-white label-large font-bold py-4 px-12 rounded-full shadow-xl transition-all active:scale-95 disabled:bg-brand-tertiary disabled:text-brand-text-secondary disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center"
+                        className="w-full sm:w-auto sm:min-w-[240px] bg-tc-growth-green hover:bg-tc-growth-green-light active:bg-tc-growth-green-dark text-white label-large font-bold py-4 px-12 rounded-full shadow-xl transition-all active:scale-95 disabled:bg-tc-bg-secondary disabled:text-tc-text-tertiary disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center"
                     >
                         Ejecutar
                     </button>
@@ -340,20 +340,20 @@ const RiskManagementScreen: React.FC<RiskManagementScreenProps> = ({ pairState, 
 
 const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement> & { label: string }> = ({ label, ...props }) => (
     <div className="relative group">
-        <label className="block label-small font-bold text-brand-text-secondary mb-1 uppercase tracking-wider">{label}</label>
-        <input {...props} className={`w-full bg-brand-tertiary border-b-2 border-brand-text-secondary/50 rounded-t-lg px-4 py-3 text-brand-text body-large focus:border-brand-accent outline-none transition-colors placeholder:text-brand-text-secondary/30 ${props.readOnly ? 'cursor-default' : ''} ${props.className}`} />
+        <label className="block label-small font-bold text-tc-text-secondary mb-1 uppercase tracking-wider">{label}</label>
+        <input {...props} className={`w-full bg-tc-bg-secondary border-b-2 border-tc-border-medium rounded-t-lg px-4 py-3 text-tc-text body-large focus:border-tc-growth-green outline-none transition-colors placeholder:text-tc-text-tertiary ${props.readOnly ? 'cursor-default' : ''} ${props.className}`} />
     </div>
 );
 
 const CalculatedField: React.FC<{ label: string, value: string, hasError?: boolean, isGain?: boolean, isLoss?: boolean, large?: boolean }> = ({ label, value, hasError, isGain, isLoss, large }) => {
-    let colorClass = 'text-brand-text';
-    if (isGain) colorClass = 'text-brand-success';
-    if (isLoss) colorClass = 'text-brand-danger';
-    if (large) colorClass = 'text-brand-accent';
+    let colorClass = 'text-tc-text';
+    if (isGain) colorClass = 'text-tc-success';
+    if (isLoss) colorClass = 'text-tc-error';
+    if (large) colorClass = 'text-tc-growth-green';
 
     return (
-        <div className={`bg-brand-tertiary rounded-2xl p-4 border border-brand-border-secondary/50 flex flex-col justify-center items-center ${hasError ? 'ring-2 ring-brand-danger bg-brand-danger/5' : ''}`}>
-            <span className="label-small font-bold text-brand-text-secondary uppercase tracking-wider mb-1">{label}</span>
+        <div className={`bg-tc-bg-secondary rounded-2xl p-4 border border-tc-border-light flex flex-col justify-center items-center ${hasError ? 'ring-2 ring-tc-error bg-tc-error/5' : ''}`}>
+            <span className="label-small font-bold text-tc-text-secondary uppercase tracking-wider mb-1">{label}</span>
             <span className={`font-mono font-bold ${large ? 'headline-medium' : 'title-large'} ${colorClass}`}>
                 {value}
             </span>
