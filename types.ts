@@ -147,8 +147,20 @@ export interface UserData {
   pairStates: Record<string, PairState>;
   trades: Trade[];
   checklists: Checklist[];
-  activeChecklistIds: { long: string; short: string };
-  settings: any;
+  activeChecklistIds: { long: string; short: string; };
+  settings: any; // Using any to avoid circular dependency or strict schema issues for now
+  challengeSettings?: ChallengeSettings;
   mt5Report: MT5ReportData | null;
   lastUpdated: number;
 }
+
+export interface ChallengeSettings {
+  isActive: boolean;
+  accountSize: number;
+  dailyLossLimitPct: number;
+  maxTotalDrawdownPct: number;
+  profitTargetPct: number;
+  startDate: number;
+}
+
+export type ChallengeStatus = 'PASSING' | 'CAUTION' | 'FAILED' | 'COMPLETE';

@@ -1,10 +1,11 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { PairState, Direction, Probability, OperationStatus, Checklist, MT5ReportData, MT5Summary, Trade } from '../types';
+import { PairState, Direction, Probability, OperationStatus, Checklist, MT5ReportData, MT5Summary, Trade, ChallengeSettings } from '../types';
 import { CURRENCY_INFO, CURRENCY_PAIRS } from '../constants';
 import { ArrowUpIcon, ArrowDownIcon, PlusIcon, TrashIcon, XCircleIcon, CheckCircleIcon, InfoIcon, ShieldCheckIcon, StarIcon, ExclamationTriangleIcon, BookOpenIcon, PauseCircleIcon, ShieldAlertIcon, PlayIcon } from './icons';
 import TradingTip from './TradingTip';
 import AlertMessage from './AlertMessage';
 import { ReflectionModal } from './ReflectionModal';
+import ChallengeDashboard from './ChallengeDashboard';
 
 const calculateProbability = (pairState: PairState, checklist: Checklist | undefined): Probability => {
   if (pairState.direction === Direction.NONE || !checklist) {
@@ -56,6 +57,7 @@ interface DashboardProps {
   tradingLog: Trade[];
   cooldownUntil: number | null;
   isBannerVisible?: boolean;
+  challengeSettings?: ChallengeSettings;
 }
 
 const LockNotification: React.FC<{ reason: string }> = ({ reason }) => (
@@ -165,7 +167,7 @@ const EuphoriaAlert: React.FC<{ currentStreak: { type: string, count: number } }
 
 // CooldownNotification was replaced by ReflectionModal
 
-const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPair, onRemovePair, isTradingLocked, lockReason, recommendedRisk, pairPerformance, showWeeklyReview, onDismissWeeklyReview, onNavigateToStats, getChecklistForPair, currentStreak, mt5Summary, tradingLog, cooldownUntil, isBannerVisible }) => {
+const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPair, onRemovePair, isTradingLocked, lockReason, recommendedRisk, pairPerformance, showWeeklyReview, onDismissWeeklyReview, onNavigateToStats, getChecklistForPair, currentStreak, mt5Summary, tradingLog, cooldownUntil, isBannerVisible, challengeSettings }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const availablePairs = CURRENCY_PAIRS.filter(p => !pairsState[p]);
 
@@ -185,12 +187,21 @@ const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPa
   });
 
   const isUiLocked = isTradingLocked || !!cooldownUntil;
+  const isChallengeActive = pairsState[Object.keys(pairsState)[0]]?.settings?.isChallengeActive; // Access settings via props or context effectively
+  // Note: settings are passed deep. Ideally Dashboard should receive 'settings' prop directly.
+  // Looking at props: 'settings' is not in DashboardProps.
+  // However, App.tsx passes 'settings' to Dashboard? No, checking App.tsx view.
+  // App.tsx: <Dashboard ... />
+  // I need to add 'settings' to DashboardProps first.
 
   return (
     <div className="p-4 md-medium:p-6 md-expanded:p-8 max-w-5xl mx-auto animate-fade-in pb-24">
       {cooldownUntil && <ReflectionModal cooldownUntil={cooldownUntil} />}
       {isTradingLocked && !cooldownUntil && <LockNotification reason={lockReason} />}
       {showWeeklyReview && <WeeklyReviewNotification onReview={onNavigateToStats} onDismiss={onDismissWeeklyReview} />}
+
+      <ChallengeDashboard trades={tradingLog} settings={challengeSettings} className="mb-6" />
+
       <TradingTip />
       <EuphoriaAlert currentStreak={currentStreak} />
       <ContextualRiskAlert currentStreak={currentStreak} mt5Summary={mt5Summary} />

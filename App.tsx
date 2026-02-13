@@ -267,6 +267,18 @@ const App: React.FC = () => {
     return baseBalance;
   }, [mt5ReportData, settings.accountBalance]);
 
+  const challengeSettings = useMemo((): ChallengeSettings | undefined => {
+    if (!settings.isChallengeActive) return undefined;
+    return {
+      isActive: true,
+      startDate: settings.challengeStartDate || Date.now(),
+      accountSize: parseFloat(settings.accountBalance) || 10000,
+      dailyLossLimitPct: parseFloat(settings.dailyLossLimit) || 0,
+      maxTotalDrawdownPct: parseFloat(settings.maxTotalDrawdownPct) || 10,
+      profitTargetPct: parseFloat(settings.profitTargetPct) || 8,
+    };
+  }, [settings]);
+
   // --- DATA SYNC LOGIC ---
   // --- DATA SYNC LOGIC ---
   const [isCloudDataLoaded, setIsCloudDataLoaded] = useState(false);
@@ -292,7 +304,7 @@ const App: React.FC = () => {
           if (cloudData.trades) setTradingLog(cloudData.trades);
           if (cloudData.checklists) setChecklists(cloudData.checklists);
           if (cloudData.activeChecklistIds) setActiveChecklistIds(cloudData.activeChecklistIds);
-          if (cloudData.settings) setSettings(cloudData.settings);
+          if (cloudData.settings) setSettings(prev => ({ ...prev, ...cloudData.settings }));
           if (cloudData.mt5Report) setMt5ReportData(cloudData.mt5Report);
 
           showToast('Datos sincronizados desde la nube', 'success');
@@ -726,8 +738,9 @@ const App: React.FC = () => {
     ));
   }, [tradingLog]);
 
-  const handleSaveSettings = (newSettings: { accountBalance: string; dailyLossLimit: string; weeklyLossLimit: string; }) => {
-    setSettings(newSettings);
+  const handleSaveSettings = (newSettings: any) => {
+    console.log('[App] Saving settings:', newSettings);
+    setSettings(prev => ({ ...prev, ...newSettings }));
     showToast('Ajustes guardados.', 'success');
   };
 
@@ -995,6 +1008,7 @@ const App: React.FC = () => {
             tradingLog={tradingLog}
             cooldownUntil={cooldownUntil}
             isBannerVisible={!pro.isPro && view === 'DASHBOARD'}
+            challengeSettings={challengeSettings}
           />
         );
     }
