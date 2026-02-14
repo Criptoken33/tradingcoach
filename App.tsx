@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import { PairState, Direction, View, ChecklistAnswers, RiskPlan, OperationStatus, Trade, Checklist as ChecklistType, ChecklistItemType, Phase, MT5ReportData, MT5Summary } from './types';
+import { PairState, Direction, View, ChecklistAnswers, RiskPlan, OperationStatus, Trade, Checklist as ChecklistType, ChecklistItemType, Phase, MT5ReportData, MT5Summary, ChallengeSettings } from './types';
+import { FUNDING_DEFAULTS } from './constants/fundingDefaults';
 import { SplashScreen } from '@capacitor/splash-screen';
 import AnimatedSplash from './src/components/Splash/AnimatedSplash';
 import Dashboard from './components/Dashboard';
@@ -272,12 +273,23 @@ const App: React.FC = () => {
     return {
       isActive: true,
       startDate: settings.challengeStartDate || Date.now(),
-      accountSize: parseFloat(settings.accountBalance) || 10000,
-      dailyLossLimitPct: parseFloat(settings.dailyLossLimit) || 0,
-      maxTotalDrawdownPct: parseFloat(settings.maxTotalDrawdownPct) || 10,
-      profitTargetPct: parseFloat(settings.profitTargetPct) || 8,
+      accountSize: settings.challengeAccountSize || 50000,
+      dailyLossLimitPct: FUNDING_DEFAULTS.dailyLossLimitPct,
+      maxTotalDrawdownPct: FUNDING_DEFAULTS.maxTotalDrawdownPct,
+      profitTargetPct: FUNDING_DEFAULTS.profitTargetPct,
     };
   }, [settings]);
+
+  const handleToggleChallenge = useCallback((active: boolean, accountSize?: number) => {
+    setSettings((prev: any) => ({
+      ...prev,
+      isChallengeActive: active,
+      ...(active && {
+        challengeAccountSize: accountSize || prev.challengeAccountSize || 50000,
+        challengeStartDate: Date.now(),
+      }),
+    }));
+  }, []);
 
   // --- DATA SYNC LOGIC ---
   // --- DATA SYNC LOGIC ---
@@ -1009,6 +1021,8 @@ const App: React.FC = () => {
             cooldownUntil={cooldownUntil}
             isBannerVisible={!pro.isPro && view === 'DASHBOARD'}
             challengeSettings={challengeSettings}
+            isChallengeActive={!!settings.isChallengeActive}
+            onToggleChallenge={handleToggleChallenge}
           />
         );
     }

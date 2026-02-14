@@ -8,10 +8,6 @@ interface SettingsValues {
     accountBalance: string;
     dailyLossLimit: string;
     weeklyLossLimit: string;
-    isChallengeActive?: boolean;
-    challengeStartDate?: number;
-    profitTargetPct?: string;
-    maxTotalDrawdownPct?: string;
 }
 
 interface AppData {
@@ -86,10 +82,6 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
             accountBalance: balanceToSave,
             dailyLossLimit: settings.dailyLossLimit,
             weeklyLossLimit: settings.weeklyLossLimit,
-            isChallengeActive: settings.isChallengeActive,
-            challengeStartDate: settings.challengeStartDate,
-            profitTargetPct: settings.profitTargetPct,
-            maxTotalDrawdownPct: settings.maxTotalDrawdownPct,
         };
         console.log('[Settings] Calling onSave with:', finalSettings);
         onSave(finalSettings);
@@ -243,68 +235,6 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
                             placeholder="2.5"
                             step="0.1"
                         />
-                    </div>
-                </SectionCard>
-
-                <SectionCard
-                    title="Configuración de Prueba de Fondeo 🏆"
-                    description="Simula las reglas de una prueba de fondeo (FTMO, MFF, etc.) para entrenar tu consistencia."
-                    headerAction={<button onClick={handleSave} aria-label="Guardar Ajustes de Desafío" className="bg-tc-growth-green hover:bg-tc-growth-green/90 text-white p-3 rounded-2xl shadow-md transition-all"><SaveIcon className="w-6 h-6" /></button>}
-                >
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-between p-4 bg-tc-bg-secondary rounded-2xl border border-tc-border-light">
-                            <div>
-                                <h3 className="text-sm font-bold text-tc-text">Modo Desafío</h3>
-                                <p className="text-xs text-tc-text-secondary">Activa las reglas estrictas de fondeo (Recuerda Guardar).</p>
-                            </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    className="sr-only peer"
-                                    checked={settings.isChallengeActive || false}
-                                    onChange={(e) => {
-                                        console.log('[Settings] Toggle changed:', e.target.checked);
-                                        setSettings(prev => ({
-                                            ...prev,
-                                            isChallengeActive: e.target.checked,
-                                            challengeStartDate: e.target.checked ? (prev.challengeStartDate || Date.now()) : prev.challengeStartDate
-                                        }));
-                                    }}
-                                />
-                                <div className="w-11 h-6 bg-tc-bg-tertiary peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tc-growth-green"></div>
-                            </label>
-                        </div>
-
-                        {(settings.isChallengeActive) && (
-                            <div className="space-y-4 animate-fade-in pl-2 border-l-2 border-tc-growth-green/30">
-                                <Input
-                                    label="Objetivo de Ganancia (%)"
-                                    name="profitTargetPct"
-                                    type="number"
-                                    min="1"
-                                    max="100"
-                                    value={settings.profitTargetPct || "8"}
-                                    onChange={(e) => setSettings(prev => ({ ...prev, profitTargetPct: e.target.value }))}
-                                    placeholder="8"
-                                />
-                                <Input
-                                    label="Drawdown Máximo Total (%)"
-                                    name="maxTotalDrawdownPct"
-                                    type="number"
-                                    min="1"
-                                    max="20"
-                                    value={settings.maxTotalDrawdownPct || "10"}
-                                    onChange={(e) => setSettings(prev => ({ ...prev, maxTotalDrawdownPct: e.target.value }))}
-                                    placeholder="10"
-                                />
-                                <div className="text-xs text-tc-text-secondary bg-tc-warning/5 p-3 rounded-lg border border-tc-warning/10 flex gap-2">
-                                    <InfoIcon className="w-4 h-4 text-tc-warning flex-shrink-0" />
-                                    <span>
-                                        El límite de pérdida diaria se tomará del parámetro "Límite Pérdida Diaria (%)" configurado arriba.
-                                    </span>
-                                </div>
-                            </div>
-                        )}
                     </div>
                 </SectionCard>
 

@@ -58,6 +58,8 @@ interface DashboardProps {
   cooldownUntil: number | null;
   isBannerVisible?: boolean;
   challengeSettings?: ChallengeSettings;
+  isChallengeActive: boolean;
+  onToggleChallenge: (active: boolean, accountSize?: number) => void;
 }
 
 const LockNotification: React.FC<{ reason: string }> = ({ reason }) => (
@@ -167,7 +169,7 @@ const EuphoriaAlert: React.FC<{ currentStreak: { type: string, count: number } }
 
 // CooldownNotification was replaced by ReflectionModal
 
-const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPair, onRemovePair, isTradingLocked, lockReason, recommendedRisk, pairPerformance, showWeeklyReview, onDismissWeeklyReview, onNavigateToStats, getChecklistForPair, currentStreak, mt5Summary, tradingLog, cooldownUntil, isBannerVisible, challengeSettings }) => {
+const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPair, onRemovePair, isTradingLocked, lockReason, recommendedRisk, pairPerformance, showWeeklyReview, onDismissWeeklyReview, onNavigateToStats, getChecklistForPair, currentStreak, mt5Summary, tradingLog, cooldownUntil, isBannerVisible, challengeSettings, isChallengeActive, onToggleChallenge }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const availablePairs = CURRENCY_PAIRS.filter(p => !pairsState[p]);
 
@@ -187,12 +189,6 @@ const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPa
   });
 
   const isUiLocked = isTradingLocked || !!cooldownUntil;
-  const isChallengeActive = pairsState[Object.keys(pairsState)[0]]?.settings?.isChallengeActive; // Access settings via props or context effectively
-  // Note: settings are passed deep. Ideally Dashboard should receive 'settings' prop directly.
-  // Looking at props: 'settings' is not in DashboardProps.
-  // However, App.tsx passes 'settings' to Dashboard? No, checking App.tsx view.
-  // App.tsx: <Dashboard ... />
-  // I need to add 'settings' to DashboardProps first.
 
   return (
     <div className="p-4 md-medium:p-6 md-expanded:p-8 max-w-5xl mx-auto animate-fade-in pb-24">
@@ -200,7 +196,7 @@ const Dashboard: React.FC<DashboardProps> = ({ pairsState, onSelectPair, onAddPa
       {isTradingLocked && !cooldownUntil && <LockNotification reason={lockReason} />}
       {showWeeklyReview && <WeeklyReviewNotification onReview={onNavigateToStats} onDismiss={onDismissWeeklyReview} />}
 
-      <ChallengeDashboard trades={tradingLog} settings={challengeSettings} className="mb-6" />
+      <ChallengeDashboard trades={tradingLog} settings={challengeSettings} isChallengeActive={isChallengeActive} onToggleChallenge={onToggleChallenge} className="mb-6" />
 
       <TradingTip />
       <EuphoriaAlert currentStreak={currentStreak} />
