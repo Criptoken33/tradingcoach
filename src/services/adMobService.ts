@@ -28,13 +28,20 @@ const TEST_IDS = {
     }
 };
 
+// Centralized Test Mode Logic
+// Returns true if explicit env var is set OR if we are in dev mode OR if we want to force it for debugging
+const isTestMode = () => {
+    // You can flip this manually to false when ready for real production ads if env vars fail
+    const FORCE_TEST_MODE = false;
+    return FORCE_TEST_MODE || import.meta.env.VITE_ENABLE_TEST_ADS === 'true' || import.meta.env.MODE === 'development';
+};
+
 // Helper to get the correct ID
 const getAdUnitId = (type: 'BANNER' | 'INTERSTITIAL' | 'REWARDED') => {
     const platform = Capacitor.getPlatform();
-    // Default to Test Mode if env var is not explicitly set to 'false' in production, or if in dev mode
-    const useTestAds = import.meta.env.VITE_ENABLE_TEST_ADS === 'true' || import.meta.env.MODE === 'development';
+    const testing = isTestMode();
 
-    if (useTestAds) {
+    if (testing) {
         if (platform === 'android') return TEST_IDS.ANDROID[type];
         if (platform === 'ios') return TEST_IDS.IOS[type];
         return '';
@@ -65,14 +72,13 @@ export const AdMobService = {
         if (!isHybrid()) return;
 
         try {
-            // FORCE TEST MODE for debugging
-            const useTestAds = true; // import.meta.env.VITE_ENABLE_TEST_ADS === 'true' || import.meta.env.MODE === 'development';
+            const testing = isTestMode();
 
             await AdMob.initialize({
                 testingDevices: ['EC21962B7AD82E4F483CA4DA3F1C2A61'],
-                initializeForTesting: useTestAds,
+                initializeForTesting: testing,
             });
-            console.log('AdMob initialized. Test Mode:', useTestAds);
+            console.log('AdMob initialized. Test Mode:', testing);
         } catch (error) {
             console.error('AdMob initialization failed', error);
         }
@@ -87,12 +93,14 @@ export const AdMobService = {
             return;
         }
 
+        const testing = isTestMode();
+
         const options: BannerAdOptions = {
             adId: adId,
             adSize: BannerAdSize.ADAPTIVE_BANNER,
             position: BannerAdPosition.TOP_CENTER,
             margin: 0,
-            isTesting: true, // Force test ads for debugging
+            isTesting: testing,
             // npa: true 
         };
 
@@ -127,9 +135,11 @@ export const AdMobService = {
         const adId = getAdUnitId('INTERSTITIAL');
         if (!adId) return;
 
+        const testing = isTestMode();
+
         const options: AdOptions = {
             adId: adId,
-            isTesting: import.meta.env.VITE_ENABLE_TEST_ADS === 'true' || import.meta.env.MODE === 'development',
+            isTesting: testing,
             // npa: true
         };
 
@@ -155,9 +165,11 @@ export const AdMobService = {
         const adId = getAdUnitId('REWARDED');
         if (!adId) return;
 
+        const testing = isTestMode();
+
         const options: AdOptions = {
             adId: adId,
-            isTesting: true, // Force test ads for debugging
+            isTesting: testing,
             // npa: true
         };
 

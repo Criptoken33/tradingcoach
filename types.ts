@@ -164,3 +164,20 @@ export interface ChallengeSettings {
 }
 
 export type ChallengeStatus = 'PASSING' | 'CAUTION' | 'FAILED' | 'COMPLETE';
+
+export interface ChallengeMetrics {
+  currentDailyLoss: number;
+  maxDailyLossAmount: number;
+  dailyLossProgress: number; // 0-100
+
+  currentTotalDrawdown: number;
+  maxTotalDrawdownAmount: number;
+  totalDrawdownProgress: number; // 0-100
+
+  netProfit: number;
+  profitTargetAmount: number;
+  profitTargetProgress: number; // 0-100
+
+  status: ChallengeStatus;
+  daysActive: number;
+}
