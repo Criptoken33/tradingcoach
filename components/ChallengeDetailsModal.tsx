@@ -21,7 +21,10 @@ const ChallengeDetailsModal: React.FC<ChallengeDetailsModalProps> = ({ metrics, 
         profitTargetAmount,
         profitTargetProgress,
         status,
-        daysActive
+        daysActive,
+        daysRemaining,
+        tradingDaysCount,
+        minTradingDays,
     } = metrics;
 
     const statusConfig = {
@@ -45,6 +48,13 @@ const ChallengeDetailsModal: React.FC<ChallengeDetailsModalProps> = ({ metrics, 
             borderColor: 'border-tc-error/20',
             icon: ExclamationTriangleIcon,
             label: 'Desafío Fallido',
+        },
+        EXPIRED: {
+            color: 'text-tc-text-tertiary',
+            bgColor: 'bg-tc-bg-tertiary/50',
+            borderColor: 'border-tc-border-light',
+            icon: ExclamationTriangleIcon,
+            label: 'Tiempo Agotado',
         },
         COMPLETE: {
             color: 'text-tc-growth-green',
@@ -140,6 +150,30 @@ const ChallengeDetailsModal: React.FC<ChallengeDetailsModalProps> = ({ metrics, 
                             <div className="flex justify-between mt-2 sm:mt-3 text-xs sm:text-sm font-medium text-tc-text-secondary">
                                 <span className="font-data">${Math.max(0, netProfit).toFixed(2)}</span>
                                 <span className="font-data">Target: ${profitTargetAmount.toFixed(0)}</span>
+                            </div>
+                        </div>
+
+                        {/* Trading Days & Time Remaining */}
+                        <div className="mt-5 sm:mt-6 pt-5 sm:pt-6 border-t border-tc-border-light">
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="bg-tc-bg-secondary/50 rounded-xl py-3 px-3 border border-tc-border-light/50 text-center">
+                                    <p className="text-[9px] text-tc-text-tertiary uppercase tracking-wider mb-1">Días Operados</p>
+                                    <p className={`text-lg font-bold font-data ${tradingDaysCount >= minTradingDays ? 'text-tc-growth-green' : 'text-tc-text'}`}>
+                                        {tradingDaysCount}<span className="text-sm text-tc-text-tertiary">/{minTradingDays}</span>
+                                    </p>
+                                    <p className="text-[9px] text-tc-text-tertiary mt-0.5">
+                                        {tradingDaysCount >= minTradingDays ? '✅ Completado' : `Faltan ${minTradingDays - tradingDaysCount}`}
+                                    </p>
+                                </div>
+                                <div className="bg-tc-bg-secondary/50 rounded-xl py-3 px-3 border border-tc-border-light/50 text-center">
+                                    <p className="text-[9px] text-tc-text-tertiary uppercase tracking-wider mb-1">Tiempo Restante</p>
+                                    <p className={`text-lg font-bold font-data ${daysRemaining <= 5 ? 'text-tc-error' : daysRemaining <= 10 ? 'text-tc-warning' : 'text-tc-text'}`}>
+                                        {daysRemaining}<span className="text-sm text-tc-text-tertiary"> días</span>
+                                    </p>
+                                    <p className="text-[9px] text-tc-text-tertiary mt-0.5">
+                                        Día {daysActive} de 30
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>

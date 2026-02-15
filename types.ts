@@ -163,7 +163,7 @@ export interface ChallengeSettings {
   startDate: number;
 }
 
-export type ChallengeStatus = 'PASSING' | 'CAUTION' | 'FAILED' | 'COMPLETE';
+export type ChallengeStatus = 'PASSING' | 'CAUTION' | 'FAILED' | 'COMPLETE' | 'EXPIRED';
 
 export interface ChallengeMetrics {
   currentDailyLoss: number;

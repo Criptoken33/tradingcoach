@@ -22,7 +22,13 @@ const ChallengeFailedModal: React.FC<ChallengeFailedModalProps> = ({
         maxTotalDrawdownAmount,
         netProfit,
         daysActive,
+        daysRemaining,
+        tradingDaysCount,
+        minTradingDays,
+        status,
     } = metrics;
+
+    const isExpired = status === 'EXPIRED';
 
     // Determine which rule was violated
     const dailyLossViolated = currentDailyLoss >= maxDailyLossAmount;
@@ -66,23 +72,33 @@ const ChallengeFailedModal: React.FC<ChallengeFailedModalProps> = ({
                             <XMarkIcon className="w-4 h-4 text-tc-text-tertiary" />
                         </button>
 
-                        <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-tc-error/10 border-2 border-tc-error/30 flex items-center justify-center">
-                            <ExclamationTriangleIcon className="w-8 h-8 text-tc-error" />
+                        <div className={`w-16 h-16 mx-auto mb-3 rounded-2xl ${isExpired ? 'bg-tc-warning/10 border-2 border-tc-warning/30' : 'bg-tc-error/10 border-2 border-tc-error/30'} flex items-center justify-center`}>
+                            <ExclamationTriangleIcon className={`w-8 h-8 ${isExpired ? 'text-tc-warning' : 'text-tc-error'}`} />
                         </div>
-                        <h2 className="text-lg font-bold text-tc-error tracking-wide uppercase">
-                            Evaluación No Superada
+                        <h2 className={`text-lg font-bold tracking-wide uppercase ${isExpired ? 'text-tc-warning' : 'text-tc-error'}`}>
+                            {isExpired ? 'Tiempo Agotado' : 'Evaluación No Superada'}
                         </h2>
                         <p className="text-xs text-tc-text-tertiary mt-1">
                             Cuenta {formattedAccount} • {daysActive} {daysActive === 1 ? 'día' : 'días'} de operativa
                         </p>
                     </div>
 
-                    {/* Violation Details */}
                     <div className="px-5 pb-4">
                         <p className="text-[10px] font-bold text-tc-text-secondary uppercase tracking-widest mb-2.5">
-                            Regla(s) Violada(s)
+                            {isExpired ? 'Motivo' : 'Regla(s) Violada(s)'}
                         </p>
                         <div className="space-y-2">
+                            {isExpired && (
+                                <div className="flex items-center gap-3 bg-tc-warning/5 border border-tc-warning/15 rounded-xl px-3.5 py-2.5">
+                                    <div className="w-2 h-2 rounded-full bg-tc-warning flex-shrink-0" />
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-xs font-bold text-tc-text">Límite de 30 días alcanzado</p>
+                                        <p className="text-[11px] text-tc-text-secondary mt-0.5">
+                                            No se alcanzó el objetivo de ganancia dentro del plazo.
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
                             {dailyLossViolated && (
                                 <div className="flex items-center gap-3 bg-tc-error/5 border border-tc-error/15 rounded-xl px-3.5 py-2.5">
                                     <div className="w-2 h-2 rounded-full bg-tc-error flex-shrink-0" />

@@ -45,14 +45,15 @@ const ChallengeDashboard: React.FC<ChallengeDashboardProps> = ({
         }
     }, [metrics, settings]);
 
-    // Auto-show failed modal when challenge fails
+    // Auto-show failed/expired modal
     useEffect(() => {
         if (!metrics || !settings) return;
-        if (metrics.status === 'FAILED') {
-            const hasShown = localStorage.getItem(`failed_shown_${settings.startDate}`);
+        if (metrics.status === 'FAILED' || metrics.status === 'EXPIRED') {
+            const key = `failed_shown_${settings.startDate}`;
+            const hasShown = localStorage.getItem(key);
             if (!hasShown) {
                 setShowFailedModal(true);
-                localStorage.setItem(`failed_shown_${settings.startDate}`, 'true');
+                localStorage.setItem(key, 'true');
             }
         }
     }, [metrics, settings]);
@@ -144,6 +145,16 @@ const ChallengeDashboard: React.FC<ChallengeDashboardProps> = ({
                                     <p className="text-[10px] font-bold text-tc-text-secondary uppercase tracking-widest mb-2.5">
                                         Reglas del desafío
                                     </p>
+                                    <div className="grid grid-cols-2 gap-2 text-center mb-2">
+                                        <div className="bg-tc-bg-secondary/50 rounded-xl py-2.5 px-1 border border-tc-border-light/50">
+                                            <p className="text-[9px] text-tc-text-tertiary uppercase tracking-wider mb-0.5">Días Mín.</p>
+                                            <p className="text-sm font-bold text-tc-text font-data">{FUNDING_DEFAULTS.minTradingDays} días</p>
+                                        </div>
+                                        <div className="bg-tc-bg-secondary/50 rounded-xl py-2.5 px-1 border border-tc-border-light/50">
+                                            <p className="text-[9px] text-tc-text-tertiary uppercase tracking-wider mb-0.5">Plazo</p>
+                                            <p className="text-sm font-bold text-tc-text font-data">{FUNDING_DEFAULTS.timeLimitDays} días</p>
+                                        </div>
+                                    </div>
                                     <div className="grid grid-cols-3 gap-2 text-center">
                                         <div className="bg-tc-bg-secondary/50 rounded-xl py-2.5 px-1 border border-tc-border-light/50">
                                             <p className="text-[9px] text-tc-text-tertiary uppercase tracking-wider mb-0.5">Pérd. Diaria</p>
@@ -187,7 +198,7 @@ const ChallengeDashboard: React.FC<ChallengeDashboardProps> = ({
     }
 
     // ─── ACTIVE STATE: Live Challenge Widget ───
-    const { status, daysActive } = metrics;
+    const { status, daysActive, daysRemaining, tradingDaysCount, minTradingDays } = metrics;
 
     const statusConfig = {
         PASSING: {
@@ -210,6 +221,13 @@ const ChallengeDashboard: React.FC<ChallengeDashboardProps> = ({
             borderColor: 'border-tc-error/20',
             icon: ExclamationTriangleIcon,
             label: 'Fallido',
+        },
+        EXPIRED: {
+            color: 'text-tc-text-tertiary',
+            bgColor: 'bg-tc-bg-tertiary/50',
+            borderColor: 'border-tc-border-light',
+            icon: ExclamationTriangleIcon,
+            label: 'Tiempo Agotado',
         },
         COMPLETE: {
             color: 'text-tc-growth-green',
@@ -249,7 +267,7 @@ const ChallengeDashboard: React.FC<ChallengeDashboardProps> = ({
                                     Desafío {formattedAccountSize} 🏆
                                 </h3>
                                 <p className="text-xs text-tc-text-secondary truncate">
-                                    Día {daysActive} • {statusConfig.label}
+                                    Día {daysActive}/{FUNDING_DEFAULTS.timeLimitDays} • {tradingDaysCount}/{minTradingDays} días op. • {statusConfig.label}
                                 </p>
                             </div>
                             {/* Toggle */}

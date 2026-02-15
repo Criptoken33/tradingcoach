@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Trade, OperationStatus, ChallengeSettings, ChallengeStatus } from '../types';
 import { calculatePnl } from '../utils';
+import { FUNDING_DEFAULTS } from '../constants/fundingDefaults';
 
 export interface ChallengeMetrics {
     currentDailyLoss: number;
@@ -17,6 +18,9 @@ export interface ChallengeMetrics {
 
     status: ChallengeStatus;
     daysActive: number;
+    daysRemaining: number;
+    tradingDaysCount: number;
+    minTradingDays: number;
 }
 
 export const useChallengeStatus = (
@@ -27,6 +31,7 @@ export const useChallengeStatus = (
         if (!settings || !settings.isActive) return null;
 
         const { accountSize, dailyLossLimitPct, maxTotalDrawdownPct, profitTargetPct, startDate } = settings;
+        const { minTradingDays, timeLimitDays } = FUNDING_DEFAULTS;
 
         // Filter relevant trades (closed after start date)
         const challengeTrades = trades.filter(
@@ -39,18 +44,11 @@ export const useChallengeStatus = (
         challengeTrades.sort((a, b) => (a.closeTimestamp || 0) - (b.closeTimestamp || 0));
 
         // --- 1. Daily Loss Calculation ---
-        // Get start of today (local time)
         const now = new Date();
         const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
         const todaysTrades = challengeTrades.filter(t => (t.closeTimestamp || 0) >= startOfDay);
 
-        // Calculate P&L for today
-        // Note: Daily Loss usually counts CLOSED trades + Floating P&L. 
-        // Since this app logs closed trades, we sum closed P&L for today.
-        // If net P&L is positive, daily loss is 0. If negative, it's the absolute value.
-        // Since this app logs closed trades, we sum closed P&L for today.
-        // If net P&L is positive, daily loss is 0. If negative, it's the absolute value.
         const todaysPnL = todaysTrades.reduce((acc, t) => {
             const pnl = calculatePnl(t);
             return acc + (pnl !== null ? pnl : 0);
@@ -60,8 +58,6 @@ export const useChallengeStatus = (
         const dailyLossProgress = Math.min((currentDailyLoss / maxDailyLossAmount) * 100, 100);
 
         // --- 2. Max Total Drawdown Calculation ---
-        // Drawdown is usually High Water Mark - Current Equity.
-        // We calculate the running equity curve.
         let currentEquity = accountSize;
         let highWaterMark = accountSize;
         let maxDrawdown = 0;
@@ -78,16 +74,8 @@ export const useChallengeStatus = (
             }
         });
 
-        // Current total drawdown relative to HWM or initial balance depending on rule.
-        // Most prop firms use "Max Drawdown from Initial Balance" or "Relative Drawdown".
-        // Let's implement "Drawdown from Initial Balance" as it's stricter/safer for now.
-        // Wait, standard is trailing or static. Let's use simple Net P&L based drawdown for simplicity first (Total Loss limit).
-        // Actually, "Total Drawdown" in prop firms usually means Equity cannot fall below Initial Balance - 10%.
-        // So distinct from "Trailing Drawdown". Let's use "Max Total Loss" logic: 
-        // Current Equity < Initial Balance - MaxLossAmount.
-
         const netProfit = currentEquity - accountSize;
-        const currentTotalDrawdown = netProfit < 0 ? Math.abs(netProfit) : 0; // Simple "Total Loss" model
+        const currentTotalDrawdown = netProfit < 0 ? Math.abs(netProfit) : 0;
         const maxTotalDrawdownAmount = (accountSize * maxTotalDrawdownPct) / 100;
         const totalDrawdownProgress = Math.min((currentTotalDrawdown / maxTotalDrawdownAmount) * 100, 100);
 
@@ -95,19 +83,37 @@ export const useChallengeStatus = (
         const profitTargetAmount = (accountSize * profitTargetPct) / 100;
         const profitTargetProgress = Math.max(0, Math.min((netProfit / profitTargetAmount) * 100, 100));
 
-        // --- 4. Status Determination ---
+        // --- 4. Trading Days Count ---
+        // A "trading day" = a unique calendar day with at least 1 closed trade
+        const tradingDaysSet = new Set<string>();
+        challengeTrades.forEach(t => {
+            if (t.closeTimestamp) {
+                const d = new Date(t.closeTimestamp);
+                tradingDaysSet.add(`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`);
+            }
+        });
+        const tradingDaysCount = tradingDaysSet.size;
+
+        // --- 5. Time Limit ---
+        const daysActive = Math.ceil((Date.now() - startDate) / (1000 * 60 * 60 * 24));
+        const daysRemaining = Math.max(0, timeLimitDays - daysActive);
+
+        // --- 6. Status Determination ---
         let status: ChallengeStatus = 'PASSING';
 
         if (currentDailyLoss >= maxDailyLossAmount || currentTotalDrawdown >= maxTotalDrawdownAmount) {
             status = 'FAILED';
-        } else if (netProfit >= profitTargetAmount) {
+        } else if (daysRemaining === 0 && netProfit < profitTargetAmount) {
+            // Time ran out without reaching profit target
+            status = 'EXPIRED';
+        } else if (netProfit >= profitTargetAmount && tradingDaysCount >= minTradingDays) {
+            // Must meet BOTH profit target AND minimum trading days
             status = 'COMPLETE';
         } else if (dailyLossProgress > 80 || totalDrawdownProgress > 80) {
             status = 'CAUTION';
         }
-
-        // Days Active
-        const daysActive = Math.ceil((Date.now() - startDate) / (1000 * 60 * 60 * 24));
+        // Note: if profit target is met but min trading days NOT met,
+        // status stays 'PASSING' — user must keep trading to meet the day requirement
 
         return {
             currentDailyLoss,
@@ -120,12 +126,10 @@ export const useChallengeStatus = (
             profitTargetAmount,
             profitTargetProgress,
             status,
-            daysActive
+            daysActive,
+            daysRemaining,
+            tradingDaysCount,
+            minTradingDays,
         };
     }, [trades, settings]);
 };
-
-// Helper: Needs to duplicate the PnL logic or import it.
-// For now, I'll inline a simple calculator assuming we have the data.
-// In reality, we should import calculateInAppPnl from utils or similar.
-// Helper removed in favor of imported util
