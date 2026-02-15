@@ -8,13 +8,13 @@ import { FirebaseAnalytics } from '@capacitor-community/firebase-analytics';
 
 // Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyALGVNFzPGnDGcm_3EfjombriJ5SurAhXA",
-    authDomain: "tradingcoach-021015.firebaseapp.com",
-    projectId: "tradingcoach-021015",
-    storageBucket: "tradingcoach-021015.firebasestorage.app",
-    messagingSenderId: "146126403535",
-    appId: "1:146126403535:web:482a5e76707d14831e84ba",
-    measurementId: "G-9EM4D0XVSQ"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
