@@ -30,7 +30,7 @@ const remoteConfig = getRemoteConfig(app);
 
 // Remote Config settings
 // Remote Config settings - Lower interval for testing/dev (1 minute instead of 1 hour)
-remoteConfig.settings.minimumFetchIntervalMillis = 60000;
+// remoteConfig.settings.minimumFetchIntervalMillis = 60000;
 
 // Analytics is only supported in browser environments
 const analytics = typeof window !== 'undefined'

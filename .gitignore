@@ -12,7 +12,16 @@ dist
 dist-ssr
 *.local
 
+
+# Security
+*.keystore
+.env
+.env.production
+.env.development
+.env.test
+
 # Editor directories and files
+
 .vscode/*
 !.vscode/extensions.json
 .idea
