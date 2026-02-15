@@ -13,11 +13,10 @@ const AnimatedSplash: React.FC = () => {
         <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#388656]">
             {/* Text Container with Slide-up Animation */}
             <h1
-                className={`text-5xl font-bold text-white tracking-widest transform transition-all duration-1000 ease-out ${textVisible
-                        ? 'opacity-100 translate-y-0 scale-100'
-                        : 'opacity-0 translate-y-20 scale-95'
+                className={`text-5xl font-bold font-sans text-white tracking-widest transform transition-all duration-1000 ease-out ${textVisible
+                    ? 'opacity-100 translate-y-0 scale-100'
+                    : 'opacity-0 translate-y-20 scale-95'
                     }`}
-                style={{ fontFamily: 'Inter, sans-serif' }}
             >
                 TradingCoach
             </h1>
