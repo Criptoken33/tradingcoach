@@ -8,11 +8,16 @@ export const PurchasesService = {
     async initialize(uid: string) {
         try {
             if (Capacitor.getPlatform() === 'web') {
-                console.warn('RevenueCat not supported on web directly via this plugin.');
+                if (import.meta.env.DEV) console.warn('RevenueCat not supported on web directly via this plugin.');
                 return;
             }
 
-            await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
+            // Only set debug log level in dev
+            if (import.meta.env.DEV) {
+                await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
+            } else {
+                await Purchases.setLogLevel({ level: LOG_LEVEL.ERROR });
+            }
 
             const apiKey = Capacitor.getPlatform() === 'android'
                 ? REVENUECAT_API_KEY_ANDROID
@@ -23,7 +28,7 @@ export const PurchasesService = {
                 appUserID: uid,
             });
 
-            console.log('RevenueCat initialized for user:', uid);
+            if (import.meta.env.DEV) console.log('RevenueCat initialized for user:', uid);
         } catch (error) {
             console.error('Error initializing RevenueCat:', error);
         }
@@ -46,8 +51,10 @@ export const PurchasesService = {
             const res = await Purchases.getCustomerInfo();
             const customerInfo = res.customerInfo;
 
-            console.log('RC Active Entitlements:', Object.keys(customerInfo.entitlements.active));
-            console.log('RC Active Subscriptions:', customerInfo.activeSubscriptions);
+            if (import.meta.env.DEV) {
+                console.log('RC Active Entitlements:', Object.keys(customerInfo.entitlements.active));
+                console.log('RC Active Subscriptions:', customerInfo.activeSubscriptions);
+            }
 
             const hasEntitlement = Object.keys(customerInfo.entitlements.active).length > 0;
             const hasSubscription = (customerInfo.activeSubscriptions && customerInfo.activeSubscriptions.length > 0);
@@ -60,12 +67,12 @@ export const PurchasesService = {
 
             // double check with cache invalidation if false
             if (!isPro) {
-                console.log('Initial check failed, invalidating cache and retrying...');
+                if (import.meta.env.DEV) console.log('Initial check failed, invalidating cache and retrying...');
                 await Purchases.invalidateCustomerInfoCache();
                 isPro = await checkStatus();
             }
 
-            console.log('Is user PRO?', isPro);
+            if (import.meta.env.DEV) console.log('Is user PRO?', isPro);
             return isPro;
         } catch (error) {
             console.error('Error checking PRO status:', error);
@@ -97,17 +104,17 @@ export const PurchasesService = {
         try {
             if (Capacitor.getPlatform() === 'web') return null;
 
-            console.log('Invalidating cache before restore...');
+            if (import.meta.env.DEV) console.log('Invalidating cache before restore...');
             await Purchases.invalidateCustomerInfoCache();
 
             const restoreResult = await Purchases.restorePurchases();
-            console.log('Restore completed. Active entitlements:', Object.keys(restoreResult.customerInfo.entitlements.active));
+            if (import.meta.env.DEV) console.log('Restore completed. Active entitlements:', Object.keys(restoreResult.customerInfo.entitlements.active));
 
             return restoreResult;
         } catch (error: any) {
             // Filter known benign errors
             if (error.message && error.message.includes('BillingWrapper is not attached to a listener')) {
-                console.warn('Suppressing BillingWrapper error (benign race condition)');
+                if (import.meta.env.DEV) console.warn('Suppressing BillingWrapper error (benign race condition)');
                 return null;
             }
             console.error('Error restoring purchases:', error);

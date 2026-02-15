@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const data = result.data as { success: boolean; expiration: number; message: string };
 
             if (data.success) {
-                console.log("[AuthContext] Temp PRO activated until:", new Date(data.expiration));
+                if (import.meta.env.DEV) console.log("[AuthContext] Temp PRO activated until:", new Date(data.expiration));
 
                 // Force token refresh to get new claims
                 if (auth.currentUser) {
@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 try {
                     isPro = await PurchasesService.isPro();
                 } catch (e) {
-                    console.log("[AuthContext] Error checking RC status, skipping sync to avoid accidental downgrade.");
+                    if (import.meta.env.DEV) console.log("[AuthContext] Error checking RC status, skipping sync to avoid accidental downgrade.");
                     return; // Stop here if we can't verify RC
                 }
 
@@ -86,9 +86,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                             // FORCE TOKEN REFRESH to pick up new Custom Claims
                             if (auth.currentUser) {
                                 await auth.currentUser.getIdToken(true);
-                                console.log("[AuthContext] Token refreshed with new claims (manual refresh).");
+                                if (import.meta.env.DEV) console.log("[AuthContext] Token refreshed with new claims (manual refresh).");
                             }
-                            console.log("[AuthContext] Secure sync triggered.");
+                            if (import.meta.env.DEV) console.log("[AuthContext] Secure sync triggered.");
                         } catch (error) {
                             console.error("[AuthContext] Secure sync failed:", error);
                         }
@@ -108,7 +108,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (Capacitor.getPlatform() === 'web') return;
 
         try {
-            console.log("[AuthContext] Starting background sync...");
+            if (import.meta.env.DEV) console.log("[AuthContext] Starting background sync...");
 
             // 1. Init RevenueCat
             await PurchasesService.initialize(firebaseUser.uid);
@@ -122,7 +122,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // 2. Sync if needed
             if (isPro !== currentProfile.isPro) {
                 try {
-                    console.log("[AuthContext] Status mismatch. Triggering Secure Sync...");
+                    if (import.meta.env.DEV) console.log("[AuthContext] Status mismatch. Triggering Secure Sync...");
                     const { httpsCallable } = await import('firebase/functions');
                     const { functions } = await import('../services/firebase');
                     const syncSubscription = httpsCallable(functions, 'syncSubscription');
@@ -130,7 +130,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
                     // 3. Force Token Refresh to get new claims
                     await firebaseUser.getIdToken(true);
-                    console.log("[AuthContext] Token refreshed with new claims (background).");
+                    if (import.meta.env.DEV) console.log("[AuthContext] Token refreshed with new claims (background).");
 
                     // Update local state smoothly
                     setUser(prev => prev ? { ...prev, isPro } : null);
@@ -145,14 +145,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     const tokenIsPro = !!tokenResult.claims.isPro;
 
                     if (currentProfile.isPro && !tokenIsPro) {
-                        console.log("[AuthContext] Firestore is PRO but Token is NOT. Refreshing...");
+                        if (import.meta.env.DEV) console.log("[AuthContext] Firestore is PRO but Token is NOT. Refreshing...");
                         await firebaseUser.getIdToken(true);
                     }
                 } catch (tokenError) {
                     console.error("[AuthContext] Error verifying token claims:", tokenError);
                 }
             }
-            console.log("[AuthContext] Background sync completed.");
+            if (import.meta.env.DEV) console.log("[AuthContext] Background sync completed.");
 
         } catch (error) {
             console.error("[AuthContext] Error in background sync", error);

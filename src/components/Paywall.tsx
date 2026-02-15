@@ -44,11 +44,11 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
     const handlePurchase = async (pkg: any) => {
         setPurchasing(true);
         try {
-            console.log('Starting purchase for:', pkg.product.identifier);
+            if (import.meta.env.DEV) console.log('Starting purchase for:', pkg.product.identifier);
             const result = await PurchasesService.purchasePackage(pkg);
             const customerInfo = result.customerInfo;
 
-            console.log('Purchase result customerInfo:', JSON.stringify(customerInfo.entitlements.active));
+            if (import.meta.env.DEV) console.log('Purchase result customerInfo:', JSON.stringify(customerInfo.entitlements.active));
 
             if (Object.keys(customerInfo.entitlements.active).length > 0) {
                 setIsSuccess(true);
@@ -69,18 +69,18 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
 
     const handleWatchAd = async () => {
         setAdLoading(true);
-        console.log('[Paywall] handleWatchAd started');
+        if (import.meta.env.DEV) console.log('[Paywall] handleWatchAd started');
 
         const adTask = async () => {
-            console.log('[Paywall] Preparing reward video...');
+            if (import.meta.env.DEV) console.log('[Paywall] Preparing reward video...');
             await prepareRewardVideo();
-            console.log('[Paywall] Showing reward video...');
+            if (import.meta.env.DEV) console.log('[Paywall] Showing reward video...');
             await showRewardVideo(async () => {
-                console.log('[Paywall] User rewarded, activating Temp Pro...');
+                if (import.meta.env.DEV) console.log('[Paywall] User rewarded, activating Temp Pro...');
                 try {
                     setLoading(true); // Show global loader while activating
                     await activateTempPro();
-                    console.log('[Paywall] Temp Pro activated successfully');
+                    if (import.meta.env.DEV) console.log('[Paywall] Temp Pro activated successfully');
                     setIsSuccess(true);
                     showToast('¡Has desbloqueado PRO por 24 horas!', 'success');
                 } catch (error: any) {
@@ -112,7 +112,7 @@ export const Paywall: React.FC<PaywallProps> = ({ onClose, onSuccess }) => {
                 showToast('No hay anuncios disponibles en este momento', 'error');
             }
         } finally {
-            console.log('[Paywall] handleWatchAd finally block');
+            if (import.meta.env.DEV) console.log('[Paywall] handleWatchAd finally block');
             setAdLoading(false);
         }
     };

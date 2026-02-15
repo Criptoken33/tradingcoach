@@ -15,12 +15,12 @@ class CurrencyService {
 
         // 1. Return memory cache if valid
         if (this.rates && (now - this.lastFetch < this.CACHE_DURATION)) {
-            console.log("[CurrencyService] Using memory cached rates");
+            if (import.meta.env.DEV) console.log("[CurrencyService] Using memory cached rates");
             return this.rates;
         }
 
         try {
-            console.log("[CurrencyService] Fetching rates from backend...");
+            if (import.meta.env.DEV) console.log("[CurrencyService] Fetching rates from backend...");
             const getExchangeRates = httpsCallable(functions, 'getExchangeRates');
             const result = await getExchangeRates();
 

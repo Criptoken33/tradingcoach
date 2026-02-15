@@ -301,7 +301,7 @@ const App: React.FC = () => {
     const loadData = async () => {
       try {
         if (!pro.canBackupToCloud) {
-          console.log("Cloud backup disabled for non-PRO users");
+          if (import.meta.env.DEV) console.log("Cloud backup disabled for non-PRO users");
           // If user just activated temp pro, wait a bit for claims to propagate?
           // Actually pro.canBackupToCloud already checks the claims/profile.
           return;
@@ -354,11 +354,11 @@ const App: React.FC = () => {
 
       try {
         if (!pro.canBackupToCloud) {
-          console.log("Cloud backup disabled for non-PRO users");
+          if (import.meta.env.DEV) console.log("Cloud backup disabled for non-PRO users");
           return;
         }
         await UserRepository.saveUserData(user.uid, userData);
-        console.log("Data saved to cloud");
+        if (import.meta.env.DEV) console.log("Data saved to cloud");
       } catch (error: any) {
         console.error("Error saving data to cloud", error);
         if (error.code === 'permission-denied') {
@@ -751,7 +751,7 @@ const App: React.FC = () => {
   }, [tradingLog]);
 
   const handleSaveSettings = (newSettings: any) => {
-    console.log('[App] Saving settings:', newSettings);
+    if (import.meta.env.DEV) console.log('[App] Saving settings:', newSettings);
     setSettings(prev => ({ ...prev, ...newSettings }));
     showToast('Ajustes guardados.', 'success');
   };

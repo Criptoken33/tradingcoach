@@ -50,11 +50,11 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
     const [isDeleteReportModalOpen, setIsDeleteReportModalOpen] = useState(false);
 
     useEffect(() => {
-        console.log('[Settings] Mounted with:', currentSettings);
+        if (import.meta.env.DEV) console.log('[Settings] Mounted with:', currentSettings);
     }, []);
 
     const handleSave = () => {
-        console.log('[Settings] Handling save with current state:', settings);
+        if (import.meta.env.DEV) console.log('[Settings] Handling save with current state:', settings);
         const dailyLimit = parseFloat(settings.dailyLossLimit);
         const weeklyLimit = parseFloat(settings.weeklyLossLimit);
 
@@ -83,7 +83,7 @@ const Settings: React.FC<SettingsProps> = ({ currentSettings, onSave, appData, o
             dailyLossLimit: settings.dailyLossLimit,
             weeklyLossLimit: settings.weeklyLossLimit,
         };
-        console.log('[Settings] Calling onSave with:', finalSettings);
+        if (import.meta.env.DEV) console.log('[Settings] Calling onSave with:', finalSettings);
         onSave(finalSettings);
     };
 

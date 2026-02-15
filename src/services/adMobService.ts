@@ -78,7 +78,7 @@ export const AdMobService = {
                 testingDevices: ['EC21962B7AD82E4F483CA4DA3F1C2A61'],
                 initializeForTesting: testing,
             });
-            console.log('AdMob initialized. Test Mode:', testing);
+            if (import.meta.env.DEV) console.log('AdMob initialized. Test Mode:', testing);
         } catch (error) {
             console.error('AdMob initialization failed', error);
         }
@@ -89,7 +89,7 @@ export const AdMobService = {
 
         const adId = getAdUnitId('BANNER');
         if (!adId) {
-            console.warn('AdMob: No Banner ID found for this platform.');
+            if (import.meta.env.DEV) console.warn('AdMob: No Banner ID found for this platform.');
             return;
         }
 
@@ -195,7 +195,7 @@ export const AdMobService = {
 
         try {
             rewardHandler = await AdMob.addListener(RewardAdPluginEvents.Rewarded, (reward) => {
-                console.log('User rewarded', reward);
+                if (import.meta.env.DEV) console.log('User rewarded', reward);
                 onReward();
                 cleanup();
             });
