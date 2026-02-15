@@ -14,10 +14,31 @@ export const calculatePnl = (trade: Trade): number | null => {
         return null;
     }
     const { entryPrice, positionSizeLots } = trade.riskPlan;
-    const pipMultiplier = trade.symbol.includes('JPY') ? 100 : 10000;
+    const symbol = trade.symbol.toUpperCase();
+    const isJpy = symbol.includes('JPY');
+    const pipMultiplier = isJpy ? 100 : 10000;
     const pips = (trade.direction === Direction.LONG ? trade.exitPrice - entryPrice : entryPrice - trade.exitPrice) * pipMultiplier;
-    const pipValuePerLot = 10; // Assuming standard lot on a USD account
-    return pips * pipValuePerLot * positionSizeLots;
+
+    // Improved Pip Value calculation
+    const baseCurrency = symbol.substring(0, 3);
+    const quoteCurrency = symbol.substring(3, 6);
+
+    // Pip value in quote currency for 1 standard lot
+    // Non-JPY (Pip 0.0001): 100,000 * 0.0001 = 10
+    // JPY (Pip 0.01): 100,000 * 0.01 = 1000
+    const pipValueInQuote = isJpy ? 1000 : 10;
+    let pipValueUSD = pipValueInQuote;
+
+    if (quoteCurrency === 'USD') {
+        pipValueUSD = pipValueInQuote;
+    } else if (baseCurrency === 'USD') {
+        // For pairs like USDCAD, USDJPY, USDCHF
+        // Pip Value (in USD) = Pip Value (in Quote) / Current Price
+        pipValueUSD = pipValueInQuote / trade.exitPrice;
+    }
+    // Fallback covers cross pairs (e.g. EURGBP) with a standard assumption if rates are unavailable.
+
+    return pips * pipValueUSD * positionSizeLots;
 };
 
 /**

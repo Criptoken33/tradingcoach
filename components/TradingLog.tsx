@@ -4,6 +4,7 @@ import { Trade, OperationStatus, Direction } from '../types';
 import { EXIT_REASONS } from '../constants';
 import { JournalIcon, XCircleIcon, InfoIcon, CheckCircleIcon } from './icons';
 import { useProFeatures } from '../src/hooks/useProFeatures';
+import { calculatePnl } from '../utils';
 
 interface TradingLogProps {
     tradingLog: Trade[];
@@ -63,28 +64,13 @@ const TradingLog: React.FC<TradingLogProps> = ({ tradingLog, onAddNote, onCloseT
     );
 };
 
-const calculatePnl = (trade: Trade) => {
-    if (trade.status !== OperationStatus.CLOSED || !trade.riskPlan || !trade.exitPrice) return null;
-
-    const { entryPrice, positionSizeLots } = trade.riskPlan;
-    if (!entryPrice || !positionSizeLots) return null;
-
-    const pipMultiplier = trade.symbol.includes('JPY') ? 100 : 10000;
-    const pips = (trade.direction === Direction.LONG ? trade.exitPrice - entryPrice : entryPrice - trade.exitPrice) * pipMultiplier;
-
-    const pipValuePerLot = 10;
-    const profit = pips * pipValuePerLot * positionSizeLots;
-
-    return { profit, pips };
-}
-
 interface TradeCardProps {
     trade: Trade;
     onViewDetails: () => void;
 }
 
 const TradeCard: React.FC<TradeCardProps> = ({ trade, onViewDetails }) => {
-    const pnl = calculatePnl(trade);
+    const profit = calculatePnl(trade);
 
     const getDisplayInfo = () => {
         if (trade.status === OperationStatus.OPEN) {
@@ -95,12 +81,12 @@ const TradeCard: React.FC<TradeCardProps> = ({ trade, onViewDetails }) => {
                 pnlColor: 'text-tc-text-secondary',
             };
         }
-        if (pnl) {
-            const isWin = pnl.profit >= 0;
+        if (profit !== null) {
+            const isWin = profit >= 0;
             return {
                 Icon: isWin ? CheckCircleIcon : XCircleIcon,
                 iconBgColor: isWin ? 'bg-tc-success' : 'bg-tc-error',
-                pnlText: `${isWin ? '+' : ''}${pnl.profit.toFixed(2)}`,
+                pnlText: `${isWin ? '+' : ''}${profit.toFixed(2)}`,
                 pnlColor: isWin ? 'text-tc-success' : 'text-tc-error',
             };
         }
@@ -112,6 +98,7 @@ const TradeCard: React.FC<TradeCardProps> = ({ trade, onViewDetails }) => {
             pnlColor: 'text-tc-text-secondary',
         };
     };
+
 
     const { Icon, iconBgColor, pnlText, pnlColor } = getDisplayInfo();
 
@@ -192,12 +179,12 @@ const TradeDetailModal: React.FC<TradeDetailModalProps> = ({ trade, onClose, onA
         }
     };
 
-    const pnl = calculatePnl(trade);
+    const profit = calculatePnl(trade);
 
     const getStatusInfo = () => {
         switch (trade.status) {
             case OperationStatus.OPEN: return { text: 'Abierta', color: 'bg-tc-warning text-white' };
-            case OperationStatus.CLOSED: return { text: 'Cerrada', color: pnl && pnl.profit >= 0 ? 'bg-tc-success' : 'bg-tc-error' };
+            case OperationStatus.CLOSED: return { text: 'Cerrada', color: profit !== null && profit >= 0 ? 'bg-tc-success' : 'bg-tc-error' };
             default: return { text: 'Desconocido', color: 'bg-slate-500' };
         }
     };
@@ -223,9 +210,9 @@ const TradeDetailModal: React.FC<TradeDetailModalProps> = ({ trade, onClose, onA
                             <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${statusInfo.color}`}>{statusInfo.text}</span>
                         )}
                     </div>
-                    {pnl && (
-                        <div className={`font-data font-bold text-lg ${pnl.profit >= 0 ? 'text-tc-success' : 'text-tc-error'}`}>
-                            {pnl.profit > 0 ? '+' : ''}{pnl.profit.toFixed(2)} USD
+                    {profit !== null && (
+                        <div className={`font-data font-bold text-lg ${profit >= 0 ? 'text-tc-success' : 'text-tc-error'}`}>
+                            {profit > 0 ? '+' : ''}{profit.toFixed(2)} USD
                         </div>
                     )}
                 </div>

@@ -1,24 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { Trade, OperationStatus, Direction, MT5ReportData, MT5Summary } from '../types';
 import { ChartPieIcon, InfoIcon } from './icons';
+import { calculatePnl as calculateInAppPnl } from '../utils';
 
-// Helper function to calculate PnL from in-app log
-const calculateInAppPnl = (trade: Trade): number | null => {
-    if (
-        trade.status !== OperationStatus.CLOSED ||
-        !trade.riskPlan ||
-        !trade.exitPrice ||
-        !trade.riskPlan.entryPrice ||
-        !trade.riskPlan.positionSizeLots
-    ) {
-        return null;
-    }
-    const { entryPrice, positionSizeLots } = trade.riskPlan;
-    const pipMultiplier = trade.symbol.includes('JPY') ? 100 : 10000;
-    const pips = (trade.direction === Direction.LONG ? trade.exitPrice - entryPrice : entryPrice - trade.exitPrice) * pipMultiplier;
-    const pipValuePerLot = 10; // Assuming standard lot on a USD account
-    return pips * pipValuePerLot * positionSizeLots;
-};
+
 
 // Generates a full performance report from the in-app trading log
 const calculateStatsFromLog = (trades: (Trade & { pnl: number })[], initialBalance: number): MT5ReportData => {
