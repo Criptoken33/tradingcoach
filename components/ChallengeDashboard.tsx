@@ -5,6 +5,7 @@ import { ACCOUNT_SIZES, FUNDING_DEFAULTS } from '../constants/fundingDefaults';
 import { ShieldCheckIcon, ExclamationTriangleIcon, TrophyIcon } from './icons';
 import ChallengeDetailsModal from './ChallengeDetailsModal';
 import FundingCertificateModal from './FundingCertificateModal';
+import ChallengeFailedModal from './ChallengeFailedModal';
 
 interface ChallengeDashboardProps {
     trades: Trade[];
@@ -30,6 +31,7 @@ const ChallengeDashboard: React.FC<ChallengeDashboardProps> = ({
     const [selectedSize, setSelectedSize] = useState<number>(ACCOUNT_SIZES[2]);
     const [showActivateModal, setShowActivateModal] = useState(false);
     const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
+    const [showFailedModal, setShowFailedModal] = useState(false);
 
     // Auto-show certificate on completion
     useEffect(() => {
@@ -39,6 +41,18 @@ const ChallengeDashboard: React.FC<ChallengeDashboardProps> = ({
             if (!hasShown) {
                 setIsCertificateOpen(true);
                 localStorage.setItem(`certificate_shown_${settings.startDate}`, 'true');
+            }
+        }
+    }, [metrics, settings]);
+
+    // Auto-show failed modal when challenge fails
+    useEffect(() => {
+        if (!metrics || !settings) return;
+        if (metrics.status === 'FAILED') {
+            const hasShown = localStorage.getItem(`failed_shown_${settings.startDate}`);
+            if (!hasShown) {
+                setShowFailedModal(true);
+                localStorage.setItem(`failed_shown_${settings.startDate}`, 'true');
             }
         }
     }, [metrics, settings]);
@@ -329,6 +343,20 @@ const ChallengeDashboard: React.FC<ChallengeDashboardProps> = ({
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Challenge Failed Modal */}
+            {showFailedModal && settings && (
+                <ChallengeFailedModal
+                    metrics={metrics}
+                    accountSize={settings.accountSize}
+                    onClose={() => setShowFailedModal(false)}
+                    onRestart={() => {
+                        setShowFailedModal(false);
+                        onToggleChallenge(false);
+                        setTimeout(() => setShowActivateModal(true), 150);
+                    }}
+                />
             )}
         </>
     );
